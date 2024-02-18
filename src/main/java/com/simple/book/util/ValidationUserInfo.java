@@ -43,16 +43,12 @@ public class ValidationUserInfo {
 		String message = "";
 		boolean existsId = userRepository.existsById(id);
 		if (id == null) {
-			// 아이디를 입력해주세요.
 			message = "no_id";
 		} else if (id.length() < 8) {
-			// 아이디 최소 자리.
 			message = "min_over_id";
 		} else if (id.length() > 16) {
-			// 아이디 최대 자리.
 			message = "max_over_id";
 		} else if (!regex.getIdCheck(id)) {
-			// 영대소문자, 숫자만 허용.
 			message = "regex_false_id";
 		} else if (existsId) {
 			message = "exists_id";
