@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 public class Regex {
 	private final String idCheck = "^[a-zA-Z0-9]+$";
 	
-	private final String nameCheck = "^[a-zA-Z°¡-ÆR]+$";
+	private final String nameCheck = "^[a-zA-Zê°€íž£]+$";
 	
-	private final String password = "^[a-zA-Z°¡-ÆR0-9~`!@#$%^&*()_+|\\\\{}\\[\\],./<>?]+$";
+	private final String password = "^[a-zA-Zê°€íž£0-9~`!@#$%^&*()_+|\\\\{}\\[\\],./<>?]+$";
 	
 	private final String birth = "^[0-9]+$";
 	
