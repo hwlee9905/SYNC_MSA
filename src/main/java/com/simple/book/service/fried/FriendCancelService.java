@@ -12,19 +12,19 @@ import com.simple.book.util.DateFmt;
 import jakarta.servlet.http.HttpSession;
 
 @Service
-public class FriendAcceptService {
-
+public class FriendCancelService {
+	
 	@Autowired
 	private FriendReqRepository friendReqRepository;
-
+	
 	@Autowired
 	private DateFmt dateFmt;
 
-	public HashMap<String, Object> friendAccept(HttpSession session, String id) {
+	public HashMap<String, Object> requestCancle(HttpSession session, String id) {
 		HashMap<String, Object> result = new HashMap<>();
 		Object myId = session.getAttribute("id");
 		if (myId != null) {
-			FriendReqEntity entity = friendReqRepository.findByIdAndReqId(id, (String) myId);
+			FriendReqEntity entity = friendReqRepository.findByReqIdAndId(id, (String) myId);
 			if (entity != null && entity.getAcceptYn().equals("R")) {
 				friendReqRepository.saveAndFlush(setEntity(entity, (String) myId));
 				result.put("result", true);
@@ -36,9 +36,9 @@ public class FriendAcceptService {
 		}
 		return result;
 	}
-
+	
 	private FriendReqEntity setEntity(FriendReqEntity entity, String myId) {
-		entity.setAcceptYn("Y");
+		entity.setAcceptYn("C");
 		entity.setUpdDate(dateFmt.getDate("yyyyMMdd"));
 		entity.setUpdTime(dateFmt.getDate("HHmmss"));
 		entity.setUpdId(myId);

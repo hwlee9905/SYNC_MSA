@@ -35,21 +35,16 @@ public class AddFriendService {
 				FriendReqEntity entity = friendReqRepository.findByIdAndReqId((String) myId, id);
 				if (entity == null || entity.getAcceptYn().equals("N") || entity.getAcceptYn().equals("C")) {
 					friendReqRepository.saveAndFlush(setEntity(session, (String) myId, id));
-					// 친구 추가 성공
 					result.put("result", true);
 				} else if (entity.getAcceptYn().equals("Y")) {
-					// 이미 친구 상태
 					result.put("result", "friend");
 				} else {
-					// 이미 친구 요청
 					result.put("result", "req_friend");
 				}
 			} else {
-				// 없는 계정
 				result.put("result", "no_req_id");
 			}
 		} else {
-			// 로그인 안함
 			result.put("result", "no_session");
 		}
 		return result;
