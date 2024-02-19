@@ -4,14 +4,19 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity(name = "USERTBL")
+@Entity(name = "DELUSERTBL")
 @DynamicUpdate
-public class UserEntity {
+public class DelUserEntity {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int no;
+	
 	private String id;
 	
 	@Column(name = "FIRST_NAME")
