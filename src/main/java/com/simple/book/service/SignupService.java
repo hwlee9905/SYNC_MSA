@@ -55,7 +55,7 @@ public class SignupService {
 		} else if (!resultGender.equals(SUCCESS)) {
 			result.put("result", resultGender);
 		} else {
-			String date = dateFmt.getDate("YYYYMMdd");
+			String date = dateFmt.getDate("yyyyMMdd");
 			String time = dateFmt.getDate("HHmmss");
 			UserEntity entity = setEntity(date, time);
 

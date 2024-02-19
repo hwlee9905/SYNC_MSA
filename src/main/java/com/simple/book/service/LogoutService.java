@@ -8,11 +8,12 @@ import jakarta.servlet.http.HttpSession;
 
 @Service
 public class LogoutService {
+	private final String SUCCESS = "success";
 
 	public HashMap<String, Object> logout(HttpSession session){
 		HashMap<String, Object> result = new HashMap<>();
 		session.invalidate();
-		result.put("result", "success");
+		result.put("result", SUCCESS);
 		return result;
 	}
 }

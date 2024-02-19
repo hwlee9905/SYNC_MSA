@@ -8,26 +8,21 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity(name = "USERTBL")
+@Entity(name = "FRIENDREQTBL")
 @DynamicUpdate
-public class UserEntity {
+public class FriendReqEntity {
+
 	@Id
+	@Column(name = "REQ_NO")
+	private int reqNo;
+	
 	private String id;
 	
-	@Column(name = "FIRST_NAME")
-	private String firstName;
+	@Column(name = "REQ_ID")
+	private String reqId;
 	
-	@Column(name = "LAST_NAME")
-	private String lastName;
-	
-	private String password;
-	
-	private String birth;
-	
-	private String gender;
-	
-	@Column(name = "DEL_YN")
-	private String delYn;
+	@Column(name = "ACCEPT_YN")
+	private String acceptYn;
 	
 	@Column(name = "INS_DATE")
 	private String insDate;
