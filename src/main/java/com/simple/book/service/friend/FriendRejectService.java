@@ -1,4 +1,4 @@
-package com.simple.book.service.fried;
+package com.simple.book.service.friend;
 
 import java.util.HashMap;
 

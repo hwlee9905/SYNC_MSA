@@ -1,4 +1,4 @@
-package com.simple.book.service.fried;
+package com.simple.book.service.friend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,23 +13,23 @@ import com.simple.book.repository.FriendReqRepository;
 import jakarta.servlet.http.HttpSession;
 
 @Service
-public class RequestFriendService {
+public class ResponseFriendService {
 	@Autowired
 	private FriendReqRepository friendReqRepository;
 
-	public HashMap<String, Object> requestFriend(HttpSession session){
+	public HashMap<String, Object> responseFriend(HttpSession session) {
 		HashMap<String, Object> result = new HashMap<>();
 		Object myId = session.getAttribute("id");
 		if (myId != null) {
-			List<FriendReqEntity> entityList = friendReqRepository.findByIdAndAcceptYn((String) myId, "R");
+			List<FriendReqEntity> entityList = friendReqRepository.findByReqIdAndAcceptYn((String) myId, "R");
 			if (entityList.size() != 0) {
 				List<Object> userList = new ArrayList<>();
 				for (FriendReqEntity entity : entityList) {
 					HashMap<String, Object> userInfo = new HashMap<>();
-					String toId = entity.getReqId();
+					String fromId = entity.getId();
 					String insDate = entity.getInsDate();
 					String insTime = entity.getInsTime();
-					userInfo.put("to_id", toId);
+					userInfo.put("from_id", fromId);
 					userInfo.put("ins_date", insDate);
 					userInfo.put("ins_time", insTime);
 					userList.add(userInfo);

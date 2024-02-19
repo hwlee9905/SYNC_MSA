@@ -25,14 +25,14 @@ public class SignupService {
 	@Autowired
 	private ValidationUserInfo validationUserInfo;
 
-	public HashMap<String, Object> signup(HashMap<String, Object> body) {
+	public String signup(HashMap<String, Object> body) {
 		HashMap<String, Object> result = new HashMap<>();
 
 		id = (String) body.get("id");
 		firstName = (String) body.get("first_name");
 		lastName = (String) body.get("last_name");
 		password = (String) body.get("password");
-		birth = (String) body.get("birth");
+		birth = ((String) body.get("birth")).replaceAll("-", "");
 		gender = (String) body.get("gender");
 
 		String resultId = validationUserInfo.getResultId(id);
@@ -62,7 +62,7 @@ public class SignupService {
 			userRepository.saveAndFlush(entity);
 			result.put("result", SUCCESS);
 		}
-		return result;
+		return String.valueOf(result.get("result"));
 	}
 	
 	private UserEntity setEntity(String date, String time) {

@@ -18,8 +18,8 @@ public class LogoutController {
 	
 	@GetMapping("/logout")
 	@ResponseBody
-	public HashMap<String, Object> logout(HttpSession session){
+	public String logout(HttpSession session){
 		HashMap<String, Object> result = logoutService.logout(session);
-		return result;
+		return "success".equals(result.get("result")) == true ? "true" : "false";
 	}
 }

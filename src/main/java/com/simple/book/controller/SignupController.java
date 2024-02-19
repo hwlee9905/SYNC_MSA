@@ -20,9 +20,9 @@ public class SignupController {
 	
 	@PostMapping("/signup")
 	@ResponseBody
-	public HashMap<String, Object> signup(@RequestBody HashMap<String, Object> body){
-		HashMap<String, Object> result = signupService.signup(body);
-		return result;
+	public String signup(@RequestBody HashMap<String, Object> body){
+		String msg = signupService.signup(body);
+		return msg;
 	}
 	
 }

@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.simple.book.service.LoginService;
@@ -18,10 +18,15 @@ public class LoginController {
 	@Autowired
 	private LoginService loginService;
 	
-	@GetMapping("/login")
+	@PostMapping("/login")
 	@ResponseBody
-	public HashMap<String, Object> login(@RequestParam(value="id") String id, @RequestParam(value="password") String password, HttpSession session) {
-		HashMap<String, Object> result = loginService.login(id, password, session);
-		return result;
+	public String login(@RequestBody HashMap<String, Object> body, HttpSession session) {
+		
+		
+		Boolean isFlag = loginService.login(String.valueOf(body.get("id")),
+											String.valueOf(body.get("password")),
+											session);
+		
+		return isFlag == true ?  "true" : "false";
 	}
 }
