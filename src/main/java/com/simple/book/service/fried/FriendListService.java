@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 public class FriendListService {
 	@Autowired
 	private FriendReqRepository friendReqRepository;
+	
 	public HashMap<String, Object> getList(HttpSession session){
 		HashMap<String, Object> result = new HashMap<>();
 		Object myId = session.getAttribute("id");

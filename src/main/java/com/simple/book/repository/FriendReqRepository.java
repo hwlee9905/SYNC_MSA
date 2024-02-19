@@ -9,14 +9,24 @@ import org.springframework.stereotype.Repository;
 import com.simple.book.entity.FriendReqEntity;
 
 @Repository
-public interface FriendReqRepository extends JpaRepository<FriendReqEntity, Integer>{
-	
+public interface FriendReqRepository extends JpaRepository<FriendReqEntity, Integer> {
+
 	@Query("SELECT f FROM FriendReqEntity f WHERE f.id = :id AND f.reqId = :myId")
 	FriendReqEntity findByIdAndReqId(String id, String myId);
-	
-	@Query("SELECT f.id, f.reqId FROM FriendReqEntity f WHERE (f.id = :id OR f.reqId = :id) AND e.acceptYn:acceptYn")
+
+	@Query("SELECT f FROM FriendReqEntity f WHERE f.id = :myId AND f.reqId = :id")
+	FriendReqEntity findByReqIdAndId(String id, String myId);
+
+//	@Query("SELECT f.id, f.reqId FROM FriendReqEntity f WHERE (f.id = :id OR f.reqId = :id) AND e.acceptYn:acceptYn")
+	@Query("SELECT f FROM FriendReqEntity f WHERE (f.id = :id OR f.reqId = :id) AND e.acceptYn:acceptYn")
 	List<FriendReqEntity> findByIdAndAcceptYn(String id, String acceptYn);
-	
+
 	@Query("SELECT f.id, f.reqId FROM FriendReqEntity f WHERE f.id = :id OR f.reqId = :id")
 	List<FriendReqEntity> findById(String id);
+
+	List<FriendReqEntity> findByReqIdAndAcceptYn(String myId, String string);
+
+	@Query("SELECT f.req_no FROM FriendReqEntity f WHERE f.id = :myId AND f.reqId = :id AND e.acceptYn:acceptYn")
+	int findByIdAndReqIdAndAcceptYn(String myId, String id, String acceptYn);
+
 }
