@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인</title>
+</head>
+<body>
+
+
+<h1>로그인</h1>
+아이디 <input id="id" name="id" type="text" maxlength="8" required="required"><br>
+비밀번호 <input id="password" name="password" type="password" maxlength="20" required="required"><br>
+<button type="button" onclick="login();">로그인</button>
+</body>
+
+<script>
+function login() {
+	let id = document.getElementById('id').value;
+	let password = document.getElementById('password').value;
+	
+	fetch("/login", {
+	    method: "POST",
+	    headers: {
+	        "Content-Type": "application/json",
+	    },
+		body: JSON.stringify({
+				"id" : id,
+				"password" : password
+			}),
+		})
+		.then(function (body) {
+           return body.text();
+	    })
+	    .then(function (data) {
+           if(data === "true") {
+               alert('로그인성공');
+               window.location.href = "/";
+           } 
+           else alert('아이디 또는 비밀번호를 확인하세요');
+     });
+}
+</script>
+
+</html>

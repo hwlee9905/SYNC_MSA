@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.simple.book.service.fried.AddFriendService;
-import com.simple.book.service.fried.FriendAcceptService;
-import com.simple.book.service.fried.FriendListService;
-import com.simple.book.service.fried.FriendRejectService;
-import com.simple.book.service.fried.FriendCancelService;
-import com.simple.book.service.fried.RequestFriendService;
-import com.simple.book.service.fried.ResponseFriendService;
+import com.simple.book.service.friend.AddFriendService;
+import com.simple.book.service.friend.FriendAcceptService;
+import com.simple.book.service.friend.FriendCancelService;
+import com.simple.book.service.friend.FriendListService;
+import com.simple.book.service.friend.FriendRejectService;
+import com.simple.book.service.friend.RequestFriendService;
+import com.simple.book.service.friend.ResponseFriendService;
 
 import jakarta.servlet.http.HttpSession;
 
