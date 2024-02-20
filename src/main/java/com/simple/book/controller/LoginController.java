@@ -21,8 +21,6 @@ public class LoginController {
 	@PostMapping("/login")
 	@ResponseBody
 	public String login(@RequestBody HashMap<String, Object> body, HttpSession session) {
-		
-		
 		Boolean isFlag = loginService.login(String.valueOf(body.get("id")),
 											String.valueOf(body.get("password")),
 											session);

@@ -18,7 +18,7 @@ import com.simple.book.util.DateFmt;
 import jakarta.servlet.http.HttpSession;
 
 @Service
-public class MyPageService {
+public class DeleteUserService {
 	@Autowired
 	private UserRepository userRepository;
 
