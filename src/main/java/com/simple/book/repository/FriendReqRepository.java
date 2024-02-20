@@ -1,6 +1,7 @@
 package com.simple.book.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,7 +27,7 @@ public interface FriendReqRepository extends JpaRepository<FriendReqEntity, Inte
 
 	List<FriendReqEntity> findByReqIdAndAcceptYn(String myId, String string);
 
-	@Query("SELECT f.req_no FROM FriendReqEntity f WHERE f.id = :myId AND f.reqId = :id AND e.acceptYn:acceptYn")
-	int findByIdAndReqIdAndAcceptYn(String myId, String id, String acceptYn);
+	@Query("SELECT f FROM FriendReqEntity f WHERE f.id = :myId AND f.reqId = :id AND e.acceptYn:acceptYn")
+	Optional<FriendReqEntity> findByIdAndReqIdAndAcceptYn(String myId, String id, String acceptYn);
 
 }

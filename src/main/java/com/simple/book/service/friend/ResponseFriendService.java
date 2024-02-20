@@ -25,14 +25,10 @@ public class ResponseFriendService {
 			if (entityList.size() != 0) {
 				List<Object> userList = new ArrayList<>();
 				for (FriendReqEntity entity : entityList) {
-					HashMap<String, Object> userInfo = new HashMap<>();
 					String fromId = entity.getId();
 					String insDate = entity.getInsDate();
 					String insTime = entity.getInsTime();
-					userInfo.put("from_id", fromId);
-					userInfo.put("ins_date", insDate);
-					userInfo.put("ins_time", insTime);
-					userList.add(userInfo);
+					userList.add(putUserInfo(fromId, insDate, insTime));
 				}
 				result.put("result", userList);
 			} else {
@@ -41,6 +37,14 @@ public class ResponseFriendService {
 		} else {
 			result.put("result", "no_session");
 		}
+		return result;
+	}
+	
+	private HashMap<String, Object> putUserInfo(String fromId, String insDate, String insTime){
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("from_id", fromId);
+		result.put("ins_date", insDate);
+		result.put("ins_time", insTime);
 		return result;
 	}
 }
