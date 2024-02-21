@@ -22,4 +22,9 @@ public class MainController {
 		return "signup";
 	}
 	
+	@GetMapping("/myPage")
+	public String myPage(Model model) {
+		return "my_page";
+	}
+	
 }

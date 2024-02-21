@@ -1,51 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>메인</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>메인</title>
+	<link rel="stylesheet" href="/css/index.css" type="text/css">
 </head>
+
 <body>
+	<div class="container">
+		<th:block th:replace="~{nav/nav_bar}"></th:block>
+		<h1>TAKE BOOK</h1>
+		<th:block th:if='${session.id != null}'>
+			<!--			<div style='margin-bottom: 10px; margin-right: 8px;'> <span th:text='${session.lastName}'></span><span>님
+					환영합니다</span></div>
+			<button onclick="logout();">로그아웃</button>
+-->
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			</br>
+			<!--			<div class="friend">
+				<div id="friend_box">
+					친구목록
+				</div>
+				<div id="friend_icon" onclick="showFriendBox();">🙋‍</div>
+			</div>
+-->
+			<th:block th:replace="~{nav/chat}"></th:block>
+		</th:block>
 
-<h1>TAKE BOOK</h1>
-<th:block th:if='${session.id != null}'>
-	<div style='margin-bottom: 10px; margin-right: 8px;'> <span th:text='${session.lastName}'></span><span>님 환영합니다</span></div>
-	<button onclick="logout();">로그아웃</button>
-</th:block>
-
-<th:block th:if='${session.id == null}'>
-	<button onclick="signup();">가입</button>
-	<button onclick="login();">로그인</button>
-</th:block>
-
-
+		<th:block th:if='${session.id == null}'>
+			<button onclick="signup();">가입</button>
+			<button onclick="login();">로그인</button>
+		</th:block>
+	</div>
 </body>
-
-<script>
-	function signup() {
-		window.location.href = "/page/signup"
-	}
-	
-	function login() {
-		window.location.href = "/page/login"
-	}
-	
-	function logout() {
-		fetch("/logout", {
-		    method: "GET",
-			})
-			.then(function (body) {
-	           return body.text();
-		    })
-		    .then(function (data) {
-	           if(data === "true") {
-	               alert('로그아웃완료');
-	               window.location.href = "/";
-	           } else {
-	        	   alert('시스템에러');
-	        	   window.location.href = "/";
-	           }
-	     });
-	}
+<script src="/js/index.js">
 </script>
+
 </html>

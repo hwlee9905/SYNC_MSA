@@ -1,0 +1,36 @@
+@charset "UTF-8";
+
+.friend {
+	display: flex;
+	justify-content: flex-end;
+}
+
+#friend_box {
+	position: fixed;
+	display: none;
+	bottom: 90px;
+	right: 20px;
+	width: 300px;
+	height: 400px;
+	border-style: solid;
+	border-width: 1px 1px 1px 1px;
+}
+
+#friend_icon {
+	display: flex;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	background-color: lightgreen;
+	justify-content: center;
+	align-items: center;
+	font-size: 30px;
+	cursor: default;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

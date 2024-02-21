@@ -2,7 +2,9 @@ package com.simple.book.controller;
 
 import java.util.HashMap;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.service.friend.AddFriendService;
 import com.simple.book.service.friend.FriendAcceptService;
 import com.simple.book.service.friend.FriendCancelService;
@@ -47,9 +51,10 @@ public class FriendController {
 
 	@GetMapping("/list")
 	@ResponseBody
-	public HashMap<String, Object> getList(HttpSession session) {
+	public String getList(HttpSession session) throws Exception{
 		HashMap<String, Object> result = friendListService.getList(session);
-		return result;
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(result);
 	}
 
 	@GetMapping("/request")
