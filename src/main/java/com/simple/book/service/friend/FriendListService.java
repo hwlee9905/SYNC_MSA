@@ -22,7 +22,7 @@ public class FriendListService {
 		Object myId = session.getAttribute("id");
 		if (myId != null) {
 			List<FriendReqEntity> frndEntity = friendReqRepository.findByIdAndAcceptYn((String) myId, "Y");
-			if (frndEntity != null) {
+			if (frndEntity.size() != 0) {
 				List<String> list = new ArrayList<>();
 				for (FriendReqEntity entity : frndEntity) {
 					String friend = "";

@@ -1,0 +1,60 @@
+@charset "UTF-8";
+
+body {
+	margin: 0;
+}
+
+.nav-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 100%;
+	background-color: darkslategray;
+	position: fixed;
+	top: 0;
+	z-index: 1000;
+}
+
+#nav-left {
+	display: flex;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#nav-right {
+	display: flex;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-item {
+	padding: 15px;
+	cursor: pointer
+}
+
+.nav-item a {
+	text-align: center;
+	text-decoration: none;
+	color: white;
+}
+
+.nav-item:hover {
+	background-color: gray;
+}
+
+.nav-user {
+	padding: 15px;
+	cursor: pointer
+}
+
+.nav-user a {
+	text-align: center;
+	text-decoration: none;
+	color: white;
+}
+
+.current-page {
+	background-color: lightseagreen;
+}
