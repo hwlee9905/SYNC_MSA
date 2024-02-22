@@ -12,6 +12,9 @@
 	<div class="container">
 		<th:block th:replace="~{nav/nav_bar}"></th:block>
 		<h1>TAKE BOOK</h1>
+		<div id="t1h"></div>
+		<div id="sky"></div>
+		<div id="reh"></div>
 		<th:block th:if='${session.id != null}'>
 			<!--			<div style='margin-bottom: 10px; margin-right: 8px;'> <span th:text='${session.lastName}'></span><span>님
 					환영합니다</span></div>
@@ -56,16 +59,8 @@
 			</br>
 			</br>
 			</br>
-			<!--			<div class="friend">
-				<div id="friend_box">
-					친구목록
-				</div>
-				<div id="friend_icon" onclick="showFriendBox();">🙋‍</div>
-			</div>
--->
 			<th:block th:replace="~{nav/chat}"></th:block>
 		</th:block>
-
 		<th:block th:if='${session.id == null}'>
 			<button onclick="signup();">가입</button>
 			<button onclick="login();">로그인</button>
