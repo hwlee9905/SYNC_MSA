@@ -12,6 +12,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,8 +23,10 @@ import com.simple.book.vo.WeatherVo;
 
 @Service
 public class WeatherService {
+	private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
 	public HashMap<String, String> getWeather(HashMap<String, Integer> body) {
+		logger.info("[weather] 위경도: " + body);
 		HashMap<String, String> weatherInfo = new HashMap<>();
 		GpsTransfer gpsTransfer = new GpsTransfer(body.get("latitude"), body.get("longitude"));
 		gpsTransfer.transfer(gpsTransfer, 0);
