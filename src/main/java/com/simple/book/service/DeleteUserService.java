@@ -13,6 +13,7 @@ import com.simple.book.entity.UserEntity;
 import com.simple.book.repository.DelUserRepository;
 import com.simple.book.repository.FriendReqRepository;
 import com.simple.book.repository.UserRepository;
+import com.simple.book.repository.query.QueryFriendReqRepository;
 import com.simple.book.util.DateFmt;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,29 +28,40 @@ public class DeleteUserService {
 
 	@Autowired
 	private FriendReqRepository friendReqRepository;
+	
+	@Autowired
+	private QueryFriendReqRepository queryFriendReqRepository;
 
 	@Autowired
 	private DateFmt dateFmt;
 
 	public HashMap<String, Object> deleteId(HttpSession session) {
+		boolean isStateCheck = false;
 		HashMap<String, Object> result = new HashMap<>();
-		Object myId = session.getAttribute("id");
-		if (myId != null) {
-			Optional<UserEntity> userInfo = userRepository.findById((String) myId);
-			if (userInfo.isPresent()) {
-				List<FriendReqEntity> frndEntity = friendReqRepository.findById((String) myId);
-				UserEntity userEntity = userInfo.get();
+		Object id = session.getAttribute("id");
+		// 로그인 상태 확인
+		if (id != null) {
+			Optional<UserEntity> userOptional = userRepository.findById((String) id);
+			// 계정이 있는지 확인
+			if (userOptional.isPresent()) {
+				String reqId = (String) id;
+				List<FriendReqEntity> frndEntityList = friendReqRepository.findByIdOrReqId((String) id, reqId);
+				UserEntity userEntity = userOptional.get();
 				delUserRepository.saveAndFlush(setDelEntity(userEntity));
-				userRepository.deleteById((String) myId);
-				friendReqRepository.saveAll(setFrndEntity(frndEntity, (String) myId));
+				userRepository.deleteById((String) id);
+				// 내가 요청하거나 받은 친구 상태가 있는지
+				if (!frndEntityList.isEmpty()) {
+					for (FriendReqEntity entity : frndEntityList) {
+						friendReqRepository.saveAndFlush(setFrndEntity(entity, (String) id));
+						session.invalidate();
+						isStateCheck = true;
+					}
+				}
 				session.invalidate();
-				result.put("result", true);
-			} else {
-				result.put("result", false);
+				isStateCheck = true;
 			}
-		} else {
-			result.put("result", false);
 		}
+		result.put("result", isStateCheck);
 		return result;
 	}
 
@@ -71,13 +83,11 @@ public class DeleteUserService {
 		return delUserEntity;
 	}
 
-	private List<FriendReqEntity> setFrndEntity(List<FriendReqEntity> frndEntity, String id) {
-		for (FriendReqEntity entity : frndEntity) {
-			entity.setAcceptYn("N");
-			entity.setUpdDate(dateFmt.getDate("yyyyMMdd"));
-			entity.setUpdTime(dateFmt.getDate("HHmmss"));
-			entity.setUpdId(id);
-		}
-		return frndEntity;
+	private FriendReqEntity setFrndEntity(FriendReqEntity entity, String id) {
+		entity.setAcceptYn("N");
+		entity.setUpdDate(dateFmt.getDate("yyyyMMdd"));
+		entity.setUpdTime(dateFmt.getDate("HHmmss"));
+		entity.setUpdId(id);
+		return entity;
 	}
 }
