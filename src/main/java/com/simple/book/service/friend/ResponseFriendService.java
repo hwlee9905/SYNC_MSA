@@ -16,15 +16,19 @@ import jakarta.servlet.http.HttpSession;
 public class ResponseFriendService {
 	@Autowired
 	private FriendReqRepository friendReqRepository;
-
+	
 	public HashMap<String, Object> responseFriend(HttpSession session) {
 		HashMap<String, Object> result = new HashMap<>();
-		Object myId = session.getAttribute("id");
-		if (myId != null) {
-			List<FriendReqEntity> entityList = friendReqRepository.findByReqIdAndAcceptYn((String) myId, "R");
-			if (entityList.size() != 0) {
+		Object id = session.getAttribute("id");
+		// 로그인 상태 확인
+		if (id != null) {
+			// 상대가 나한테 보낸 모든 요청
+			String reqId = (String) id;
+			List<FriendReqEntity> frndEntityList = friendReqRepository.findByReqIdAndAcceptYn(reqId, "R");
+			// 내가 요청한 친구 목록이 있을 경우
+			if (!frndEntityList.isEmpty()) {
 				List<Object> userList = new ArrayList<>();
-				for (FriendReqEntity entity : entityList) {
+				for (FriendReqEntity entity : frndEntityList) {
 					String fromId = entity.getId();
 					String insDate = entity.getInsDate();
 					String insTime = entity.getInsTime();

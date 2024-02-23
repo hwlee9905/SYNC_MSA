@@ -19,12 +19,14 @@ public class RequestFriendService {
 
 	public HashMap<String, Object> requestFriend(HttpSession session){
 		HashMap<String, Object> result = new HashMap<>();
-		Object myId = session.getAttribute("id");
-		if (myId != null) {
-			List<FriendReqEntity> entityList = friendReqRepository.findByIdAndAcceptYn((String) myId, "R");
-			if (entityList.size() != 0) {
+		Object id = session.getAttribute("id");
+		if (id != null) {
+			// 내가 상대한테 보낸 모든 요청
+			List<FriendReqEntity> frndEntityList = friendReqRepository.findByIdAndAcceptYn((String) id, "R");
+			// 내가 요청한 친구 목록이 있을 경우
+			if (!frndEntityList.isEmpty()) {
 				List<Object> userList = new ArrayList<>();
-				for (FriendReqEntity entity : entityList) {
+				for (FriendReqEntity entity : frndEntityList) {
 					String toId = entity.getReqId();
 					String insDate = entity.getInsDate();
 					String insTime = entity.getInsTime();

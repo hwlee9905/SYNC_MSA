@@ -49,7 +49,7 @@ public class WeatherService {
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
 
-			weatherInfo = reseponseApi(con);
+			weatherInfo = responseApi(con);
 		} catch (Exception e) {
 			e.getMessage();
 		}
@@ -70,7 +70,7 @@ public class WeatherService {
 		return host + serviceType + serviceKey + pageResult + dataType + baseDate + baseTime + nx + ny;
 	}
 
-	private HashMap<String, String> reseponseApi(HttpURLConnection con) {
+	private HashMap<String, String> responseApi(HttpURLConnection con) {
 		HashMap<String, String> weatherInfo = new HashMap<>();
 
 		ObjectMapper objectMapper = new ObjectMapper();
