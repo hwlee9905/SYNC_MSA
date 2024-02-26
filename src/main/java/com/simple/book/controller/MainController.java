@@ -37,4 +37,9 @@ public class MainController {
 		return "board_write";
 	}
 	
+	@GetMapping("/friend")
+	public String pageFriend(Model model) {
+		return "friend";
+	}
+	
 }
