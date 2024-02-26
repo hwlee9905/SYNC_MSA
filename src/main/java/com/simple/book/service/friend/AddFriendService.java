@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.simple.book.entity.FriendReqEntity;
-import com.simple.book.entity.UserEntity;
 import com.simple.book.repository.FriendReqRepository;
 import com.simple.book.repository.UserRepository;
 import com.simple.book.repository.query.QueryFriendReqRepository;
@@ -36,8 +35,8 @@ public class AddFriendService {
 		// 로그인 상태 확인
 		if (id != null) {
 			// 가입 되어 있는 사용자인지 확인
-			Optional<UserEntity> userOptional = userRepository.findById(reqId);
-			if (userOptional.isPresent()) {
+			boolean userOptional = userRepository.existsById(reqId);
+			if (userOptional) {
 				// 내가 신청 했거나, 신청 받은 요청 목록
 				Optional<FriendReqEntity> reqOptional = queryFriendReqRepository.findByIdOrReqId((String) id, reqId);
 				// 내가 신청 했거나, 신청 받은 적 있음.

@@ -27,4 +27,14 @@ public class MainController {
 		return "my_page";
 	}
 	
+	@GetMapping("/board")
+	public String pageBoard(Model model) {
+		return "board";
+	}
+	
+	@GetMapping("/board/write")
+	public String pageBoardWrite(Model model) {
+		return "board_write";
+	}
+	
 }
