@@ -53,11 +53,12 @@
 <script>
 	function uploadFiles(files){
 		let formData = new FormData();
-		formData.append('images', files);
+		
+		formData.append('images', files[0]);
 		
 		fetch('/board/add/file', {
 			method: 'POST',
-			body: formData
+			body: formData,
 		})
 		.then(response => {
 			return response.json();
