@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/friend.css" type="text/css">
+
+<!-- <div th:replace="/common/bootstrap.html :: fragment-header"></div>
+ -->
+<title>Friend</title>
+</head>
+<body>
+	<div class="container">
+		<th:block th:replace="~{nav/nav_bar}"></th:block>
+		<th:block th:if='${session.id != null}'>
+			<select id="category">
+				<option value="id">id</option>
+				<option value="name">이름</option>
+			</select>
+			<input type="text" id="search_friend" />
+			<button onclick="search();">검색</button>
+			<table id="result_search_box">
+				<tr>
+				</tr>
+			</table>
+			<th:block th:replace="~{nav/chat}"></th:block>
+		</th:block>
+		<th:block th:if='${session.id == null}'>
+			<h1>로그인 해주세요</h1>
+		</th:block>
+	</div>
+</body>
+<!-- <script src="/js/friend.js"></script> -->
+
+<script>
+	function search() {
+		let category = document.getElementById("category").value;
+		let keyword = document.getElementById("search_friend").value;
+
+		fetch("/user/search", {
+			method : "POST",
+			headers : {
+				'Content-Type' : 'application/json',
+			},
+			body : JSON.stringify({
+				'category' : category,
+				'keyword' : keyword
+			}),
+		}).then(function(body) {
+			return body.text();
+		}).then(function(data) {
+			console.log(data);
+			let jsonData = JSON.parse(data);
+			let result = document.getElementById("result_search_box");
+
+			for (let i = 0; i < jsonData.result.length; i++) {
+				result.append(jsonData.result[i].id);
+
+			}
+
+		});
+	}
+</script>
+
+</html>
+
+

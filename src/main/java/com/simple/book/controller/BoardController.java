@@ -31,6 +31,8 @@ public class BoardController {
 	@ResponseBody
 	public HashMap<String, Object> getBoard() {
 		HashMap<String, Object> result = boardListSerivce.boardList();
+		System.out.println("리액트에서호출");
+		result.put("result", "리액트하이");
 		return result;
 	}
 
@@ -44,7 +46,7 @@ public class BoardController {
 
 	@PostMapping("/add/file")
 	@ResponseBody
-	public String addBoard(HttpSession session, @RequestParam(value = "file") MultipartFile file) throws Exception {
+	public String addBoard(HttpSession session, @RequestParam(value = "images", required = false) MultipartFile file) throws Exception {
 		HashMap<String, Object> result = addBoardService.addBoard(session, file);
 		ObjectMapper mapper = new ObjectMapper();
 		System.out.println("결과: " + mapper.writeValueAsString(result));
