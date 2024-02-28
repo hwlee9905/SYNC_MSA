@@ -1,12 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState} from 'react';
+import axios from 'axios';
 
 function App() {
+  const onClick = async ()=>{
+    //api 통신 테스트
+    axios.get('http://158.247.197.212:9090/test')
+    .then(reponse => {
+      console.log(reponse);
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+}
   return (
-    <div className="bg-gray-900">
-	Edit 
-</div>
+    <div>
+      <div>
+        <h3>Axios 테스트해보기</h3>
+        <button onClick={onClick}>불러오기</button>
+      </div>
+    </div>
   );
 }
 
 export default App;
+
