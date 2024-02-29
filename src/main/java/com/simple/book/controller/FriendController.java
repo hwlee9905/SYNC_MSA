@@ -3,12 +3,13 @@ package com.simple.book.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.service.friend.AddFriendService;
@@ -25,7 +26,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/friend")
 public class FriendController {
-
+	@Autowired
+	private ObjectMapper mapper;
+	
 	@Autowired
 	private AddFriendService addFriendService;
 
@@ -49,62 +52,54 @@ public class FriendController {
 
 	@Autowired
 	private FriendRejectService friendRejectService;
-
+	
 	@GetMapping("/list")
-	@ResponseBody
-	public String getList(HttpSession session) throws Exception {
+	public ResponseEntity<String> getList(HttpSession session) throws Exception {
 		HashMap<String, Object> result = friendListService.getFriendList(session);
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(result);
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@GetMapping("/search")
-	@ResponseBody
-	public String getSearch(HttpSession session, @RequestParam(value = "req_id") String reqId) throws Exception {
+	public ResponseEntity<String> getSearch(HttpSession session, @RequestParam(value = "req_id") String reqId)
+			throws Exception {
 		HashMap<String, Object> result = findFriendService.findFriend(session, reqId);
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(result);
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@GetMapping("/add")
-	@ResponseBody
-	public HashMap<String, Object> addFriend(HttpSession session, @RequestParam(value = "req_id") String reqId) {
+	public ResponseEntity<String> addFriend(HttpSession session, @RequestParam(value = "req_id") String reqId)
+			throws Exception {
 		HashMap<String, Object> result = addFriendService.addFriend(session, reqId);
-		return result;
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@GetMapping("/request")
-	@ResponseBody
-	public HashMap<String, Object> requestFriend(HttpSession session) {
+	public ResponseEntity<String> requestFriend(HttpSession session) throws Exception {
 		HashMap<String, Object> result = requestFriendService.requestFriend(session);
-		return result;
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@GetMapping("/response")
-	@ResponseBody
-	public HashMap<String, Object> responseFriend(HttpSession session) {
+	public ResponseEntity<String> responseFriend(HttpSession session) throws Exception {
 		HashMap<String, Object> result = responseFriendService.responseFriend(session);
-		return result;
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@GetMapping("/accept")
-	@ResponseBody
-	public HashMap<String, Object> friendAccept(HttpSession session, @RequestParam(value = "req_id") String reqId) {
+	public ResponseEntity<String> friendAccept(HttpSession session, @RequestParam(value = "req_id") String reqId) throws Exception{
 		HashMap<String, Object> result = friendAcceptService.friendAccept(session, reqId);
-		return result;
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/cancel")
-	@ResponseBody
-	public HashMap<String, Object> friendCancel(HttpSession session, @RequestParam(value = "req_id") String reqId) {
+	public ResponseEntity<String> friendCancel(HttpSession session, @RequestParam(value = "req_id") String reqId) throws Exception{
 		HashMap<String, Object> result = friendCancelService.requestCancle(session, reqId);
-		return result;
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@GetMapping("/reject")
-	@ResponseBody
-	public HashMap<String, Object> friendReject(HttpSession session, @RequestParam(value = "req_id") String reqId) {
+	public ResponseEntity<String> friendReject(HttpSession session, @RequestParam(value = "req_id") String reqId) throws Exception {
 		HashMap<String, Object> result = friendRejectService.responseReject(session, reqId);
-		return result;
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 }
