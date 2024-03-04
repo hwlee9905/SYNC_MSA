@@ -27,5 +27,4 @@ public class SignupController {
 		HashMap<String, Object> result = signupService.signup(body);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
-	
 }

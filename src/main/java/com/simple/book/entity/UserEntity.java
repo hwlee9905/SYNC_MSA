@@ -14,13 +14,15 @@ public class UserEntity {
 	@Id
 	private String id;
 	
+	private String password;
+	
+	private String email;
+	
 	@Column(name = "FIRST_NAME")
 	private String firstName;
 	
 	@Column(name = "LAST_NAME")
 	private String lastName;
-	
-	private String password;
 	
 	private String birth;
 	

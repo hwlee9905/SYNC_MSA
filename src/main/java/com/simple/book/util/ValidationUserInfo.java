@@ -19,16 +19,20 @@ public class ValidationUserInfo {
 		return isIdCheck(id);
 	}
 	
+	public String getResultPassword(String password) {
+		return isPasswordCheck(password);
+	}
+	
+	public String getResultEmail(String email) {
+		return isEmailCheck(email);
+	}
+	
 	public String getResultFirstName(String firstName) {
 		return isFirstNameCheck(firstName);
 	}
 	
 	public String getResultLastName(String lastName) {
 		return isLastNameCheck(lastName);
-	}
-	
-	public String getResultPassword(String password) {
-		return isPasswordCheck(password);
 	}
 	
 	public String getResultBirth(String birth) {
@@ -55,6 +59,35 @@ public class ValidationUserInfo {
 		} else {
 			message = SUCCESS;
 		}
+		return message;
+	}
+	
+	private String isPasswordCheck(String password) {
+		String message = "";
+		if (password == null) {
+			message = "no_password";
+		} else if (password.length() < 4) {
+			message = "min_over_password";
+		} else if (password.length() > 8) {
+			message = "max_over_password";
+		} else if (!regex.getPasswordCheck(password)) {
+			message = "regex_false_password";
+		} else {
+			message = SUCCESS;
+		}
+		return message;
+	}
+	
+	private String isEmailCheck(String email) {
+		String message = "";
+		if (email == null) {
+			message = "no_email";
+		} else if (!regex.getEmailCheck(email)) {
+			message = "regex_false_email";
+		} else {
+			message = SUCCESS;
+		}
+		
 		return message;
 	}
 
@@ -84,22 +117,6 @@ public class ValidationUserInfo {
 			message = "max_over_lastname";
 		} else if (!regex.getNameCheck(lastName)) {
 			message = "regex_false_lastname";
-		} else {
-			message = SUCCESS;
-		}
-		return message;
-	}
-
-	private String isPasswordCheck(String password) {
-		String message = "";
-		if (password == null) {
-			message = "no_password";
-		} else if (password.length() < 4) {
-			message = "min_over_password";
-		} else if (password.length() > 8) {
-			message = "max_over_password";
-		} else if (!regex.getPasswordCheck(password)) {
-			message = "regex_false_password";
 		} else {
 			message = SUCCESS;
 		}
