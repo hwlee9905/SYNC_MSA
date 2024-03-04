@@ -1,4 +1,4 @@
-package com.simple.book.service;
+package com.simple.book.service.user;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ public class DeleteUserService {
 
 	@Autowired
 	private FriendReqRepository friendReqRepository;
-	
+
 	@Autowired
 	private QueryFriendReqRepository queryFriendReqRepository;
 

@@ -1,5 +1,6 @@
 package com.simple.book.service;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,20 @@ public class LoginService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public Boolean login(String id, String password, HttpSession session) {
-		boolean isExists = false;
+	public HashMap<String, Object> login(HashMap<String, Object> body, HttpSession session) {
+		HashMap<String, Object> result = new HashMap<>();
+		String status = "false";
+		
+		String id = String.valueOf(body.get("id"));
+		String password = String.valueOf(body.get("password"));
 		Optional<UserEntity> userEntity = userRepository.findByIdAndPassword(id, password);
 		if (userEntity.isPresent()) {
 			UserEntity entity = userEntity.get();
 			setSession(session, entity);
-			isExists = true;
+			status = id;
 		}
-		return isExists;
+		result.put("result", status);
+		return result;
 	}
 
 	private void setSession(HttpSession session, UserEntity entity) {

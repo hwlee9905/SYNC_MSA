@@ -1,4 +1,4 @@
-package com.simple.book.service;
+package com.simple.book.service.user;
 
 import java.util.HashMap;
 
