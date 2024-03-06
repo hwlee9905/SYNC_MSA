@@ -9,6 +9,5 @@ import com.simple.book.entity.FollowReqEntity;
 
 @Repository
 public interface FollowReqRepository extends JpaRepository<FollowReqEntity, Integer> {
-
 	Optional<FollowReqEntity> findByIdAndReqIdAndAcceptYn(String id, String reqId, String acceptYn);
 }

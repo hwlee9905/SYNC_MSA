@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.simple.book.service.SignupService;
 import com.simple.book.service.user.DeleteUserService;
 import com.simple.book.service.user.FindUserService;
 import com.simple.book.service.user.ModifyUserService;
@@ -28,6 +29,9 @@ public class UserController {
 	private FindUserService findUserService;
 
 	@Autowired
+	private SignupService signupService;
+	
+	@Autowired
 	private DeleteUserService deleteUserService;
 	
 	@Autowired
@@ -37,6 +41,12 @@ public class UserController {
 	public ResponseEntity<String> search(HttpSession session, @RequestBody HashMap<String, Object> body)
 			throws Exception {
 		HashMap<String, Object> result = findUserService.search(session, body);
+		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
+	}
+	
+	@PostMapping("/signup")
+	public ResponseEntity<String> signup(@RequestBody HashMap<String, Object> body) throws Exception{
+		HashMap<String, Object> result = signupService.signup(body);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 	
