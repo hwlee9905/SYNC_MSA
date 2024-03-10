@@ -1,4 +1,4 @@
-package com.simple.book.service.board;
+package com.simple.book.service;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +18,8 @@ import com.simple.book.util.DateFmt;
 import jakarta.servlet.http.HttpSession;
 
 @Service
-public class AddBoardService {
+public class BoardService {
+	
 	@Autowired
 	private BoardRepository boardRepository;
 
@@ -27,7 +28,13 @@ public class AddBoardService {
 
 	@Autowired
 	private DateFmt dateFmt;
-
+	
+	public HashMap<String, Object> boardList(){
+		HashMap<String, Object> result = new HashMap<>();
+		
+		return result;
+	}
+	
 	public HashMap<String, Object> addBoard(HttpSession session, HashMap<String, Object> body) {
 		HashMap<String, Object> result = new HashMap<>();
 		Object id = session.getAttribute("id");

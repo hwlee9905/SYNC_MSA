@@ -3,12 +3,16 @@ package com.simple.book.service;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.simple.book.entity.UserEntity;
 import com.simple.book.repository.UserRepository;
 import com.simple.book.util.DateFmt;
 import com.simple.book.util.ValidationUserInfo;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 public class SignupService {
@@ -28,9 +32,10 @@ public class SignupService {
 	public HashMap<String, Object> signup(HashMap<String, Object> body) {
 		String key = "result";
 		HashMap<String, Object> result = new HashMap<>();
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 		id = String.valueOf(body.get("id"));
-		password = String.valueOf(body.get("password"));
+		password = passwordEncoder.encode(String.valueOf(body.get("password")));
 		email = String.valueOf(body.get("email"));
 		firstName = String.valueOf(body.get("first_name"));
 		lastName = String.valueOf(body.get("last_name"));

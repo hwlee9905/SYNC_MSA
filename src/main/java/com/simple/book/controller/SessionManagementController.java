@@ -26,12 +26,7 @@ public class SessionManagementController {
 	
 	@Autowired
 	private LogoutService logoutService;
-	
-	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody HashMap<String, Object> body, HttpSession session) throws Exception {
-		HashMap<String, Object> result = loginService.login(body, session);
-		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
-	}
+
 	
 	@GetMapping("/logout")
 	public ResponseEntity<String> logout(HttpSession session) throws Exception {
