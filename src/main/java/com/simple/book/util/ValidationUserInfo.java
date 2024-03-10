@@ -68,7 +68,7 @@ public class ValidationUserInfo {
 			message = "no_password";
 		} else if (password.length() < 4) {
 			message = "min_over_password";
-		} else if (password.length() > 8) {
+		} else if (password.length() > 100) {
 			message = "max_over_password";
 		} else if (!regex.getPasswordCheck(password)) {
 			message = "regex_false_password";

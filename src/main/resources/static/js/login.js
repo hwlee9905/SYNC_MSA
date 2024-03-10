@@ -1,16 +1,27 @@
 function login() {
-	let id = document.getElementById('id').value;
+	let userId = document.getElementById('userId').value;
 	let password = document.getElementById('password').value;
-
-	fetch("/login", {
+	
+	let formInfo = {
+	    'userId': userId,
+	    'password': password
+	};
+	
+	let formBody = [];
+	for (let property in formInfo) {
+	  let encodedKey = encodeURIComponent(property);
+	  let encodedValue = encodeURIComponent(formInfo[property]);
+	  formBody.push(encodedKey + "=" + encodedValue);
+	}
+	
+	formBody = formBody.join("&");
+	
+	fetch("/login/proc", {
 		method: "POST",
 		headers: {
-			"Content-Type": "application/json",
+			"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
 		},
-		body: JSON.stringify({
-			"id": id,
-			"password": password
-		}),
+		body: formBody
 	}).then(function(body) {
 		return body.text();
 	}).then(function(data) {

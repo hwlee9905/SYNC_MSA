@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.simple.book.service.board.AddBoardService;
-import com.simple.book.service.board.BoardListSerivce;
+import com.simple.book.service.BoardService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,26 +25,23 @@ public class BoardController {
 	private ObjectMapper mapper;
 	
 	@Autowired
-	private BoardListSerivce boardListSerivce;
-
-	@Autowired
-	private AddBoardService addBoardService;
+	private BoardService boardService;
 
 	@GetMapping("/list")
 	public ResponseEntity<String> getBoard() throws Exception{
-		HashMap<String, Object> result = boardListSerivce.boardList();
+		HashMap<String, Object> result = boardService.boardList();
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/add")
 	public ResponseEntity<String> addBoard(HttpSession session, @RequestBody HashMap<String, Object> body) throws Exception {
-		HashMap<String, Object> result = addBoardService.addBoard(session, body);
+		HashMap<String, Object> result = boardService.addBoard(session, body);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/add/file")
 	public ResponseEntity<String> addBoard(HttpSession session, @RequestParam(value = "images", required = false) MultipartFile file) throws Exception {
-		HashMap<String, Object> result = addBoardService.addBoard(session, file);
+		HashMap<String, Object> result = boardService.addBoard(session, file);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 }
