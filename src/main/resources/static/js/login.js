@@ -25,10 +25,13 @@ function login() {
 	}).then(function(body) {
 		return body.text();
 	}).then(function(data) {
+		console.log(data);
+		/*
 		if (data === "true") {
 			alert('로그인성공');
 			window.location.href = "/";
 		} else
 			alert('아이디 또는 비밀번호를 확인하세요');
+		*/
 	});
 }

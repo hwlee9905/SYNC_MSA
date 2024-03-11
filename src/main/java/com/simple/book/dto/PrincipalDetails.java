@@ -11,8 +11,11 @@ public class PrincipalDetails implements UserDetails{
 	
 	private UserEntity userEntity;
 	
-	public PrincipalDetails(UserEntity userEntity) {
+	private JwtToken token;
+	
+	public PrincipalDetails(UserEntity userEntity, JwtToken token) {
 		this.userEntity=userEntity;
+		this.token=token;
 	}
 
 	@Override

@@ -1,36 +1,42 @@
 package com.simple.book.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.simple.book.dto.PrincipalDetails;
 import com.simple.book.entity.UserEntity;
 import com.simple.book.repository.UserRepository;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class LoginService implements UserDetailsService{
-
 	@Autowired
 	private UserRepository userRepository;
 	
+	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//	private final PasswordEncoder passwordEncoder;
+	
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		
-		log.info("**************************** 아이디 {}", userId);
-		UserEntity userEntity = userRepository.findById(userId)
-				.orElseThrow(() -> {
-					return new UsernameNotFoundException("해당 유저를 찾을 수 없습니다.");
-				});
-		return new PrincipalDetails(userEntity) ; 
+		System.out.println("!!LoginService 진입!!");
+		return userRepository.findById(userId)
+				.map(this::createUserDetails)
+				.orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
 	}
-
 	
+	private UserDetails createUserDetails(UserEntity entity) {
+		return User.builder()
+                .username(entity.getId())
+                .password(entity.getPassword())
+                .build();
+	}
 	
 	
 	/*
