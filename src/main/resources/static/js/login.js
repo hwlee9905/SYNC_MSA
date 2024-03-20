@@ -16,7 +16,7 @@ function login() {
 	
 	formBody = formBody.join("&");
 	
-	fetch("/login/proc", {
+	fetch("/login", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",

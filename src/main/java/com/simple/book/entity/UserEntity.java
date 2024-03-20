@@ -48,4 +48,7 @@ public class UserEntity {
 	
 	@Column(name = "UPD_ID")
 	private String updId;
+	
+	@Column(name = "TOKEN")
+	private String token;
 }

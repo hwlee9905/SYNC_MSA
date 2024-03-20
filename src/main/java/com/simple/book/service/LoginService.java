@@ -1,5 +1,7 @@
 package com.simple.book.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +27,6 @@ public class LoginService implements UserDetailsService{
 	
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		System.out.println("!!LoginService 진입!!");
 		return userRepository.findById(userId)
 				.map(this::createUserDetails)
 				.orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
