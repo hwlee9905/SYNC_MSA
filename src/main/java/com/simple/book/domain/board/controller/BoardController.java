@@ -1,5 +1,6 @@
 package com.simple.book.domain.board.controller;
 
+import java.security.Principal;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.domain.board.service.BoardService;
 
-import jakarta.servlet.http.HttpSession;
-
 @Controller
 @RequestMapping("/board")
 public class BoardController {
@@ -28,20 +27,20 @@ public class BoardController {
 	private BoardService boardService;
 
 	@GetMapping("/list")
-	public ResponseEntity<String> getBoard() throws Exception{
-		HashMap<String, Object> result = boardService.boardList();
+	public ResponseEntity<String> getBoard(Principal principal) throws Exception{
+		HashMap<String, Object> result = boardService.boardList(principal);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addBoard(HttpSession session, @RequestBody HashMap<String, Object> body) throws Exception {
-		HashMap<String, Object> result = boardService.addBoard(session, body);
+	public ResponseEntity<String> addBoard(@RequestBody HashMap<String, Object> body) throws Exception {
+		HashMap<String, Object> result = boardService.addBoard(body);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/add/file")
-	public ResponseEntity<String> addBoard(HttpSession session, @RequestParam(value = "images", required = false) MultipartFile file) throws Exception {
-		HashMap<String, Object> result = boardService.addBoard(session, file);
+	public ResponseEntity<String> addBoard(@RequestParam(value = "images", required = false) MultipartFile file) throws Exception {
+		HashMap<String, Object> result = boardService.addBoard(file);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 }
