@@ -37,6 +37,7 @@ public class BoardService {
 	public HashMap<String, Object> boardList(Principal principal){
 		HashMap<String, Object> result = new HashMap<>();
 		String id = principal.getName();
+		
 		return result;
 	}
 	
@@ -46,9 +47,21 @@ public class BoardService {
 	 * @param body
 	 * @return
 	 */
-	public HashMap<String, Object> addBoard(HashMap<String, Object> body) {
+	public HashMap<String, Object> addBoard(Principal principal, HashMap<String, Object> body) {
 		HashMap<String, Object> result = new HashMap<>();
-
+		String id = principal.getName();
+		String contents = String.valueOf(body.get("content"));
+		String hashtag1 = String.valueOf(body.get("hashtag1"));
+		String hashtag2 = String.valueOf(body.get("hashtag2"));
+		String hashtag3 = String.valueOf(body.get("hashtag3"));
+		String hashtag4 = String.valueOf(body.get("hashtag4"));
+		String hashtag5 = String.valueOf(body.get("hashtag5"));
+		
+		
+		
+		
+		
+		
 		return result;
 	}
 
@@ -58,7 +71,7 @@ public class BoardService {
 	 * @param file
 	 * @return
 	 */
-	public HashMap<String, Object> addBoard(MultipartFile file) {
+	public HashMap<String, Object> imageUpload(MultipartFile file) {
 		HashMap<String, Object> result = new HashMap<>();
 			Path uploadPath = Paths.get(applicationConfig.getImagePath());
 			if (Files.exists(uploadPath)) {
