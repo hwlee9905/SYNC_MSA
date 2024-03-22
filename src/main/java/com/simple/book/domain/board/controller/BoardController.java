@@ -27,20 +27,20 @@ public class BoardController {
 	private BoardService boardService;
 
 	@GetMapping("/list")
-	public ResponseEntity<String> getBoard(Principal principal) throws Exception{
+	public ResponseEntity<String> getBoard(Principal principal) throws Exception {
 		HashMap<String, Object> result = boardService.boardList(principal);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addBoard(@RequestBody HashMap<String, Object> body) throws Exception {
-		HashMap<String, Object> result = boardService.addBoard(body);
+	public ResponseEntity<String> addBoard(Principal principal, @RequestBody HashMap<String, Object> body) throws Exception {
+		HashMap<String, Object> result = boardService.addBoard(principal, body);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 
 	@PostMapping("/add/file")
-	public ResponseEntity<String> addBoard(@RequestParam(value = "images", required = false) MultipartFile file) throws Exception {
-		HashMap<String, Object> result = boardService.addBoard(file);
+	public ResponseEntity<String> imageUpload(@RequestParam(value = "images", required = false) MultipartFile file) throws Exception {
+		HashMap<String, Object> result = boardService.imageUpload(file);
 		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 	}
 }
