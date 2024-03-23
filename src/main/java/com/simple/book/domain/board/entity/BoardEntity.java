@@ -2,15 +2,17 @@ package com.simple.book.domain.board.entity;
 
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.simple.book.global.entity.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Data;
+import lombok.Builder;
 
-@Data
 @Entity(name = "BOARDTBL")
 @DynamicUpdate
-public class BoardEntity {
+@Builder
+public class BoardEntity extends BaseTimeEntity{
 	@Id
 	@Column(name = "NO")
 	private long no;
@@ -29,6 +31,7 @@ public class BoardEntity {
 	
 	@Column(name="DEL_YN")
 	private String delYn;
+
 	
 	@Column(name="HASHTAG_1")
 	private String hashtag1;
@@ -45,21 +48,10 @@ public class BoardEntity {
 	@Column(name="HASHTAG_5")
 	private String hashtag5;
 	
-	@Column(name = "INS_DATE")
-	private String insDate;
-	
-	@Column(name = "INS_TIME")
-	private String insTime;
-	
 	@Column(name = "INS_ID")
 	private String insId;
 	
-	@Column(name = "UPD_DATE")
-	private String updDate;
-	
-	@Column(name = "UPD_TIME")
-	private String updTime;
-	
 	@Column(name = "UPD_ID")
 	private String updId;
+	
 }
