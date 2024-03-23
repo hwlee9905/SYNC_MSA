@@ -1,0 +1,36 @@
+### Login
+POST https://localhost:9090/login?id=user12&password=qwe123!@#
+
+### Signup
+#User Signup
+#Admin은 UserService Authentication.Builder()에서 Role 바꿔줄 것
+POST https://localhost:9090/signup
+Content-Type: application/json
+
+{
+  "username": "user",
+  "nickname": "John",
+  "city": "Anytown",
+  "district": "CA",
+  "roadAddress": "12345",
+  "sex": "MAN",
+  "userId": "userId12",
+  "password": "qwe123!@",
+  "email": "john@example.com"
+}
+### Signup validation
+//필수 입력값 빈값, 비밀번호 유효성, 이메일 유효성, 아이디 중복 검사
+POST https://localhost:9090/signup
+Content-Type: application/json
+
+{
+  "username": "",
+  "nickname": "John",
+  "city": "Anytown",
+  "district": "CA",
+  "roadAddress": "12345",
+  "sex": "MAN",
+  "userId": "",
+  "password": "",
+  "email": "df"
+}
