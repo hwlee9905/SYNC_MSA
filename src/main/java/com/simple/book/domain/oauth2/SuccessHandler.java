@@ -40,6 +40,7 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         ResponseCookie jwtCookie = createCookie("JWT_TOKEN",  token);
 
         response.addHeader("Set-Cookie", jwtCookie.toString());
+        response.sendRedirect("https://localhost:9090/api/user/auth");
     }
 
     //쿠키로 JWT 발급

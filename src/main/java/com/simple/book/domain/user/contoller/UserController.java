@@ -27,20 +27,15 @@ import com.simple.book.domain.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
+@RequestMapping("api/user/")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
 	//.requestMatchers("/user").hasAnyAuthority("USER") USER 계정 로그인 필요
 
-	private final UserService userService;
-	@PostMapping("/signup")
-	public String signup(@RequestBody @Valid SignupRequestDto signupRequestDto){
-		userService.signup(signupRequestDto);
 
-		return "OK";
-	}
 
-	@GetMapping("api/user/auth")
+	@GetMapping("auth")
 	public String userApi(){
 		String userId = null;
 		String name = null;
@@ -62,7 +57,7 @@ public class UserController {
 
 			}
 		}
-		return "ID : "+ userId + "\n" + name + "님 반갑습니다. 유저 컨트롤러입니다.";
+		return "ID : "+ userId + " 이름 : " + name + "님 반갑습니다. 유저 컨트롤러입니다.";
 	}
 
 //	@PostMapping("/search")
