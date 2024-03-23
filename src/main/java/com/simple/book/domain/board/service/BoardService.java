@@ -3,6 +3,7 @@ package com.simple.book.domain.board.service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -29,27 +30,36 @@ public class BoardService {
 	@Autowired
 	private DateFmt dateFmt;
 	
-	public HashMap<String, Object> boardList(){
+	/**
+	 * 글 목록
+	 * @return
+	 */
+	public HashMap<String, Object> boardList(Principal principal){
 		HashMap<String, Object> result = new HashMap<>();
-		
+		String id = principal.getName();
 		return result;
 	}
 	
-	public HashMap<String, Object> addBoard(HttpSession session, HashMap<String, Object> body) {
+	/**
+	 * 글 쓰기 (텍스트)
+	 * @param session
+	 * @param body
+	 * @return
+	 */
+	public HashMap<String, Object> addBoard(HashMap<String, Object> body) {
 		HashMap<String, Object> result = new HashMap<>();
-		Object id = session.getAttribute("id");
-		if (id != null) {
 
-		} else {
-			result.put("result", "no_session");
-		}
 		return result;
 	}
 
-	public HashMap<String, Object> addBoard(HttpSession session, MultipartFile file) {
+	/**
+	 * 글 쓰기 (이미지 첨부)
+	 * @param session
+	 * @param file
+	 * @return
+	 */
+	public HashMap<String, Object> addBoard(MultipartFile file) {
 		HashMap<String, Object> result = new HashMap<>();
-		Object id = session.getAttribute("id");
-		if (id != null) {
 			Path uploadPath = Paths.get(applicationConfig.getImagePath());
 			if (Files.exists(uploadPath)) {
 				String fileName = StringUtils.cleanPath(createFilename(file));
@@ -63,9 +73,6 @@ public class BoardService {
 			} else {
 				// 디렉터리 오류
 			}
-		} else {
-			result.put("result", "no_session");
-		}
 		return result;
 	}
 
