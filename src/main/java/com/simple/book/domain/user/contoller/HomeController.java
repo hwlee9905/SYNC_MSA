@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class HomeController {
     private final UserService userService;
+    @ResponseBody
     @PostMapping("signup")
     public String signup(@RequestBody @Valid SignupRequestDto signupRequestDto){
         userService.signup(signupRequestDto);
