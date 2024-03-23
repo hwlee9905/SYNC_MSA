@@ -6,12 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 
-	@GetMapping("")
-	public String pageIndex() {
-		return "index";
-	}
-	
-	@GetMapping("board")
+	@GetMapping("/board")
 	public String pageBoard() {
 		return "board";
 	}
