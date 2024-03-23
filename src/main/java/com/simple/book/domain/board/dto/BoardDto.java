@@ -1,5 +1,6 @@
 package com.simple.book.domain.board.dto;
 
+
 import com.simple.book.domain.board.entity.BoardEntity;
 
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardDto {
 	private long no;
+
 	private String id;
 	private String contents;
 	private String imagePath;
@@ -57,4 +59,5 @@ public class BoardDto {
 				.updId(updId)
 				.build();
 	}
+
 }
