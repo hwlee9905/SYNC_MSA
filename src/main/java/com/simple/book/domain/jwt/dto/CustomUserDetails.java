@@ -1,5 +1,6 @@
 package com.simple.book.domain.jwt.dto;
 
+import com.simple.book.domain.user.util.InfoSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,6 +32,16 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
         return authTokenDto.getPassword();
+    }
+
+    public String getRole() {
+        return authTokenDto.getRole();
+    }
+    public String getName() {
+        return authTokenDto.getName();
+    }
+    public String getInfoSet(){
+        return authTokenDto.getInfoSet();
     }
 
     @Override

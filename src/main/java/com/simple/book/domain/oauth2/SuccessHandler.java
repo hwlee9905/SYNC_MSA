@@ -1,11 +1,13 @@
 package com.simple.book.domain.oauth2;
 
 import com.simple.book.domain.jwt.util.JWTUtil;
+import com.simple.book.domain.user.util.InfoSet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -26,28 +28,29 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         String username = customUserDetails.getUsername();
         String name = customUserDetails.getName();
-
+        String infoSet = customUserDetails.getInfoSet();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
 
-        String token = jwtUtil.createJwt(username, role, 60*30*1000L);
+        String token = jwtUtil.createJwt(username, role, 60*30*1000L, infoSet, name);
 
-        Cookie jwtCookie = createCookie("JWT_TOKEN",  token);
-        String encodedName = URLEncoder.encode(name, "UTF-8");
-        response.addCookie(jwtCookie);
-        response.sendRedirect("https://localhost:9090/?username=" + username + "&role=" + role + "&name=" + encodedName);
+        ResponseCookie jwtCookie = createCookie("JWT_TOKEN",  token);
+
+        response.addHeader("Set-Cookie", jwtCookie.toString());
     }
 
     //쿠키로 JWT 발급
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*30); // 30분 유효
-        cookie.setSecure(true); // HTTPS에서만 전송
-        cookie.setPath("/"); // 전체 경로에서 접근 가능
-        cookie.setHttpOnly(true); // JavaScript에서 접근 불가
+    private ResponseCookie createCookie(String key, String value) {
+        ResponseCookie cookie = ResponseCookie.from(key, value)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(false)
+                .secure(true)
+                .maxAge(30 * 60)
+                .build();
         return cookie;
     }
 }

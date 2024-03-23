@@ -14,7 +14,7 @@ Content-Type: application/json
   "district": "CA",
   "roadAddress": "12345",
   "sex": "MAN",
-  "userId": "user12",
+  "userId": "userId12",
   "password": "qwe123!@",
   "email": "john@example.com"
 }

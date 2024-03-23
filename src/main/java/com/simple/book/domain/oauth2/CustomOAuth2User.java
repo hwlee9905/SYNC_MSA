@@ -1,6 +1,7 @@
 package com.simple.book.domain.oauth2;
 
 import com.simple.book.domain.oauth2.dto.OAuth2UserDto;
+import com.simple.book.domain.user.util.InfoSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -44,5 +45,12 @@ public class CustomOAuth2User implements OAuth2User {
     public String getUsername() {
 
         return oAuth2UserDto.getUsername();
+    }
+    public String getRole() {
+
+        return oAuth2UserDto.getRole();
+    }
+    public String getInfoSet(){
+        return oAuth2UserDto.getInfoSet();
     }
 }

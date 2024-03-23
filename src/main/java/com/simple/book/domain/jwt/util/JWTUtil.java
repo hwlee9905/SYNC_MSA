@@ -1,5 +1,6 @@
 package com.simple.book.domain.jwt.util;
 
+import com.simple.book.domain.user.util.InfoSet;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,23 +23,31 @@ public class JWTUtil {
     public String getUsername(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+    } public String getName(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("name", String.class);
     }
 
     public String getRole(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
+    public String getInfoSet(String token) {
 
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("infoset", String.class);
+    }
     public Boolean isExpired(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String userId, String role, Long expiredMs) {
+    public String createJwt(String userId, String role, Long expiredMs, String infoSet, String name) {
 
         return Jwts.builder()
+                .claim("infoset",infoSet.toString())
                 .claim("username", userId)
                 .claim("role", role)
+                .claim("name",name)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)

@@ -14,14 +14,14 @@
 	<button id="Google-Login">Google Login</button>
 	<button id="Kakao-Login">Kakao Login</button>
 	<button id="Login-Request">Custom Login</button>
-	<!-- 현재 로그인한 사용자의 정보 출력 -->
-	<div th:if="${username == null}">
-		<p>로그인 하지 않아도 사용자들의 게시물을 둘러볼 수 있지만.. 로그인 해보세요!</p>
-	</div>
-	<div th:unless="${username == null}">
-		<p th:text="'환영합니다! ' + ${name} + '님'"></p>
-		<p th:text="'로그인 아이디: ' + ${username} + ' 권한: ' + ${role}"></p>
-	</div>
+<!--	&lt;!&ndash; 현재 로그인한 사용자의 정보 출력 &ndash;&gt;-->
+<!--	<div th:if="${username == null}">-->
+<!--		<p>로그인 하지 않아도 사용자들의 게시물을 둘러볼 수 있지만.. 로그인 해보세요!</p>-->
+<!--	</div>-->
+<!--	<div th:unless="${username == null}">-->
+<!--		<p th:text="'환영합니다! ' + ${name} + '님'"></p>-->
+<!--		<p th:text="'로그인 아이디: ' + ${username} + ' 권한: ' + ${role}"></p>-->
+<!--	</div>-->
 </div>
 
 <script th:inline="javascript">
@@ -37,21 +37,21 @@
 		window.location.href = /*[[@{/oauth2/authorization/kakao}]]*/ '';
 	});
 
-	// document.getElementById('Login-Request').addEventListener('click', function() {
-	// 	var xhr = new XMLHttpRequest();
-	// 	xhr.open('POST', /*[[@{/login?id=user12&password=qwe123!@}]]*/ '', true);
-	// 	xhr.withCredentials = true;
-	// 	xhr.onreadystatechange = function() {
-	// 		if (xhr.readyState === XMLHttpRequest.DONE) {
-	// 			if (xhr.status === 200) {
-	// 				alert(JSON.stringify(xhr.responseText));
-	// 			} else {
-	// 				alert('Error: ' + xhr.status);
-	// 			}
-	// 		}
-	// 	};
-	// 	xhr.send();
-	// });
+	document.getElementById('Login-Request').addEventListener('click', function() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', /*[[@{/login?id=userId12&password=qwe123!@}]]*/ '', true);
+		xhr.withCredentials = true;
+		// xhr.onreadystatechange = function() {
+		// 	if (xhr.readyState === XMLHttpRequest.DONE) {
+		// 		if (xhr.status === 200) {
+		// 			alert(JSON.stringify(xhr.responseText));
+		// 		} else {
+		// 			alert('Error: ' + xhr.status);
+		// 		}
+		// 	}
+		// };
+		xhr.send();
+	});
 </script>
 </body>
 </html>

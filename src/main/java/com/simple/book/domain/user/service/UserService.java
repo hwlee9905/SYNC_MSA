@@ -64,6 +64,8 @@ public class UserService implements UserDetailsService {
 		User user = userRepository.findByUserId(userId);
 		if (user != null) {
 			AuthTokenDto authTokenDto = AuthTokenDto.builder()
+					.infoSet(user.getAuthentication().getInfoSet().toString())
+					.name(user.getUsername())
 					.username(user.getAuthentication().getUserId())
 					.password(user.getAuthentication().getPassword())
 					.role(user.getRole().toString())
@@ -73,4 +75,5 @@ public class UserService implements UserDetailsService {
 		}
 		return null;
 	}
+
 }

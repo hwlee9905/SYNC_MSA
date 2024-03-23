@@ -68,6 +68,7 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
             userRepository.save(user);
 
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
+                    .infoSet(infoSet.toString())
                     .name(oAuth2Response.getName())
                     .username(username)
                     .role(Role.USER.toString())
@@ -81,6 +82,7 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
             existData.setUsername(oAuth2Response.getName());
 
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
+                    .infoSet(infoSet.toString())
                     .username(existData.getAuthentication().getUserId())
                     .name(oAuth2Response.getName())
                     .role(Role.USER.toString())
