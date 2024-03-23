@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 @Order(1)
 @Component
 public class FriendListAdvisor {
-
-	@Before("@annotation(com.simple.book.annotation.FriendList)")
+	@Before("@annotation(com.simple.book.global.annotation.FriendList)")
 	public void friendList() {
 	}
 }
