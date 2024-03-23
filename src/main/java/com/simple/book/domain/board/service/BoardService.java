@@ -3,8 +3,8 @@ package com.simple.book.domain.board.service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Principal;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.simple.book.domain.board.dto.BoardDto;
+import com.simple.book.domain.board.entity.BoardEntity;
 import com.simple.book.domain.board.repository.BoardRepository;
 import com.simple.book.global.config.ApplicationConfig;
 import com.simple.book.global.util.DateFmt;
+import com.simple.book.global.util.ResponseMessage;
 
-import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class BoardService {
 	
 	@Autowired
@@ -31,39 +35,21 @@ public class BoardService {
 	private DateFmt dateFmt;
 	
 	/**
-	 * 글 목록
-	 * @return
-	 */
-	public HashMap<String, Object> boardList(Principal principal){
-		HashMap<String, Object> result = new HashMap<>();
-		String id = principal.getName();
-		
-		return result;
-	}
-	
-	/**
-	 * 글 쓰기 (텍스트)
-	 * @param session
+	 * 글쓰기 (텍스트)
 	 * @param body
 	 * @return
+	 * @throws Exception
 	 */
-	public HashMap<String, Object> addBoard(Principal principal, HashMap<String, Object> body) {
-		HashMap<String, Object> result = new HashMap<>();
-		String id = principal.getName();
-		String contents = String.valueOf(body.get("content"));
-		String hashtag1 = String.valueOf(body.get("hashtag1"));
-		String hashtag2 = String.valueOf(body.get("hashtag2"));
-		String hashtag3 = String.valueOf(body.get("hashtag3"));
-		String hashtag4 = String.valueOf(body.get("hashtag4"));
-		String hashtag5 = String.valueOf(body.get("hashtag5"));
+	public ResponseMessage addBoard(BoardDto body, MultipartFile file) throws Exception {
+		if (body.getContents() != null && !body.getContents().isEmpty()) {
+			System.out.println(file);
+			Optional<BoardEntity> result = Optional.ofNullable(boardRepository.save(body.toEntity()));
+			result.orElseThrow(() -> new RuntimeException("system_error"));
+		} else throw new RuntimeException("본문을 입력 해 주세요.");
 		
-		
-		
-		
-		
-		
-		return result;
+ 		return ResponseMessage.builder().message("저장 완료").build();
 	}
+	
 
 	/**
 	 * 글 쓰기 (이미지 첨부)
@@ -88,6 +74,7 @@ public class BoardService {
 			}
 		return result;
 	}
+	
 
 	private String createFilename(MultipartFile file) {
 		String date = dateFmt.getDate("yyyyMMdd");

@@ -41,7 +41,7 @@
 		<div class="write_box">
 			<input id="contents" type="text" />
 			<div class="file_box">
-				<input class="files" id="image" type="file" accept="image/jpeg, image/png" multiple onchange="uploadFiles(this.files)"/>
+				<input class="files" id="image" type="file" accept="image/jpeg, image/png"/>
 			</div>
 			<div class="btn_box">
 				<button onclick="submit()">작성</button>
@@ -52,13 +52,13 @@
 </body>
 <script>
 	function uploadFiles(files){
+		let contents = document.getElementById('contents').value;
 		let formData = new FormData();
-		
 		formData.append('images', files[0]);
 		
-		fetch('/board/add/file', {
+		fetch('/board/add', {
 			method: 'POST',
-			body: formData,
+			body: contents, formData,
 		})
 		.then(response => {
 			return response.json();

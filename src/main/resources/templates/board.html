@@ -9,9 +9,7 @@
 <body>
 	<div class="container">
 		<th:block th:replace="~{nav/nav_bar}" />
-		<th:block th:if='${session.id != null}'>
-			<button onclick="writePage();">글쓰기</button>
-		</th:block>
+		<button onclick="writePage();">글쓰기</button>
 	</div>
 </body>
 <script>
