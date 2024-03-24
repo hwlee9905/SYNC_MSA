@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
 	//회원가입
 	@Transactional(rollbackFor = {Exception.class})
 	public User signup(SignupRequestDto signupRequestDto) {
-		log.info("signup password : " + signupRequestDto.getPassword());
+//		log.info("signup password : " + signupRequestDto.getPassword());
 		Authentication authentication = Authentication.builder()
 				.userId(signupRequestDto.getUserId())
 				.email(signupRequestDto.getEmail())

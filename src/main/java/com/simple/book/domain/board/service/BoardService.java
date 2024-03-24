@@ -35,11 +35,13 @@ public class BoardService {
 	private DateFmt dateFmt;
 	
 	/**
+
 	 * 글쓰기 (텍스트)
 	 * @param body
 	 * @return
 	 * @throws Exception
 	 */
+
 	public ResponseMessage addBoard(BoardDto body, MultipartFile file) throws Exception {
 		if (body.getContents() != null && !body.getContents().isEmpty()) {
 			System.out.println(file);
@@ -48,6 +50,7 @@ public class BoardService {
 		} else throw new RuntimeException("본문을 입력 해 주세요.");
 		
  		return ResponseMessage.builder().message("저장 완료").build();
+\
 	}
 	
 

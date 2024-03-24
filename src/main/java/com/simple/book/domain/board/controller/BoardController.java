@@ -33,4 +33,5 @@ public class BoardController {
 //		HashMap<String, Object> result = boardService.imageUpload(file);
 //		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
 //	}
+
 }

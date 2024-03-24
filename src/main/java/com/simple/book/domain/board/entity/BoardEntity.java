@@ -31,6 +31,7 @@ public class BoardEntity extends BaseTimeEntity{
 	
 	@Column(name="DEL_YN")
 	private String delYn;
+
 	
 	@Column(name="HASHTAG_1")
 	private String hashtag1;
