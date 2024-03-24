@@ -42,7 +42,6 @@ public class BoardService {
 	 */
 	public ResponseMessage addBoard(BoardDto body, MultipartFile file) throws Exception {
 		if (body.getContents() != null && !body.getContents().isEmpty()) {
-			System.out.println(file);
 			Optional<BoardEntity> result = Optional.ofNullable(boardRepository.save(body.toEntity()));
 			result.orElseThrow(() -> new RuntimeException("system_error"));
 		} else throw new RuntimeException("본문을 입력 해 주세요.");

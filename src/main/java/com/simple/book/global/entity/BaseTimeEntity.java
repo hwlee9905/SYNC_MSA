@@ -15,10 +15,10 @@ import lombok.Getter;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
 	@CreatedDate
-	@Column(name = "INS_DATE")
+	@Column(name = "ins_date")
 	private Timestamp insDate;
 	
 	@CreatedDate
-	@Column(name = "UPD_DATE")
+	@Column(name = "upd_date")
 	private Timestamp updDate;
 }
