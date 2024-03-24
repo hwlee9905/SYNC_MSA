@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.jwt.util.JWTUtil;
 import com.simple.book.domain.user.util.InfoSet;
+import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.exception.AuthenticationFailureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -74,21 +76,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        log.error("로그인 실패");
-        //로그인 실패 응답
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        LocalDateTime currentTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedTime = currentTime.format(formatter);
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("timestamp", formattedTime);
-        responseData.put("error", "Authentication failed: " + failed.getMessage() +" ID와 PW를 확인해주세요.");
-        responseData.put("errorCode", HttpStatus.UNAUTHORIZED.value());
-                ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(responseData);
-        response.getWriter().write(json);
+
+        throw new AuthenticationFailureException("패스워드가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
     }
     private ResponseCookie createCookie(String key, String value) {
         ResponseCookie cookie = ResponseCookie.from(key, value)

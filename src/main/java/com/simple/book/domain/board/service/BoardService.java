@@ -50,7 +50,7 @@ public class BoardService {
 		} else throw new RuntimeException("본문을 입력 해 주세요.");
 		
  		return ResponseMessage.builder().message("저장 완료").build();
-\
+
 	}
 	
 

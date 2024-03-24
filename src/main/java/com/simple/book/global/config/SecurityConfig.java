@@ -6,20 +6,28 @@ import com.simple.book.domain.jwt.util.JWTUtil;
 import com.simple.book.domain.oauth2.SuccessHandler;
 import com.simple.book.domain.user.service.OAuth2UserSerivce;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationEventPublisher;
+import org.springframework.security.authorization.SpringAuthorizationEventPublisher;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Collections;
 
@@ -32,11 +40,23 @@ public class SecurityConfig {
     private final OAuth2UserSerivce oauth2UserSerivce;
     private final SuccessHandler successHandler;
     private final JWTUtil jwtUtil;
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver exceptionResolver;
+
+    @Bean
+    public JWTFilter JWTFilter() {
+        return new JWTFilter(exceptionResolver, jwtUtil);
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
+    @Bean
+    public AuthorizationEventPublisher authorizationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        return new SpringAuthorizationEventPublisher(applicationEventPublisher);
+    }
     //비밀번호 암호화 메소드
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -79,7 +99,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         //JWTFilter 등록
         http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+                .addFilterBefore(JWTFilter(), LoginFilter.class);
 
         //LoginFilter 등록
         http
@@ -101,6 +121,9 @@ public class SecurityConfig {
                         return configuration;
                     }
                 })));
+
+
+
         return http.build();
     }
 }
