@@ -99,22 +99,22 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHORIZATION);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHORIZATION.getStatus()));
     }
-    /**
-     * 잘못된 비밀번호 입력시 발생
-     */
-    @ExceptionHandler(AuthenticationFailureException.class)
-    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
-        log.error("AuthorizationFailureException", e);
-
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));
-    }
+//    /**
+//     * 잘못된 비밀번호 입력시 발생
+//     */
+//    @ExceptionHandler(AuthenticationFailureException.class)
+//    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
+//        log.error("AuthorizationFailureException", e);
+//
+//        final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
+//        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));
+//    }
     /**
      * 잘못된 아이디 입력시 발생
      */
-    @ExceptionHandler(InternalAuthenticationServiceException.class)
-    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(InternalAuthenticationServiceException e) {
-        log.error("InternalAuthenticationServiceException", e);
+    @ExceptionHandler(AuthenticationFailureException.class)
+    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
+        log.error("AuthenticationFailureException", e);
 
         final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));

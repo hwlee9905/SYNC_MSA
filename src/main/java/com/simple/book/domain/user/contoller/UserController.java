@@ -33,9 +33,6 @@ import jakarta.servlet.http.HttpSession;
 @Slf4j
 public class UserController {
 	//.requestMatchers("/user").hasAnyAuthority("USER") USER 계정 로그인 필요
-
-
-
 	@GetMapping("auth")
 	public String userApi(){
 		String userId = null;

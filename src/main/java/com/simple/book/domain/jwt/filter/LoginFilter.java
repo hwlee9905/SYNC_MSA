@@ -24,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -37,19 +38,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-    private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final HandlerExceptionResolver exceptionResolver;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        //클라이언트 요청에서 id, password 추출
-        String id = obtainUsername(request);
-        String password = obtainPassword(request);
-        //스프링 시큐리티에서 id와 password를 검증하기 위해서 token에 담는다.
-        // (token이 AuthenticationManager로 넘겨질 때 dto 역할을 한다.)
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password, null);
-
-        return  authenticationManager.authenticate(authenticationToken);
+        try {
+            //클라이언트 요청에서 id, password 추출
+            String id = obtainUsername(request);
+            String password = obtainPassword(request);
+            //스프링 시큐리티에서 id와 password를 검증하기 위해서 token에 담는다.
+            // (token이 AuthenticationManager로 넘겨질 때 dto 역할을 한다.)
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password, null);
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            return authentication;
+        } catch (Exception e) {
+            exceptionResolver.resolveException(request, response, null, e);
+        }
+        return null;
     }
     //로그인 성공시 실행하는 메소드 (이곳에서 JWT를 발급합니다.)
     @Override
