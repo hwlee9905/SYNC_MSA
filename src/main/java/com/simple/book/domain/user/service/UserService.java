@@ -10,6 +10,8 @@ import com.simple.book.domain.user.repository.AuthenticationRepository;
 import com.simple.book.domain.user.util.Address;
 import com.simple.book.domain.user.util.InfoSet;
 import com.simple.book.domain.user.util.Role;
+import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.exception.AuthenticationFailureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,7 +75,7 @@ public class UserService implements UserDetailsService {
 			//UserDetails에 담아서 return하면 AutneticationManager가 검증 함
 			return new CustomUserDetails(authTokenDto);
 		}
-		return null;
+		throw new AuthenticationFailureException("아이디가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
 	}
 
 }
