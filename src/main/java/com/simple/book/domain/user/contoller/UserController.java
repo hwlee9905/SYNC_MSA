@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,9 +33,6 @@ import jakarta.servlet.http.HttpSession;
 @Slf4j
 public class UserController {
 	//.requestMatchers("/user").hasAnyAuthority("USER") USER 계정 로그인 필요
-
-
-
 	@GetMapping("auth")
 	public String userApi(){
 		String userId = null;

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.jwt.util.JWTUtil;
 import com.simple.book.domain.user.util.InfoSet;
+import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.exception.AuthenticationFailureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -22,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -35,19 +38,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-    private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final HandlerExceptionResolver exceptionResolver;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        //클라이언트 요청에서 id, password 추출
-        String id = obtainUsername(request);
-        String password = obtainPassword(request);
-        //스프링 시큐리티에서 id와 password를 검증하기 위해서 token에 담는다.
-        // (token이 AuthenticationManager로 넘겨질 때 dto 역할을 한다.)
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password, null);
-
-        return  authenticationManager.authenticate(authenticationToken);
+        try {
+            //클라이언트 요청에서 id, password 추출
+            String id = obtainUsername(request);
+            String password = obtainPassword(request);
+            //스프링 시큐리티에서 id와 password를 검증하기 위해서 token에 담는다.
+            // (token이 AuthenticationManager로 넘겨질 때 dto 역할을 한다.)
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password, null);
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            return authentication;
+        } catch (Exception e) {
+            exceptionResolver.resolveException(request, response, null, e);
+        }
+        return null;
     }
     //로그인 성공시 실행하는 메소드 (이곳에서 JWT를 발급합니다.)
     @Override
@@ -74,21 +83,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        log.error("로그인 실패");
-        //로그인 실패 응답
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        LocalDateTime currentTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedTime = currentTime.format(formatter);
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("timestamp", formattedTime);
-        responseData.put("error", "Authentication failed: " + failed.getMessage() +" ID와 PW를 확인해주세요.");
-        responseData.put("errorCode", HttpStatus.UNAUTHORIZED.value());
-                ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(responseData);
-        response.getWriter().write(json);
+
+        throw new AuthenticationFailureException("패스워드가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
     }
     private ResponseCookie createCookie(String key, String value) {
         ResponseCookie cookie = ResponseCookie.from(key, value)

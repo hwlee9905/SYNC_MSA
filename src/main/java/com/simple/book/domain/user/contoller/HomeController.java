@@ -2,6 +2,8 @@ package com.simple.book.domain.user.contoller;
 
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
 import com.simple.book.domain.user.service.UserService;
+import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.exception.BusinessException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,4 +33,5 @@ public class HomeController {
         }
         return "index";
     }
+
 }

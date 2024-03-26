@@ -1,12 +1,14 @@
 package com.simple.book.global.advice;
 
+import com.simple.book.global.exception.AuthenticationFailureException;
+import com.simple.book.global.exception.AuthorizationFailureException;
 import com.simple.book.global.exception.BusinessException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,14 +23,18 @@ import java.util.Map;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
+    /**
+     * 파라미터 바인딩 에러 발생
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("Validation failed for argument: {}", e.getMessage());
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
+    /**
+     * 파라미터 바인딩 에러 발생
+     */
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<ErrorResponse> handleBindException(BindException e) {
         log.error("handleBindException", e);
@@ -55,7 +61,6 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED);
         return new ResponseEntity<>(response, HttpStatus.METHOD_NOT_ALLOWED);
     }
-
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
         log.error("handleAccessDeniedException", e);
@@ -77,33 +82,42 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    //아이디 중복 에러
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<ErrorResponse> DuplicateException(DataIntegrityViolationException e) {
         log.error("UserIdDuplicateException", e);
+
         final ErrorResponse response = ErrorResponse.of(ErrorCode.USERID_DUPLICATE);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USERID_DUPLICATE.getStatus()));
     }
-	
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    protected ResponseEntity<ErrorResponse> InvalidInputValueException(ConstraintViolationException e) {
-//        log.error("ConstraintViolationException", e);
-//        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
-//        e.getConstraintViolations().forEach(violation -> response.getErrors().add(
-//                new ErrorResponse.FieldError(
-//                        violation.getPropertyPath().toString(),
-//                        violation.getInvalidValue().toString(),
-//                        violation.getMessage()
-//                )
-//        ));
-//        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INVALID_INPUT_VALUE.getStatus()));
-//    }
-//    @ExceptionHandler(BindException.class)
-//    protected ResponseEntity<ErrorResponse> InvalidInputValueException(BindException ex) {
-//        log.error("InvalidInputValueException", ex);
+    /**
+     * 권한이 없는 경로에 접근했을때 발생
+     */
+    @ExceptionHandler(AuthorizationFailureException.class)
+    protected ResponseEntity<ErrorResponse> AuthorizationException(AuthorizationFailureException e) {
+        log.error("AuthorizationFailureException", e);
+
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHORIZATION);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHORIZATION.getStatus()));
+    }
+//    /**
+//     * 잘못된 비밀번호 입력시 발생
+//     */
+//    @ExceptionHandler(AuthenticationFailureException.class)
+//    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
+//        log.error("AuthorizationFailureException", e);
 //
-//        BindingResult bindingResult = ex.getBindingResult();
-//        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, bindingResult);
-//
-//        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ErrorCode.INVALID_INPUT_VALUE.getStatus()));
+//        final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
+//        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));
 //    }
+    /**
+     * 잘못된 아이디 입력시 발생
+     */
+    @ExceptionHandler(AuthenticationFailureException.class)
+    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
+        log.error("AuthenticationFailureException", e);
+
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));
+    }
 }
