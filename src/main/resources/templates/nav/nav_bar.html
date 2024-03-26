@@ -13,8 +13,8 @@
 			</ul>
 			<ul id="nav-right">
 				<th:block th:if='${session.id == null}'>
-					<li class="nav-user"><a onclick="login();">login</a></li>
-					<li class="nav-user"><a onclick="signup();">sign up</a></li>
+					<li class="nav-user"><a onclick="pageLogin();">login</a></li>
+					<li class="nav-user"><a onclick="pageSignup();">sign up</a></li>
 				</th:block>
 				<th:block th:if='${session.id != null}'>
 					<li class="nav-user"><a onclick="myPage();"><th:block th:text="${session.id}"/> 님</a></li>
