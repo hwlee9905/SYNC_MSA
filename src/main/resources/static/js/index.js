@@ -2,14 +2,6 @@ window.onload = function() {
 	getLocation();
 };
 
-function signup() {
-	window.location.href = "/page/signup"
-}
-
-function login() {
-	window.location.href = "/page/login"
-}
-
 function logout() {
 	fetch("/logout", {
 		method: "GET",

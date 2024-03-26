@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
 import com.simple.book.domain.user.entity.EmailVerification;
@@ -37,7 +38,7 @@ public class EmailVerificationService {
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseMessage sendVerificationEmail(EmailVerificationRequestDto dto) throws Exception {
+	public ResponseMessage sendVerificationEmail(EmailVerificationRequestDto dto) throws RuntimeException {
 		SimpleMailMessage message = new SimpleMailMessage();
 		EmailVerificationRequestDto setTokenDto = createVerificationToken(dto);
 		try {
@@ -48,7 +49,7 @@ public class EmailVerificationService {
 			javaMailSender.send(message);
 		} catch (Exception e) {
 			log.error(e.getStackTrace());
-			throw new Exception(e);
+			throw new RuntimeException(e);
 		}
 
 		return ResponseMessage.builder().message("전송 완료").build();
@@ -91,14 +92,22 @@ public class EmailVerificationService {
 		long thirtyMinutesInMillis = 30 * 60 * 1000;
 		return currentTime.getTime() - updDate.getTime() >= thirtyMinutesInMillis;
 	}
-
-	private Timestamp latestDate(List<EmailVerification> response) {
-		Timestamp latestInsDate = response.get(0).getInsDate();
-		for (EmailVerification entity : response) {
-			if (entity.getInsDate().after(latestInsDate)) {
-				latestInsDate = entity.getInsDate();
+	
+	/**
+	 * 만료된 인증 정보 삭제
+	 * @throws Exception
+	 */
+	@Transactional
+	public void deleteEmailToken() throws RuntimeException {
+		List<EmailVerification> reqList = emailVerificationRepository.findAll();
+		if (reqList.size() > 0) {
+			for (EmailVerification entity : reqList) {
+				String email = entity.toDto().getEmail();
+				Timestamp updDate = entity.getUpdDate();
+				if (isRequestExpires(updDate)) {
+					emailVerificationRepository.deleteByEmail(email);
+				}
 			}
 		}
-		return latestInsDate;
 	}
 }

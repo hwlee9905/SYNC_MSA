@@ -5,6 +5,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
+	
+	@GetMapping("/page/signup")
+	public String pageSignup() {
+		return "signup";
+	}
+	
+	@GetMapping("/page/login")
+	public String pageLogin() {
+		return "login.html";
+	}
 
 	@GetMapping("/board")
 	public String pageBoard() {
