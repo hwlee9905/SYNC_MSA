@@ -9,19 +9,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class EmailVerificationRequestDto {
-	private String token;
 	private String email;
+	private String token;
+	
 	
 	@Builder
-	public EmailVerificationRequestDto(String token, String email) {
-		this.token=token;
+	public EmailVerificationRequestDto(String email, String token) {
 		this.email=email;
+		this.token=token;
 	}
 	
 	public EmailVerification toEntity() {
 		return EmailVerification.builder()
-				.token(token)
 				.email(email)
+				.token(token)
 				.build();
 	}
 }
