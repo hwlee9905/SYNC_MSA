@@ -3,6 +3,7 @@ package com.simple.book.global.entity;
 import java.sql.Timestamp;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -15,10 +16,10 @@ import lombok.Getter;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
 	@CreatedDate
-	@Column(name = "ins_date")
+	@Column(name = "ins_date", updatable = false)
 	private Timestamp insDate;
 	
-	@CreatedDate
+	@LastModifiedDate
 	@Column(name = "upd_date")
 	private Timestamp updDate;
 }

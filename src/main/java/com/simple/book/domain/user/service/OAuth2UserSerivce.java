@@ -50,12 +50,12 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
         }
 
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
-        String username = oAuth2Response.getProvider()+"_"+oAuth2Response.getProviderId();
-        User existData = userRepository.findByUserId(username);
+        String userId = oAuth2Response.getProvider()+"_"+oAuth2Response.getProviderId();
+        Authentication existData = authenticationRepository.findByUserId(userId);
 
         if (existData == null) {
             Authentication authentication = Authentication.builder()
-                    .userId(username)
+                    .userId(userId)
                     .email(oAuth2Response.getEmail())
                     .infoSet(infoSet)
                     .build();
@@ -65,12 +65,13 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
                     .role(Role.USER)
                     .build();
             user.setAuthentication(authentication);
+            authentication.setUser(user);
             userRepository.save(user);
 
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
                     .infoSet(infoSet.toString())
                     .name(oAuth2Response.getName())
-                    .username(username)
+                    .username(userId)
                     .role(Role.USER.toString())
                     .build();
 
@@ -78,12 +79,10 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
         }
         else {
 
-            existData.getAuthentication().setEmail(oAuth2Response.getEmail());
-            existData.setUsername(oAuth2Response.getName());
 
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
                     .infoSet(infoSet.toString())
-                    .username(existData.getAuthentication().getUserId())
+                    .username(existData.getUserId())
                     .name(oAuth2Response.getName())
                     .role(Role.USER.toString())
                     .build();

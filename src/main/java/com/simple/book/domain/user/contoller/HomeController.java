@@ -16,22 +16,26 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 public class HomeController {
-    private final UserService userService;
-    @ResponseBody
-    @PostMapping("signup")
-    public String signup(@RequestBody @Valid SignupRequestDto signupRequestDto){
-        userService.signup(signupRequestDto);
+	private final UserService userService;
 
-        return "OK";
-    }
-    @GetMapping("")
-    public String userHome(@RequestParam(required = false) String username, @RequestParam(required = false) String role, @RequestParam(required = false) String name, Model model){
-        if(username != null && role != null) {
-            model.addAttribute("username", username);
-            model.addAttribute("role", role);
-            model.addAttribute("name", name);
-        }
-        return "index";
-    }
+	@ResponseBody
+	@PostMapping("signup")
+	public String signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
+		userService.signup(signupRequestDto);
+
+		return "OK";
+	}
+
+	@GetMapping("")
+	public String userHome(@RequestParam(name = "username", required = false) String username,
+			@RequestParam(name = "role", required = false) String role,
+			@RequestParam(name = "name", required = false) String name, Model model) {
+		if (username != null && role != null) {
+			model.addAttribute("username", username);
+			model.addAttribute("role", role);
+			model.addAttribute("name", name);
+		}
+		return "index";
+	}
 
 }

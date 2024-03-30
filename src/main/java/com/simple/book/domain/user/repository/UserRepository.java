@@ -7,6 +7,5 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query(value = "SELECT u.* FROM user u JOIN authentication a ON u.id = a.id WHERE a.userId = :userId", nativeQuery = true)
-    User findByUserId(@Param("userId") String userId);
+
 }

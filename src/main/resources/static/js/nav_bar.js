@@ -1,8 +1,8 @@
-function signup() {
+function pageSignup() {
 	window.location.href = "/page/signup"
 }
 
-function login() {
+function pageLogin() {
 	window.location.href = "/page/login"
 }
 

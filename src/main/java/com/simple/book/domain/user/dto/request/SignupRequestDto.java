@@ -21,7 +21,6 @@ public class SignupRequestDto {
     private String district;
     private String roadAddress;
     private Sex sex;
-    @Column(unique = true)
     @Size(min = 8, max = 16)
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
     private String userId;
