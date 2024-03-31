@@ -14,6 +14,7 @@ import lombok.*;
 public class Authentication extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "authentication_id")
     private Long id;
     @Column(unique = true)
     private String userId;
@@ -22,4 +23,6 @@ public class Authentication extends BaseEntity {
     private Integer failCount;
     @Enumerated(EnumType.STRING)
     private InfoSet infoSet;
+    @OneToOne(mappedBy = "authentication", cascade = CascadeType.ALL)
+    private User user;
 }

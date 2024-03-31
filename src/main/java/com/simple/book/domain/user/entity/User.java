@@ -32,6 +32,6 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "authentication_id")
     private Authentication authentication;
 }
