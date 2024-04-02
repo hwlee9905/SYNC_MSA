@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,14 +19,11 @@ import com.simple.book.global.util.ResponseMessage;
 @RequestMapping("/board")
 public class BoardController {
 	@Autowired
-	private ObjectMapper mapper;
-	
-	@Autowired
 	private BoardService boardService;
 
-	@PostMapping(value="/add", consumes = "multipart/form-data")
-	public ResponseEntity<ResponseMessage> addBoard(@RequestBody BoardDto body, @RequestBody(required = false) MultipartFile file) throws Exception {
-		return ResponseEntity.ok(boardService.addBoard(body, file));
+	@PostMapping(value="/add")
+	public ResponseEntity<ResponseMessage> addBoard(@RequestBody BoardDto body) throws Exception {
+		return ResponseEntity.ok(boardService.addBoard(body));
 	}
 
 //	@PostMapping("/add/file")

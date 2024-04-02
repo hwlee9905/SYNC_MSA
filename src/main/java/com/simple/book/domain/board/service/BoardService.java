@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.simple.book.domain.board.dto.BoardDto;
 import com.simple.book.domain.board.entity.BoardEntity;
 import com.simple.book.domain.board.repository.BoardRepository;
+import com.simple.book.domain.user.service.UserService;
 import com.simple.book.global.config.ApplicationConfig;
 import com.simple.book.global.util.DateFmt;
 import com.simple.book.global.util.ResponseMessage;
@@ -24,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class BoardService {
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private BoardRepository boardRepository;
@@ -42,14 +46,22 @@ public class BoardService {
 	 * @throws Exception
 	 */
 
-	public ResponseMessage addBoard(BoardDto body, MultipartFile file) throws Exception {
+	public ResponseMessage addBoard(BoardDto body) throws Exception {
 		if (body.getContents() != null && !body.getContents().isEmpty()) {
-			Optional<BoardEntity> result = Optional.ofNullable(boardRepository.save(body.toEntity()));
+			Optional<BoardEntity> result = Optional.ofNullable(boardRepository.save(setDefaultSetting(body).toEntity()));
 			result.orElseThrow(() -> new RuntimeException("system_error"));
 		} else throw new RuntimeException("본문을 입력 해 주세요.");
 		
  		return ResponseMessage.builder().message("저장 완료").build();
 
+	}
+	
+	private BoardDto setDefaultSetting(BoardDto body) {
+		String id = userService.getCurrentUserId();
+		body.setId(id);
+		body.setInsId(id);
+		body.setUpdId(id);
+		return body;
 	}
 	
 
