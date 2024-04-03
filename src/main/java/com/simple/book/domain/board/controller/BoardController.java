@@ -13,14 +13,18 @@ import com.simple.book.domain.board.dto.BoardDto;
 import com.simple.book.domain.board.service.BoardService;
 import com.simple.book.global.util.ResponseMessage;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @RestController
 @RequestMapping("/board")
 public class BoardController {
 	@Autowired
 	private BoardService boardService;
 
-	@PostMapping("/add")
-	public ResponseEntity<ResponseMessage> addBoard(@ModelAttribute BoardDto body, @RequestPart(value="images", required = false) MultipartFile[] files) throws Exception {
+	@Operation(summary = "글 저장", description = "작성한 글을 저장합니다.")
+	@PostMapping(value = "/add", consumes = "multipart/form-data")
+	public ResponseEntity<ResponseMessage> addBoard(@ModelAttribute BoardDto body, @Schema(description = "이미지 파일", required = false)@RequestPart(value="images", required = false) MultipartFile[] files) throws Exception {
 		return ResponseEntity.ok(boardService.addBoard(body, files));
 	}
 
