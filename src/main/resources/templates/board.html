@@ -9,12 +9,29 @@
 <body>
 	<div class="container">
 		<th:block th:replace="~{nav/nav_bar}" />
-		<button onclick="writePage();">글쓰기</button>
+		<button onclick="wirteTest();">글쓰기</button>
 	</div>
 </body>
 <script>
 	function writePage() {
-		window.location.href="/board/write";
+		window.location.href = "/board/write";
+	}
+
+	function wirteTest() {
+		fetch('https://localhost:9090/board/add', {
+			method : "POST",
+			headers : {
+				"Content-Type" : "application/json",
+				"Cookie" : "JWT_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpbmZvc2V0IjoiREVGQVVMVCIsInVzZXJuYW1lIjoidGVzdDEyMzQiLCJyb2xlIjoiVVNFUiIsIm5hbWUiOiLqsJXrr7zqsr0iLCJpYXQiOjE3MTIxMjI2NzAsImV4cCI6MTcxMjEyNDQ3MH0.piQoae4ivyazFWGSbXSRfIYnuwT-LHJBb26_fA36Ltw"
+			},
+			body : JSON.stringify({
+				"contents" : "TEST"
+			}),
+		}).then(function(body) {
+			return body.json();
+		}).then(function(data) {
+			console.log(data);
+		});
 	}
 </script>
 </html>
