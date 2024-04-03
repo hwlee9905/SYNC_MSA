@@ -13,15 +13,15 @@ public class SwaggerConfig {
 	@Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-				.title("Hinc!").description("SNS 웹 사이트 Hinc!의 API입니다.")
+				.title("Hinc!")
+				.description("SNS 웹 사이트 Hinc!의 API입니다.")
 				.contact(new Contact()
 						.name("MinKyeong")
 						.url("https://github.com/str0ngMK")
-						.email("qldrhsmszz@naver.com"))
-				.contact(new Contact()
+						.email("qldrhsmszz@naver.com, ")
 						.name("")
 						.url("")
-						.email("")
+						.email(", ")
 				);
 		return new OpenAPI().components(new Components()).info(info);
 	}
