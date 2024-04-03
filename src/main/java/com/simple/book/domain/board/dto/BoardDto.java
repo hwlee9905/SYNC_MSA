@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardDto {
 	private long no;
-
 	private String id;
 	private String contents;
 	private String imagePath;
