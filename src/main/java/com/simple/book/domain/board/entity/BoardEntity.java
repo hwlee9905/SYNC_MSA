@@ -1,5 +1,6 @@
 package com.simple.book.domain.board.entity;
 
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.simple.book.global.entity.BaseTimeEntity;
@@ -10,36 +11,40 @@ import jakarta.persistence.Id;
 import lombok.Builder;
 
 @Entity(name = "BOARD")
+@DynamicInsert
 @DynamicUpdate
 @Builder
 public class BoardEntity extends BaseTimeEntity{
 	@Id
-	@Column(name = "NO")
+//	@NotNull
+	@Column(name = "no")
 	private long no;
 	
-	@Column(name = "ID")
+//	@NotNull
+	@Column(name = "id")
 	private String id;
-	
-	@Column(name = "CONTENTS")
+
+//	@NotNull
+	@Column(name = "contents")
 	private String contents;
 	
-	@Column(name = "IMAGE_PATH")
+	@Column(name = "image_path")
 	private String imagePath;
 	
-	@Column(name = "VIDEO_PATH")
+	@Column(name = "video_path")
 	private String videoPath;
 	
-	@Column(name="DEL_YN")
+	@Column(name="del_yn")
 	private String delYn;
 
-	
-	@Column(name="HASHTAG")
+	@Column(name="hashtag")
 	private String hashtag;
-	
-	@Column(name = "INS_ID")
+
+//	@NotNull
+	@Column(name="ins_id")
 	private String insId;
 	
-	@Column(name = "UPD_ID")
+//	@NotNull
+	@Column(name="upd_id")
 	private String updId;
-	
 }
