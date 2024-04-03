@@ -15,6 +15,8 @@ public enum ErrorCode {
     HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied"),
     BLANK_INPUT_VALUE(400,"C007","Blank Input Value"),
 
+
+
     // User 예시
     USERID_DUPLICATE(409, "U001", "UserId is duplicated"),
     SOCIAL_EMAIL_EXIST(410, "U002", "Email has already been used in social register"),
