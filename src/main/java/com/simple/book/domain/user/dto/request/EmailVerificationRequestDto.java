@@ -2,6 +2,7 @@ package com.simple.book.domain.user.dto.request;
 
 import com.simple.book.domain.user.entity.EmailVerification;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmailVerificationRequestDto {
 	private String email;
-	private String token;
 	
+	@Schema(hidden = true)
+	private String token;
 	
 	@Builder
 	public EmailVerificationRequestDto(String email, String token) {

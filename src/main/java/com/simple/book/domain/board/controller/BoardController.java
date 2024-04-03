@@ -1,6 +1,7 @@
 package com.simple.book.domain.board.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BoardController {
 	@Autowired
 	private BoardService boardService;
