@@ -18,10 +18,11 @@ public class SwaggerConfig {
 				.contact(new Contact()
 						.name("MinKyeong")
 						.url("https://github.com/str0ngMK")
-						.email("qldrhsmszz@naver.com, ")
-						.name("")
-						.url("")
-						.email(", ")
+						.email("qldrhsmszz@naver.com, "))
+				.contact(new Contact()
+						.name("HyunWoong")
+						.url("https://github.com/hwlee9905")
+						.email("9905hyun@naver.com")
 				);
 		return new OpenAPI().components(new Components()).info(info);
 	}
