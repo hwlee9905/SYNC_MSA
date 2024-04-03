@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@Schema(description = "게시물 정보")
 public class BoardDto {
 	@Schema(hidden = true)
 	private long no;
