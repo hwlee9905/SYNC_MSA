@@ -16,12 +16,9 @@ public class SwaggerConfig {
 				.title("Hinc!")
 				.description("SNS 웹 사이트 Hinc!의 API입니다.")
 				.contact(new Contact()
-						.name("MinKyeong")
-						.url("https://github.com/str0ngMK")
-						.email("qldrhsmszz@naver.com, ")
-						.name("HyunWoong")
-						.url("https://github.com/hwlee9905")
-						.email("9905hyun@naver.com")
+						.name("MinKyeong and HyunWoong")
+						.url("https://github.com/str0ngMK/Hinc_BE")
+						.email("qldrhsmszz@naver.com, 9905hyun@naver.com")
 				);
 		return new OpenAPI().components(new Components()).info(info);
 	}
