@@ -25,4 +25,9 @@ public class MainController {
 	public String pageBoardWrite() {
 		return "board_write";
 	}
+	
+	@GetMapping("/chat")
+	public String pageChat() {
+		return "chat";
+	}
 }
