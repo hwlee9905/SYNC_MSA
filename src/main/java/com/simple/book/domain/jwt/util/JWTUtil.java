@@ -42,7 +42,6 @@ public class JWTUtil {
     }
 
     public String createJwt(String userId, String role, Long expiredMs, String infoSet, String name) {
-
         return Jwts.builder()
                 .claim("infoset",infoSet.toString())
                 .claim("username", userId)

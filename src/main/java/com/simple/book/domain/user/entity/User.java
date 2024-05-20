@@ -1,5 +1,7 @@
 package com.simple.book.domain.user.entity;
 
+import com.simple.book.domain.member.entity.Member;
+import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.user.util.Address;
 import com.simple.book.domain.user.util.ProfileImage;
 import com.simple.book.domain.user.util.Role;
@@ -21,8 +23,7 @@ public class User extends BaseEntity {
     private Long id;
     private String username;
     private String nickname;
-    @Embedded
-    private Address address;
+    private String position;
     @Embedded
     private ProfileImage profileImage;
     @Lob
@@ -34,4 +35,7 @@ public class User extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "authentication_id")
     private Authentication authentication;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
