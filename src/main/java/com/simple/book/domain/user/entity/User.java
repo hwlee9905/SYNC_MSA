@@ -35,10 +35,10 @@ public class User extends BaseEntity {
     private Sex sex;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authentication_id")
     private Authentication authentication;
-    @ManyToOne
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 }

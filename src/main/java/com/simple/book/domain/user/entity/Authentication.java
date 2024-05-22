@@ -23,6 +23,6 @@ public class Authentication extends BaseEntity {
     private Integer failCount;
     @Enumerated(EnumType.STRING)
     private InfoSet infoSet;
-    @OneToOne(mappedBy = "authentication", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "authentication")
     private User user;
 }

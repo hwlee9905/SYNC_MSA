@@ -1,7 +1,7 @@
 package com.simple.book.domain.member.entity;
 
 import com.simple.book.domain.project.entity.Project;
-import com.simple.book.domain.user.util.Role;
+import com.simple.book.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,11 +17,9 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-
-    private String title;
-    private String description;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;

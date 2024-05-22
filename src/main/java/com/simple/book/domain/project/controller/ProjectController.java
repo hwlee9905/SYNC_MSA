@@ -15,7 +15,6 @@ public class ProjectController {
     @ResponseBody
     @PostMapping("/create")
     public String projectCreate(@RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
-        log.warn(projectCreateRequestDto.getDescription(), projectCreateRequestDto.getTitle());
         return projectService.createProject(projectCreateRequestDto);
     }
 }
