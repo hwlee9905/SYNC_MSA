@@ -26,28 +26,28 @@ public class MemberService {
     private final UserRepository userRepository;
     private final UserService userService;
     public String memberAddToProject(MemberMappingRequestDto memberMappingRequestDto){
-        try {
-            Project project = projectRepository.findById(memberMappingRequestDto.getProjectId())
-                    .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingRequestDto.getProjectId()));
+//        try {
+//
+//        } catch (Exception e) {
+//            log.error("Entity not found error occurred: {}", e.getMessage());
+//            return "FAILED";
+//        }
+        Project project = projectRepository.findById(memberMappingRequestDto.getProjectId())
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingRequestDto.getProjectId()));
 
-            String currentUserId = userService.getCurrentUserId();
-            User user = userRepository.findByAuthenticationUserId(currentUserId);
-            if (user == null) {
-                throw new EntityNotFoundException("User not found with authentication user ID: " + currentUserId);
-            }
-
-            Member member = Member.builder()
-                    .project(project)
-                    .isManager(memberMappingRequestDto.getIsManager())
-                    .user(user)
-                    .build();
-            memberRepository.save(member);
-
-            return "OK";
-        } catch (EntityNotFoundException e) {
-            log.error("Entity not found error occurred: {}", e.getMessage());
-            // 추가적인 예외 처리 로직 추가 가능
-            return "FAILED";
+        String currentUserId = userService.getCurrentUserId();
+        User user = userRepository.findByAuthenticationUserId(currentUserId);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found with authentication user ID: " + currentUserId);
         }
+
+        Member member = Member.builder()
+                .project(project)
+                .isManager(memberMappingRequestDto.getIsManager())
+                .user(user)
+                .build();
+        memberRepository.save(member);
+
+        return "OK";
     }
 }
