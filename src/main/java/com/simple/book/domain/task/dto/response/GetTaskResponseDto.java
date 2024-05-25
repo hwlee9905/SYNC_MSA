@@ -20,6 +20,7 @@ public class GetTaskResponseDto {
     private Date startDate;
     private Date endDate;
     private Boolean status;
+    private Long memberId;
     private List<GetTaskResponseDto> subTasks;
 
     public static GetTaskResponseDto fromEntity(Task task) {
@@ -45,6 +46,20 @@ public class GetTaskResponseDto {
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .status(task.getStatus())
+                .memberId(task.getMember() != null ? task.getMember().getId() : null)
+                .subTasks(task.getSubTasks().stream()
+                        .map(child -> GetTaskResponseDto.builder()
+                                .id(child.getId())
+                                .title(child.getTitle())
+                                .description(child.getDescription())
+                                .startDate(child.getStartDate())
+                                .endDate(child.getEndDate())
+                                .status(child.getStatus())
+                                .memberId(child.getMember() != null ? child.getMember().getId() : null)
+                                // 자식의 자식 업무를 추가하지 않습니다.
+                                .build())
+                        .collect(Collectors.toList()))
                 .build();
     }
+
 }
