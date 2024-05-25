@@ -1,5 +1,6 @@
 package com.simple.book.global.config;
 
+
 import com.simple.book.domain.jwt.filter.JWTFilter;
 import com.simple.book.domain.jwt.filter.LoginFilter;
 import com.simple.book.domain.jwt.util.JWTUtil;
@@ -29,6 +30,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.util.Collections;
+
 
 import java.util.Collections;
 
