@@ -25,12 +25,12 @@ public class TaskController {
     }
     //해당 업무의 모든 하위 업무를 조회합니다.
     @PostMapping("/getSubTasks")
-    public GetTaskResponseDto getTask(@RequestBody GetTaskRequestDto getTaskRequestDto) {
+    public GetTaskResponseDto getSubTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
         return taskService.getAllSubTask(getTaskRequestDto.getTaskId());
     }
-    //해당 업무의 모든 자식 업무만 조회합니다.
+    //해당 업무의 자식 업무만 조회합니다.
     @PostMapping("/getOnlyChildrenTasks")
-    public GetTaskResponseDto getSubTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
+    public GetTaskResponseDto getOnlyChildrenTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
         return taskService.getOnlyChildrenTasks(getTaskRequestDto.getTaskId());
     }
 }
