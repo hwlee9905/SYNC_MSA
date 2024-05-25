@@ -20,6 +20,7 @@ public class GetTaskResponseDto {
     private Date startDate;
     private Date endDate;
     private Boolean status;
+    private Long memberId;
     private List<GetTaskResponseDto> subTasks;
 
     public static GetTaskResponseDto fromEntity(Task task) {
@@ -45,6 +46,7 @@ public class GetTaskResponseDto {
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .status(task.getStatus())
+                .memberId(task.getMember() != null ? task.getMember().getId() : null)
                 .build();
     }
 }

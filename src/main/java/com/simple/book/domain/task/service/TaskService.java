@@ -68,14 +68,15 @@ public class TaskService {
         return GetTaskResponseDto.fromEntity(task);
     }
     @Transactional(rollbackFor = {Exception.class})
-    public GetTaskResponseDto getOnlyChildrenTasks(Long taskId) {
+    public List<GetTaskResponseDto> getOnlyChildrenTasks(Long taskId) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
-        List<GetTaskResponseDto> subTaskDtos = task.getSubTasks().stream()
+        return task.getSubTasks().stream()
                 .map(GetTaskResponseDto::fromEntityOnlyChildrenTasks)
                 .collect(Collectors.toList());
-
-        GetTaskResponseDto dto = GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
-        dto.setSubTasks(subTaskDtos);
-        return dto;
+    }
+    @Transactional(rollbackFor = {Exception.class})
+    public GetTaskResponseDto getTaskDetails(Long taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        return GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
     }
 }
