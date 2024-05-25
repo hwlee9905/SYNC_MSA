@@ -35,7 +35,6 @@ public class Task {
     //순환참조
     @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> subTasks = new ArrayList<>();
-
     @ManyToOne
     @JoinColumn(name = "parent_task_id")
     private Task parentTask;
