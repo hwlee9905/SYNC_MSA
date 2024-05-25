@@ -30,11 +30,7 @@ public class TaskController {
     }
     //해당 업무의 자식 업무만 조회합니다.
     @PostMapping("/getOnlyChildrenTasks")
-    public List<GetTaskResponseDto> getOnlyChildrenTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
+    public GetTaskResponseDto getOnlyChildrenTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
         return taskService.getOnlyChildrenTasks(getTaskRequestDto.getTaskId());
-    }
-    @PostMapping("/getTaskDetails")
-    public GetTaskResponseDto getTaskDetails(@RequestBody GetTaskRequestDto getTaskRequestDto) {
-        return taskService.getTaskDetails(getTaskRequestDto.getTaskId());
     }
 }

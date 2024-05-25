@@ -67,16 +67,10 @@ public class TaskService {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("해당 업무는 존재하지 않습니다."));
         return GetTaskResponseDto.fromEntity(task);
     }
+
     @Transactional(rollbackFor = {Exception.class})
-    public List<GetTaskResponseDto> getOnlyChildrenTasks(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
-        return task.getSubTasks().stream()
-                .map(GetTaskResponseDto::fromEntityOnlyChildrenTasks)
-                .collect(Collectors.toList());
-    }
-    @Transactional(rollbackFor = {Exception.class})
-    public GetTaskResponseDto getTaskDetails(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+    public GetTaskResponseDto getOnlyChildrenTasks(Long taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("해당 업무는 존재하지 않습니다."));
         return GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
     }
 }
