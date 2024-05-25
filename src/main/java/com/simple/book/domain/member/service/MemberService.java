@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -25,13 +26,8 @@ public class MemberService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    @Transactional(rollbackFor = {Exception.class})
     public String memberAddToProject(MemberMappingRequestDto memberMappingRequestDto){
-//        try {
-//
-//        } catch (Exception e) {
-//            log.error("Entity not found error occurred: {}", e.getMessage());
-//            return "FAILED";
-//        }
         Project project = projectRepository.findById(memberMappingRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingRequestDto.getProjectId()));
 

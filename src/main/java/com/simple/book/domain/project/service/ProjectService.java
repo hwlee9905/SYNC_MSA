@@ -6,12 +6,14 @@ import com.simple.book.domain.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    @Transactional(rollbackFor = {Exception.class})
     public String createProject(ProjectCreateRequestDto projectCreateRequestDto){
         Project project = Project.builder()
                 .description(projectCreateRequestDto.getDescription())
