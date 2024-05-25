@@ -22,9 +22,9 @@ public class AlarmService {
         kafkaTemplate.send(topic, message);
     }
     
-    @KafkaListener(topics = "test", groupId = "console-consumer-53939")
-    public void listen(String message) {
-    	messagingTemplate.convertAndSend("/topic/messages", message);
-    }
+//    @KafkaListener(topics = "test", groupId = "console-consumer-53939")
+//    public void listen(String message) {
+//    	messagingTemplate.convertAndSend("/topic/messages", message);
+//    }
     
 }

@@ -47,7 +47,7 @@ public class UserController {
 
 	@ResponseBody
 	@PostMapping("remove")
-	public String removeMembership() {
+	public String removeUser() {
 		return userService.remove(userService.getCurrentUserId());
 	}
 

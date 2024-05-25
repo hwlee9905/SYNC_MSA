@@ -60,7 +60,6 @@ public class UserService implements UserDetailsService {
 				.role(Role.USER)
 				.nickname(signupRequestDto.getNickname())
 				.sex(signupRequestDto.getSex())
-				.address(address)
 				.build();
 		user.setAuthentication(authentication);
 		authentication.setUser(user);
