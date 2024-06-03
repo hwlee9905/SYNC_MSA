@@ -27,23 +27,32 @@ public class MemberService {
     private final UserRepository userRepository;
     private final UserService userService;
     @Transactional(rollbackFor = {Exception.class})
-    public String memberAddToProject(MemberMappingRequestDto memberMappingRequestDto){
-        Project project = projectRepository.findById(memberMappingRequestDto.getProjectId())
-                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingRequestDto.getProjectId()));
+    public String memberAddToProject(MemberMappingRequestDto memberMappingRequestDto) {
+        try {
+            Project project = findProjectById(memberMappingRequestDto.getProjectId());
+            User user = findUserByCurrentUserId();
 
-        String currentUserId = userService.getCurrentUserId();
-        User user = userRepository.findByAuthenticationUserId(currentUserId);
-        if (user == null) {
-            throw new EntityNotFoundException("User not found with authentication user ID: " + currentUserId);
+            Member member = Member.builder()
+                    .project(project)
+                    .isManager(memberMappingRequestDto.getIsManager())
+                    .user(user)
+                    .build();
+
+            memberRepository.save(member);
+            return "OK";
+        } catch (Exception e) {
+            // Handle other exceptions if needed
+            throw new RuntimeException("An unexpected error occurred", e);
         }
+    }
 
-        Member member = Member.builder()
-                .project(project)
-                .isManager(memberMappingRequestDto.getIsManager())
-                .user(user)
-                .build();
-        memberRepository.save(member);
+    private Project findProjectById(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
+    }
 
-        return "OK";
+    private User findUserByCurrentUserId() {
+        String currentUserId = userService.getCurrentUserId();
+        return userRepository.findByAuthenticationUserId(currentUserId);
     }
 }
