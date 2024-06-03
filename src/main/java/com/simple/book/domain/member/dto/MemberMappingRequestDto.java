@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MemberMappingRequestDto {
+    private String userId;
     private Long projectId;
     private Boolean isManager;
 }
