@@ -5,6 +5,9 @@ import com.simple.book.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,11 +21,13 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",updatable = false)
     private User user;
     @ManyToOne
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id",updatable = false)
     private Project project;
     @Column(name = "is_manager")
     private boolean isManager;
+    @OneToMany(mappedBy = "id.mappingMemberId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskMember> taskMembers = new ArrayList<>();
 }
