@@ -30,4 +30,11 @@ public class MainController {
 	public String pageChat() {
 		return "chat";
 	}
+	
+	@GetMapping("/alarm")
+	public String pageAlarm() {
+		return "alarm";
+	}
+	
+	
 }

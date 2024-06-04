@@ -1,11 +1,13 @@
 package com.simple.book.global.advice;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
+	
     // Common
     INVALID_INPUT_VALUE(400, "C001", "Invalid Input Value"),
     METHOD_NOT_ALLOWED(405, "C002", "Invalid Input Value"),
