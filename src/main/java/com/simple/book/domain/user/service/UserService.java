@@ -50,16 +50,11 @@ public class UserService implements UserDetailsService {
 				.infoSet(InfoSet.DEFAULT)
 				.build();
 		authenticationRepository.save(authentication);
-		Address address = Address.builder()
-				.city(signupRequestDto.getCity())
-				.district(signupRequestDto.getDistrict())
-				.roadAddress(signupRequestDto.getRoadAddress())
-				.build();
+
 		User user = User.builder()
 				.username(signupRequestDto.getUsername())
 				.role(Role.USER)
 				.nickname(signupRequestDto.getNickname())
-				.sex(signupRequestDto.getSex())
 				.build();
 		user.setAuthentication(authentication);
 		authentication.setUser(user);

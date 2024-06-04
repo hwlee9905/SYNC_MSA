@@ -32,8 +32,6 @@ public class User extends BaseEntity {
     @Lob
     private String introduction;
     @Enumerated(EnumType.STRING)
-    private Sex sex;
-    @Enumerated(EnumType.STRING)
     private Role role;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authentication_id")
