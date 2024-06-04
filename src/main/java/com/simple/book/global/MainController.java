@@ -26,14 +26,14 @@ public class MainController {
 		return "board_write";
 	}
 	
-	@GetMapping("/chat")
-	public String pageChat() {
-		return "chat";
+	@GetMapping("/producer")
+	public String pageProducer() {
+		return "producer";
 	}
 	
-	@GetMapping("/alarm")
-	public String pageAlarm() {
-		return "alarm";
+	@GetMapping("/consumer")
+	public String pageConsumer() {
+		return "consumer";
 	}
 	
 	
