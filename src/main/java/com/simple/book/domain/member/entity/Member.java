@@ -15,14 +15,14 @@ import lombok.*;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "memberId")
+    @Column(name = "member_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "projectId")
+    @JoinColumn(name = "project_id")
     private Project project;
-    @Column(name = "isManager")
+    @Column(name = "is_manager")
     private boolean isManager;
 }

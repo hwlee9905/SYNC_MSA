@@ -1,5 +1,6 @@
 package com.simple.book.global.util;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,8 +14,10 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
     @CreatedDate
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     @LastModifiedDate
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 }
