@@ -2,6 +2,7 @@ package com.simple.book.domain.user.entity;
 
 import com.simple.book.domain.member.entity.Member;
 import com.simple.book.domain.project.entity.Project;
+import com.simple.book.domain.task.entity.Task;
 import com.simple.book.domain.user.util.Address;
 import com.simple.book.domain.user.util.ProfileImage;
 import com.simple.book.domain.user.util.Role;
@@ -35,4 +36,13 @@ public class User extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authentication_id")
     private Authentication authentication;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_task",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
+    )
+    private List<Task> tasks = new ArrayList<>();
 }

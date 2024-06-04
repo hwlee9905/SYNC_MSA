@@ -54,7 +54,7 @@ public class TaskService {
             }
         }
         else{
-            throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId" + createTaskRequestDto.getProjectId());
+            throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + createTaskRequestDto.getProjectId());
         }
 
 
@@ -64,13 +64,13 @@ public class TaskService {
 
     @Transactional(rollbackFor = {Exception.class})
     public GetTaskResponseDto getAllSubTask(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("해당 업무는 존재하지 않습니다."));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("해당 업무는 존재하지 않습니다. TaskId : " + taskId));
         return GetTaskResponseDto.fromEntity(task);
     }
 
     @Transactional(rollbackFor = {Exception.class})
     public GetTaskResponseDto getOnlyChildrenTasks(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("해당 업무는 존재하지 않습니다."));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("해당 업무는 존재하지 않습니다. TaskId : " + taskId));
         return GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
     }
 }
