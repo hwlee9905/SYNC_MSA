@@ -15,10 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @jakarta.persistence.Entity
+@Table(name = "task")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
+    @Column(name = "taskId")
     private Long id;
 
     private String title;
@@ -27,16 +28,16 @@ public class Task {
     private Date endDate;
     private Boolean status;
     @ManyToOne
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "projectId")
     private Project project;
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "memberId")
     private Member member;
     //순환참조
     @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> subTasks = new ArrayList<>();
     @ManyToOne
-    @JoinColumn(name = "parent_task_id")
+    @JoinColumn(name = "parentTaskId")
     private Task parentTask;
 
 }

@@ -16,10 +16,6 @@ import lombok.Setter;
 public class SignupRequestDto {
     private String username;
     private String nickname;
-    private String city;
-    private String district;
-    private String roadAddress;
-    private Sex sex;
     @Size(min = 8, max = 16)
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
     private String userId;

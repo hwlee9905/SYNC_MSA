@@ -20,7 +20,7 @@ import java.util.List;
 public class Project extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "project_id")
+    @Column(name = "projectId")
     private Long id;
     private String title;
     private String description;
