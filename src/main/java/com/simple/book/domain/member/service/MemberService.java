@@ -36,7 +36,7 @@ public class MemberService {
      ALTER TABLE member DROP INDEX 인덱스;
 
      * user_id와 project_id의 복합키로 고유 제약 조건 추가
-     ALTER TABLE member ADD UNIQUE INDEX UK_user_project (user_id, project_id);
+     ALTER TABLE member ADD UNIQUE INDEX UK_user_project (userId, projectId);
     */
     @Transactional(rollbackFor = {Exception.class})
     public String memberAddToProject(MemberMappingRequestDto memberMappingRequestDto){

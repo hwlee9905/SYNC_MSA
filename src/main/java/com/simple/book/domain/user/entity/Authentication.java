@@ -14,9 +14,9 @@ import lombok.*;
 public class Authentication extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "authenticationId")
+    @Column(name = "authentication_id")
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, name = "user_login_id")
     private String userId;
     private String password;
     private String email;
