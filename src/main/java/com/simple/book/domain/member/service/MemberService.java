@@ -25,16 +25,28 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
+    /**
+     * @memberAddToProject
+     * @Caution
+     * 같은 유저를 여러개의 프로젝트에 추가하기 위해서 member table의 제약조건을 복합키로 설정해야 합니다.
+     * 외래 키 제약 조건 제거
+     ALTER TABLE member DROP FOREIGN KEY 외래키;
+
+     * 기존 인덱스 제거
+     ALTER TABLE member DROP INDEX 인덱스;
+
+     * user_id와 project_id의 복합키로 고유 제약 조건 추가
+     ALTER TABLE member ADD UNIQUE INDEX UK_user_project (user_id, project_id);
+    */
     @Transactional(rollbackFor = {Exception.class})
     public String memberAddToProject(MemberMappingRequestDto memberMappingRequestDto){
         Project project = projectRepository.findById(memberMappingRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingRequestDto.getProjectId()));
 
-        String currentUserId = userService.getCurrentUserId();
-        User user = userRepository.findByAuthenticationUserId(currentUserId);
+        String UserId = memberMappingRequestDto.getUserId();
+        User user = userRepository.findByAuthenticationUserId(UserId);
         if (user == null) {
-            throw new EntityNotFoundException("User not found with authentication user ID: " + currentUserId);
+            throw new EntityNotFoundException("User not found with authentication user ID: " + UserId);
         }
 
         Member member = Member.builder()
