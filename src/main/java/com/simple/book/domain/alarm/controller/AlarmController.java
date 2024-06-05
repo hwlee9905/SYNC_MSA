@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.simple.book.domain.alarm.dto.req.ReqTopicDto;
 import com.simple.book.domain.alarm.service.AlarmService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 public class AlarmController {
 	

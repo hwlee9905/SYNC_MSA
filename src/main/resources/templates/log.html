@@ -2,38 +2,28 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>chat</title>
+<title>SYNC - 실시간 로그</title>
 </head>
 <body>
-	<div id="chat"></div>
-	<input type="text" id="message" />
-	<button onclick="sendMessage()">Send</button>
+<div id="log"></div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
-	var stompClient = Stomp.over(new SockJS('/ws'));
+	let stompClient = Stomp.over(new SockJS('/ws'));
 
 	stompClient.connect({}, function(frame) {
 		console.log('Connected: ' + frame);
 		stompClient.subscribe('/topic/messages', function(response) {
-			showMessage(JSON.parse(response.body).content);
+			showMessage(response.body);
 		});
 	});
-
-	function sendMessage() {
-		var message = document.getElementById('message').value;
-		stompClient.send("/app/log", {}, JSON.stringify({
-			'content' : message
-		}));
-	}
-
+	
 	function showMessage(message) {
-		var chat = document.getElementById('chat');
-		var p = document.createElement('p');
+		const chat = document.getElementById('log');
+		let p = document.createElement('p');
 		p.appendChild(document.createTextNode(message));
 		chat.appendChild(p);
 	}
-	
 </script>
 </html>
