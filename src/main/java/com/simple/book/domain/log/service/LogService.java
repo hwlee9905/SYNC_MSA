@@ -1,5 +1,6 @@
 package com.simple.book.domain.log.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.FileSystems;
@@ -18,8 +19,6 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-
 @Service
 public class LogService {
 	private final KafkaTemplate<String, String> kafkaTemplate;
@@ -30,7 +29,6 @@ public class LogService {
 	@Autowired
     private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory;
 	
-	private Path filePath;
     private long lastReadPosition = 0;
     
     @Autowired
@@ -38,11 +36,11 @@ public class LogService {
 		this.kafkaTemplate=kafkaTemplate;
 	}
     
-    @PostConstruct
-    public void initialize() {
-        readLog();
-    }
-	
+//    @PostConstruct
+//    public void initialize() {
+//        readLog();
+//    }
+    
 	public void readLog() {
 		Path logDir = Paths.get("/takebook/logs");
 
@@ -64,20 +62,21 @@ public class LogService {
 //                    Path fullPath = logDir.resolve(fileName);
 
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                    	try (RandomAccessFile file = new RandomAccessFile(filePath.toFile(), "r")) {
+                    	try (RandomAccessFile file = new RandomAccessFile(new File(logDir.toString() + File.separator + "takebook.log"), "r")) {
                             // 파일의 변경된 부분으로 이동
                             file.seek(lastReadPosition);
 
                             String line;
                             while ((line = file.readLine()) != null) {
                                 // 변경된 부분에 대한 처리 (여기서는 간단히 콘솔에 출력)
-                                System.out.println(line);
                                 kafkaTemplate.send("log", line);
                             }
 
                             // 파일의 현재 위치를 기록하여 다음 읽기 시 이전 위치부터 읽도록 함
                             lastReadPosition = file.getFilePointer();
-                        }
+                        }catch (Exception e) {
+                        	e.printStackTrace();
+						}
 //                        System.out.println("파일 수정됨: " + fullPath);
 //
 //                        try {
