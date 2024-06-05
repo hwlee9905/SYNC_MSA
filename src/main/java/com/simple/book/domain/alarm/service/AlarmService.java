@@ -1,8 +1,5 @@
 package com.simple.book.domain.alarm.service;
 
-import java.util.Map;
-
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,6 +17,7 @@ import com.simple.book.domain.alarm.repository.TopicRepository;
 @Service
 public class AlarmService {
 	private final KafkaTemplate<String, String> kafkaTemplate;
+	
 	private final KafkaAdmin kafkaAdmin;
 	
 	@Autowired
@@ -27,7 +25,6 @@ public class AlarmService {
 	
 	@Autowired
     private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory;
-	
 	
 	@Autowired
 	private TopicRepository topicRepository;
@@ -79,9 +76,9 @@ public class AlarmService {
     	return dto;
     }
     
-    private AdminClient createAdminClient() {
-    	Map<String, Object> config = kafkaAdmin.getConfigurationProperties();
-        return AdminClient.create(config);
-    }
+//    private AdminClient createAdminClient() {
+//    	Map<String, Object> config = kafkaAdmin.getConfigurationProperties();
+//        return AdminClient.create(config);
+//    }
 
 }

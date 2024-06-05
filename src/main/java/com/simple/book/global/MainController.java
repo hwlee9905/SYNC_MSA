@@ -36,5 +36,10 @@ public class MainController {
 		return "consumer";
 	}
 	
+	@GetMapping("/log")
+	public String pageLog() {
+		return "log";
+	}
+	
 	
 }
