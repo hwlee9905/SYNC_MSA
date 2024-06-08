@@ -23,7 +23,7 @@
 
 	function sendMessage() {
 		var message = document.getElementById('message').value;
-		stompClient.send("/app/log", {}, JSON.stringify({
+		stompClient.send("/app/alarm", {}, JSON.stringify({
 			'content' : message
 		}));
 	}

@@ -21,6 +21,8 @@ public class AlarmController {
 	public void socketSend(String message) {
 		alarmService.sendMessage("test", message);
 	}
+	
+	
 
 	@PostMapping("/add/topic")
 	public void addTopic(@RequestBody ReqTopicDto body) {
