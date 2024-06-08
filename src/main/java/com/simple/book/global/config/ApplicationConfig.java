@@ -11,12 +11,19 @@ public class ApplicationConfig {
 	@Value("${spring.mail.username}")
 	private String mailId;
 	
+	@Value("${server.log.path}")
+	private String logPath;
+	
 	public String getImagePath() {
-		return imagePath;
+		return this.imagePath;
 	}
 	
 	public String getMailId() {
-		return mailId;
+		return this.mailId;
+	}
+	
+	public String getLogPath() {
+		return this.logPath;
 	}
 	
 }
