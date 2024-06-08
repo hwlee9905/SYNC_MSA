@@ -1,6 +1,7 @@
 package com.simple.book.domain.project.controller;
 
 import com.simple.book.domain.project.dto.request.ProjectCreateRequestDto;
+import com.simple.book.domain.project.dto.request.ProjectDeleteRequestDto;
 import com.simple.book.domain.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,5 +17,10 @@ public class ProjectController {
     @PostMapping("/create")
     public String projectCreate(@RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
         return projectService.createProject(projectCreateRequestDto);
+    }
+    @ResponseBody
+    @PostMapping("/delete")
+    public String projectDelete(@RequestBody ProjectDeleteRequestDto projectDeleteRequestDto) {
+        return projectService.deleteProject(projectDeleteRequestDto);
     }
 }
