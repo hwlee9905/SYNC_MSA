@@ -20,6 +20,7 @@ public class KafkaConfig {
 		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory);
 		factory.getContainerProperties().setGroupId("console-consumer-" + System.currentTimeMillis());
+		factory.setConcurrency(3);
 		return factory;
 	}
 	
