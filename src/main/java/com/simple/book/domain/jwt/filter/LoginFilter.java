@@ -3,6 +3,7 @@ package com.simple.book.domain.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.jwt.util.JWTUtil;
+import com.simple.book.domain.oauth2.CustomOAuth2User;
 import com.simple.book.domain.user.util.InfoSet;
 import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.exception.AuthenticationFailureException;
@@ -21,6 +22,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -75,10 +78,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createJwt(username, role, 60*30*1000L, infoSet, name);
         ResponseCookie jwtCookie = createCookie("JWT_TOKEN",  token);
 
+        // JSON 객체 생성
+        UserResponse userResponse = new UserResponse(username, name);
+
+        // ObjectMapper를 사용하여 JSON으로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(userResponse);
         response.addHeader("Set-Cookie", jwtCookie.toString());
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("OK");
+        // JSON 스트링을 response body에 작성
+        response.getWriter().write(jsonResponse);
         response.getWriter().flush();
     }
     //로그인 실패시 실행하는 메소드
@@ -100,5 +110,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected String obtainUsername(HttpServletRequest request) {
         return request.getParameter("id");
+    }
+    static class UserResponse {
+        private String username;
+        private String name;
+
+        public UserResponse(String username, String name) {
+            this.username = username;
+            this.name = name;
+        }
+
+        // Getters (필요한 경우 Setters도 추가할 수 있습니다)
+        public String getUsername() {
+            return username;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }
