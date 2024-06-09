@@ -55,7 +55,7 @@ public class TaskService {
                 	id = taskRepository.save(task).getId();
                 	isSuccess = true;
                 } catch (Exception e) {
-					throw new RuntimeException("시스템 오류가 발생하였습니다.");
+					throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
 				}
             } else {
                 Task task = Task.builder()
@@ -70,7 +70,7 @@ public class TaskService {
                 	id = taskRepository.save(task).getId();
                 	isSuccess = true;
                 } catch (Exception e) {
-                	throw new RuntimeException("시스템 오류가 발생하였습니다.");
+                    throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
 				}
             }
         }
@@ -78,10 +78,10 @@ public class TaskService {
             throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + createTaskRequestDto.getProjectId());
         }
         
-        if (isSuccess) {
-        	alarmService.createTopic(setDto(id));
-        	alarmService.sendMessage(setDto(id).getName(), "님 담당자으로 배정됨");
-        }
+//        if (isSuccess) {
+//        	alarmService.createTopic(setDto(id));
+//        	alarmService.sendMessage(setDto(id).getName(), "님 담당자으로 배정됨");
+//        }
 
         return "OK";
     }
