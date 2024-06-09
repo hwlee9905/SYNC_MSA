@@ -76,9 +76,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         ResponseCookie jwtCookie = createCookie("JWT_TOKEN",  token);
 
         response.addHeader("Set-Cookie", jwtCookie.toString());
-        response.sendRedirect("https://localhost:9090/api/user/auth");
-        // 로그인 성공 후 리다이렉트할 URL 설정
-
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("OK");
+        response.getWriter().flush();
     }
     //로그인 실패시 실행하는 메소드
     @Override
