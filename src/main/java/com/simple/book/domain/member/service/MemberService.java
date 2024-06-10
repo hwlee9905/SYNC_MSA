@@ -4,8 +4,8 @@ package com.simple.book.domain.member.service;
 import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
 import com.simple.book.domain.member.dto.request.MemberMappingToTaskRequestDto;
 import com.simple.book.domain.member.entity.Member;
-import com.simple.book.domain.member.entity.TaskMember;
-import com.simple.book.domain.member.entity.TaskMemberId;
+import com.simple.book.domain.member.entity.MemberTask;
+import com.simple.book.domain.member.entity.MemberTaskId;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.member.repository.TaskMemberRepository;
 import com.simple.book.domain.project.entity.Project;
@@ -70,16 +70,16 @@ public class MemberService {
         if(task.getProject().equals(member.getProject())){
             Optional<User> user = userRepository.findById(member.getUser().getId());
             user.get().getTasks().add(task);
-            TaskMemberId taskMemberId = TaskMemberId.builder()
+            MemberTaskId memberTaskId = MemberTaskId.builder()
                     .mappingTaskId(task.getId())
                     .mappingMemberId(member.getId())
                     .build();
-            TaskMember taskMember = TaskMember.builder()
-                    .id(taskMemberId)
+            MemberTask memberTask = MemberTask.builder()
+                    .id(memberTaskId)
                     .member(member)
                     .task(task)
                     .build();
-            taskMemberRepository.save(taskMember);
+            taskMemberRepository.save(memberTask);
         }else{
             throw new InvalidValueException("해당 작업과 멤버는 같은 프로젝트 소속이어야 합니다.");
         }

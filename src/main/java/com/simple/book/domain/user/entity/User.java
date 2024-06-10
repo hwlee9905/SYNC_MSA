@@ -41,7 +41,7 @@ public class User extends BaseEntity {
     private Authentication authentication;
 
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_task",
             joinColumns = @JoinColumn(name = "user_id"),

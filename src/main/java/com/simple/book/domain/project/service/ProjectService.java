@@ -1,5 +1,6 @@
 package com.simple.book.domain.project.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -7,10 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.simple.book.domain.member.entity.Member;
 import com.simple.book.domain.member.repository.MemberRepository;
+import com.simple.book.domain.member.repository.UserTaskRepository;
 import com.simple.book.domain.project.dto.request.ProjectCreateRequestDto;
 import com.simple.book.domain.project.dto.request.ProjectDeleteRequestDto;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.ProjectRepository;
+import com.simple.book.domain.task.entity.Task;
+import com.simple.book.domain.task.repository.TaskRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.service.UserService;
@@ -27,6 +31,8 @@ public class ProjectService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final MemberRepository memberRepository;
+    private final TaskRepository taskRepository;
+    private final UserTaskRepository userTaskRepository;
 	
     @Transactional(rollbackFor = {Exception.class})
     public String createProject(ProjectCreateRequestDto projectCreateRequestDto){
@@ -39,12 +45,34 @@ public class ProjectService {
     }
     
     public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
-        Optional<Project> project = projectRepository.findById(projectDeleteRequestDto.getProjectId());
+        Optional<Project> opProject = projectRepository.findById(projectDeleteRequestDto.getProjectId());
         User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());
+
+
         try{
-            if (project.isPresent()){
-                isProjectManager(user, project.get());
-                projectRepository.delete(project.get());
+            if (opProject.isPresent()){
+                Project project = opProject.get();
+                project.getTasks().size();
+                isProjectManager(user, project);
+                // 연관된 task 삭제
+                List<Task> tasks = project.getTasks();
+                for (Task task : tasks) {
+                    task.getTaskMembers().clear();
+                    userTaskRepository.deleteByTaskId(task.getId());
+
+
+                    taskRepository.delete(task);
+                }
+
+                // 연관된 member 삭제
+                List<Member> members = project.getMembers();
+                for (Member member : members) {
+                    member.getTaskMembers().clear();
+                    memberRepository.delete(member);
+                }
+
+
+                projectRepository.delete(project);
             }else {
                 throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + projectDeleteRequestDto.getProjectId());
             }
