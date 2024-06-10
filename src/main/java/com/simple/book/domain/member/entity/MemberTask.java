@@ -11,9 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TaskMember {
+public class MemberTask {
     @EmbeddedId
-    private TaskMemberId id;
+    private MemberTaskId id;
     @ManyToOne
     @MapsId("mappingTaskId")
     @JoinColumn(name = "task_id")

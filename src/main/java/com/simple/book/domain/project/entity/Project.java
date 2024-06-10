@@ -2,6 +2,7 @@ package com.simple.book.domain.project.entity;
 
 
 import com.simple.book.domain.member.entity.Member;
+import com.simple.book.domain.task.entity.Task;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.global.util.BaseEntity;
 import jakarta.persistence.*;
@@ -24,6 +25,8 @@ public class Project extends BaseEntity {
     private Long id;
     private String title;
     private String description;
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Member> members = new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Task> tasks = new ArrayList<>();
 }

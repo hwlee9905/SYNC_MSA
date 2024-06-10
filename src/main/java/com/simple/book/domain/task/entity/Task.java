@@ -1,7 +1,7 @@
 package com.simple.book.domain.task.entity;
 
 import com.simple.book.domain.member.entity.Member;
-import com.simple.book.domain.member.entity.TaskMember;
+import com.simple.book.domain.member.entity.MemberTask;
 import com.simple.book.domain.project.entity.Project;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,7 +42,8 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "parent_task_id")
     private Task parentTask;
-    @OneToMany(mappedBy = "id.mappingTaskId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TaskMember> taskMembers = new ArrayList<>();
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<MemberTask> taskMembers = new ArrayList<>();
+
 
 }

@@ -112,17 +112,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return request.getParameter("id");
     }
     static class UserResponse {
-        private String username;
+        private String userId;
         private String name;
 
-        public UserResponse(String username, String name) {
-            this.username = username;
+        public UserResponse(String userId, String name) {
+            this.userId = userId;
             this.name = name;
         }
 
         // Getters (필요한 경우 Setters도 추가할 수 있습니다)
         public String getUsername() {
-            return username;
+            return userId;
         }
 
         public String getName() {
