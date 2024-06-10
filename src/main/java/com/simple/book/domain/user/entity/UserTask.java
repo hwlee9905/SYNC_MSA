@@ -1,0 +1,27 @@
+package com.simple.book.domain.user.entity;
+
+import com.simple.book.domain.task.entity.Task;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "user_task")
+public class UserTask {
+    @EmbeddedId
+    private UserTaskId id;
+
+    @ManyToOne
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @MapsId("taskId")
+    @JoinColumn(name = "task_id")
+    private Task task;
+}
