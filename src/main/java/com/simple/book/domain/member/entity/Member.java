@@ -28,6 +28,7 @@ public class Member {
     private Project project;
     @Column(name = "is_manager")
     private boolean isManager;
-    @OneToMany(mappedBy = "id.mappingMemberId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TaskMember> taskMembers = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberTask> taskMembers = new ArrayList<>();
+
 }
