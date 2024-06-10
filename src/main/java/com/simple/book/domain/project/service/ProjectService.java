@@ -1,7 +1,10 @@
 package com.simple.book.domain.project.service;
 
-import com.simple.book.domain.alarm.dto.req.ReqTopicDto;
-import com.simple.book.domain.alarm.service.AlarmService;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.simple.book.domain.member.entity.Member;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.project.dto.request.ProjectCreateRequestDto;
@@ -12,25 +15,14 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.service.UserService;
 import com.simple.book.global.exception.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ProjectService {
-	@Autowired
-	private AlarmService alarmService;
-	
-	private final String TYPE = "P"; // project = P, task = T
-	
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final UserRepository userRepository;
@@ -42,19 +34,10 @@ public class ProjectService {
                 .description(projectCreateRequestDto.getDescription())
                 .title(projectCreateRequestDto.getTitle())
                 .build();
-        long id = projectRepository.save(project).getId();
-        alarmService.createTopic(setDto(id));
+        projectRepository.save(project);
         return "OK";
     }
     
-    private ReqTopicDto setDto(long id) {
-    	ReqTopicDto dto = new ReqTopicDto();
-    	dto.setName(TYPE + id);
-    	dto.setType(TYPE);
-    	dto.setId(id);
-    	return dto;
-    }
-
     public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
         Optional<Project> project = projectRepository.findById(projectDeleteRequestDto.getProjectId());
         User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());

@@ -29,10 +29,13 @@ public class User extends BaseEntity {
     private String username;
     private String nickname;
     private String position;
+    
     @Lob
     private String introduction;
+    
     @Enumerated(EnumType.STRING)
     private Role role;
+    
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authentication_id")
     private Authentication authentication;
