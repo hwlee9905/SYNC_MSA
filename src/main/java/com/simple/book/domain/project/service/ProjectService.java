@@ -3,6 +3,7 @@ package com.simple.book.domain.project.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.simple.book.domain.alarm.service.AlarmService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ public class ProjectService {
     private final MemberRepository memberRepository;
     private final TaskRepository taskRepository;
     private final UserTaskRepository userTaskRepository;
+    private final AlarmService alarmService;
 	
     @Transactional(rollbackFor = {Exception.class})
     public String createProject(ProjectCreateRequestDto projectCreateRequestDto){
@@ -42,7 +44,7 @@ public class ProjectService {
                 .build();
         long id = projectRepository.save(project).getId();
 
-        alarmService.createTopic(setDto(id));
+        projectRepository.save(project);
         return "OK";
     }
     
