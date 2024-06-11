@@ -1,6 +1,7 @@
 package com.simple.book.domain.member.service;
 
 
+import com.simple.book.domain.alarm.service.AlarmService;
 import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
 import com.simple.book.domain.member.dto.request.MemberMappingToTaskRequestDto;
 import com.simple.book.domain.member.entity.Member;
@@ -18,6 +19,9 @@ import com.simple.book.global.exception.EntityNotFoundException;
 import com.simple.book.global.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +36,9 @@ public class MemberService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final TaskMemberRepository taskMemberRepository;
+    
+    @Autowired
+    private AlarmService alarmService;
     /**
     * @memberAddToProject
     * @Caution
@@ -56,7 +63,11 @@ public class MemberService {
                 .isManager(memberMappingToProjectRequestDto.getIsManager())
                 .user(user)
                 .build();
-        memberRepository.save(member);
+        try {
+        	memberRepository.save(member);
+        } catch (DataIntegrityViolationException e) {
+        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
+		}
 
         return "OK";
     }
@@ -79,11 +90,16 @@ public class MemberService {
                     .member(member)
                     .task(task)
                     .build();
-            taskMemberRepository.save(memberTask);
+	        try {
+	            taskMemberRepository.save(memberTask);
+	            alarmService.sendTaskManager(memberMappingToTaskRequestDto.getMemberId());
+	        } catch (DataIntegrityViolationException e) {
+	        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
+			}
+        
         }else{
             throw new InvalidValueException("해당 작업과 멤버는 같은 프로젝트 소속이어야 합니다.");
         }
-
 
         return "OK";
     }
