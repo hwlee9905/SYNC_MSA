@@ -49,6 +49,7 @@ public class ProjectService {
                 .title(projectCreateRequestDto.getTitle())
                 .build();
         long id = projectRepository.save(project).getId();
+
         alarmService.createTopic(setDto(id));
         return "OK";
     }
@@ -63,6 +64,7 @@ public class ProjectService {
     @Transactional(rollbackFor = {Exception.class})
     public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
         Optional<Project> opProject = projectRepository.findById(projectDeleteRequestDto.getProjectId());
+
         User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());
 
 

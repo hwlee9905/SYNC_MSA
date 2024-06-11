@@ -42,7 +42,7 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "parent_task_id")
     private Task parentTask;
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTask> taskMembers = new ArrayList<>();
 
 
