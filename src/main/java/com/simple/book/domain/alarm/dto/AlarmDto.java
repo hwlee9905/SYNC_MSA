@@ -1,6 +1,7 @@
 package com.simple.book.domain.alarm.dto;
 
 import com.simple.book.domain.alarm.entity.Alarm;
+import com.simple.book.domain.user.entity.User;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,20 +11,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlarmDto {
 	private long alarmId;
-	private long userId;
+	private User user;
 	private String message;
 	
 	@Builder
-	public AlarmDto(long alarmId, long userId, String message) {
+	public AlarmDto(long alarmId, User user, String message) {
 		this.alarmId=alarmId;
-		this.userId=userId;
+		this.user=user;
 		this.message=message;
 	}
 	
 	public Alarm toEntity() {
 		return Alarm.builder()
 				.alarmId(alarmId)
-				.userId(userId)
+				.user(user)
 				.message(message)
 				.build();
 	}

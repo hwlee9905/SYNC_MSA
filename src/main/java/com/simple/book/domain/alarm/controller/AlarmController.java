@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.alarm.service.AlarmService;
@@ -24,10 +25,16 @@ public class AlarmController {
 //		alarmService.sendMessage("test", message);
 //	}
 	
-	@GetMapping("/getUrl")
+	@GetMapping("/url")
 	public ResponseEntity<?> getAlarmUrl(){
 		String userId = userService.getCurrentUserId();
 		return ResponseEntity.ok().body(alarmService.getAlarmUrl(userId));
+	}
+	
+	@GetMapping("/list")
+	public ResponseEntity<?> getAlarmList() {
+		String userId = userService.getCurrentUserId();
+		return ResponseEntity.ok().body(alarmService.getAlarmList(userId));
 	}
 	
 //	@PostMapping("/add/topic")
