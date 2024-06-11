@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Setter
@@ -21,6 +22,7 @@ public class CreateTaskRequestDto {
     @NotBlank(message = "이름은 필수 입력 값 입니다.")
     private String title;
     private Optional<Long> parentTaskId;
+    private List<Long> memberId;
     @NotBlank(message = "프로젝트는 필수 입력 값 입니다.")
     private Long projectId;
 
