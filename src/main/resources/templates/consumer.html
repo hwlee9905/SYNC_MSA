@@ -10,12 +10,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
-	var stompClient = Stomp.over(new SockJS('/ws'));
-
+	var stompClient = Stomp.over(new SockJS('/api/user/ws'));
+	
 	stompClient.connect({}, function(frame) {
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/topic/messages', function(response) {
-			showMessage(JSON.parse(response.body).content);
+		
+		fetch("/api/user/alarm/getUrl", {
+			method: "GET",
+		})
+		.then(function(body) {
+			return body.text();
+		})
+		.then(function(data) {
+			stompClient.subscribe(data, function(response) {
+				showMessage(response.body);
+			});
 		});
 	});
 	
