@@ -15,16 +15,6 @@ public class MainController {
 	public String pageLogin() {
 		return "login.html";
 	}
-
-	@GetMapping("/board")
-	public String pageBoard() {
-		return "board";
-	}
-	
-	@GetMapping("/board/write")
-	public String pageBoardWrite() {
-		return "board_write";
-	}
 	
 	@GetMapping("/producer")
 	public String pageProducer() {
@@ -39,6 +29,11 @@ public class MainController {
 	@GetMapping("/log")
 	public String pageLog() {
 		return "log";
+	}
+	
+	@GetMapping("/alarm")
+	public String pageAlarm() {
+		return "alarm";
 	}
 	
 	

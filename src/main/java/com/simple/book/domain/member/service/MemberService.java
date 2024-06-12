@@ -91,11 +91,13 @@ public class MemberService {
                     .task(task)
                     .build();
 	        try {
-	            taskMemberRepository.save(memberTask);
-	            alarmService.sendTaskManager(memberMappingToTaskRequestDto.getMemberId());
+	            taskMemberRepository.saveAndFlush(memberTask);
 	        } catch (DataIntegrityViolationException e) {
 	        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
+			} catch (Exception e) {
+				throw new RuntimeException("시스템에 문제가 생겼습니다. 관리자에게 문의하세요.");
 			}
+	        alarmService.sendTaskManager(memberMappingToTaskRequestDto.getMemberId());
         
         }else{
             throw new InvalidValueException("해당 작업과 멤버는 같은 프로젝트 소속이어야 합니다.");

@@ -1,6 +1,7 @@
 package com.simple.book.domain.user.service;
 
 
+import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
@@ -15,6 +16,8 @@ import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.exception.AuthenticationFailureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +36,8 @@ public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	@Autowired
+	private AlarmUrlService alarmUrlService;
 	@Transactional(rollbackFor = {Exception.class})
 	public String remove(String userId) {
 		Authentication authentication = authenticationRepository.findByUserId(userId);
@@ -42,6 +47,8 @@ public class UserService implements UserDetailsService {
 	//회원가입
 	@Transactional(rollbackFor = {Exception.class})
 	public User signup(SignupRequestDto signupRequestDto) {
+		boolean isSuccess;
+		long id;
 //		log.info("signup password : " + signupRequestDto.getPassword());
 		Authentication authentication = Authentication.builder()
 				.userId(signupRequestDto.getUserId())
@@ -49,7 +56,13 @@ public class UserService implements UserDetailsService {
 				.password(bCryptPasswordEncoder.encode(signupRequestDto.getPassword()))
 				.infoSet(InfoSet.DEFAULT)
 				.build();
-		authenticationRepository.save(authentication);
+		try {
+			authenticationRepository.saveAndFlush(authentication);
+			isSuccess = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
 
 		User user = User.builder()
 				.username(signupRequestDto.getUsername())
@@ -58,7 +71,18 @@ public class UserService implements UserDetailsService {
 				.build();
 		user.setAuthentication(authentication);
 		authentication.setUser(user);
-		userRepository.save(user);
+		try {
+			id = userRepository.saveAndFlush(user).getId();
+			isSuccess = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+		if (isSuccess) {
+			alarmUrlService.createAlarmUrl(id);
+		}
+		
 		return user;
 	}
 
