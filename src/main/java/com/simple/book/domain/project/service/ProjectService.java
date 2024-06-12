@@ -35,6 +35,7 @@ public class ProjectService {
 	private final TaskRepository taskRepository;
 	private final UserTaskRepository userTaskRepository;
 
+<<<<<<< Updated upstream
 	@Transactional(rollbackFor = { Exception.class })
 	public String createProject(ProjectCreateRequestDto projectCreateRequestDto) {
 		Project project = Project.builder().description(projectCreateRequestDto.getDescription())
@@ -96,5 +97,57 @@ public class ProjectService {
 			throw new EntityNotFoundException("해당 멤버는 해당 프로젝트에 소속되어 있지 않습니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
 		}
 	}
+=======
+        projectRepository.save(project);
+        return "OK";
+    }
+    @Transactional(rollbackFor = {Exception.class})
+    public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
+        Optional<Project> opProject = projectRepository.findById(projectDeleteRequestDto.getProjectId());
+        User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());
+        try{
+            if (opProject.isPresent()){
+                Project project = opProject.get();
+                project.getTasks().size();
+                isProjectManager(user, project);
+                // 연관된 task 삭제
+                List<Task> tasks = project.getTasks();
+                for (Task task : tasks) {
+                    task.getTaskMembers().clear();
+                    userTaskRepository.deleteByTaskId(task.getId());
+                    taskRepository.delete(task);
+                }
+                // 연관된 member 삭제
+                List<Member> members = project.getMembers();
+                for (Member member : members) {
+                    member.getTaskMembers().clear();
+                    memberRepository.delete(member);
+                }
+                projectRepository.delete(project);
+            }else {
+                throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + projectDeleteRequestDto.getProjectId());
+            }
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return "OK";
+    }
+    //프로젝트의 관리자인지 확인합니다.
+    public void isProjectManager(User user, Project project) {
+        Long userId = user.getId();
+
+        Optional<Member> member = memberRepository.findByUserIdAndProjectId(userId, project.getId());
+
+        if (member.isPresent()) {
+            if (member.get().isManager()) {
+                // 유효한 관리자
+            } else {
+                throw new EntityNotFoundException("해당 멤버는 해당 프로젝트의 관리자가 아닙니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
+            }
+        } else {
+            throw new EntityNotFoundException("해당 멤버는 해당 프로젝트에 소속되어 있지 않습니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
+        }
+    }
+>>>>>>> Stashed changes
 
 }
