@@ -7,7 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.simple.book.domain.alarm.dto.AlarmDto;
+import com.simple.book.domain.alarm.dto.AlarmUrlDto;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.global.util.BaseEntity;
 
@@ -24,36 +24,29 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "alarm")
+@Table(name = "alarm_url")
 @DynamicInsert
 @DynamicUpdate
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Alarm extends BaseEntity{
-	@Id 
+public class AlarmUrl extends BaseEntity{
+	
+	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "alarm_id", columnDefinition = "BINARY(16)")
+	@Column(name = "url", columnDefinition = "BINARY(16)", nullable = false)
 	@JdbcTypeCode(SqlTypes.BINARY)
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "alarm_id")
-	private UUID alarmId;
+	private UUID url;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", nullable = false, unique = true)
 	private User user;
 	
-	@Column(name = "message")
-	private String message;
-
-	public AlarmDto toDto() {
-		return AlarmDto.builder()
-				.alarmId(alarmId)
+	public AlarmUrlDto toDto() {
+		return AlarmUrlDto.builder()
+				.url(url)
 				.user(user)
-				.message(message)
-				.createdAt(getCreatedAt())
-				.updatedAt(getUpdatedAt())
 				.build();
+
 	}
-	
 }

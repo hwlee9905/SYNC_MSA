@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>알람 TEST</title>
+</head>
+<body>
+<div id="alarm"></div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+	var stompClient = Stomp.over(new SockJS('/api/user/ws'));
+	
+	stompClient.connect({}, async function(frame) {
+		console.log('Connected: ' + frame);
+		
+		await fetch("/api/user/alarm/list", {
+			method: "GET",
+		})
+		.then(function(body) {
+			return body.json();
+		})
+		.then(function(data) {
+			data.forEach((element) => {
+				showMessage(element);
+			})
+		})
+		
+		await fetch("/api/user/alarm/url/get", {
+			method: "GET",
+		})
+		.then(function(body) {
+			return body.text();
+		})
+		.then(function(data) {
+			stompClient.subscribe(data, function(response) {
+				console.log('response: ', response);
+				showMessage(JSON.parse(response.body));
+			});
+		});
+	});
+	function showMessage(result) {
+		const message = result.message;
+		const alarmId = result.alarmId;
+		const createdAt = result.createdAt;
+		
+		const chat = document.getElementById('alarm');
+		let p = document.createElement('p');
+		p.id = alarmId;
+		p.appendChild(document.createTextNode(message + createdAt));
+		chat.appendChild(p);
+	}
+</script>
+</html>

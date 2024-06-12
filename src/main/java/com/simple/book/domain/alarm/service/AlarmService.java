@@ -1,10 +1,10 @@
 package com.simple.book.domain.alarm.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,8 +19,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.book.domain.alarm.dto.AlarmDto;
 import com.simple.book.domain.alarm.dto.data.ResAlarm;
+import com.simple.book.domain.alarm.dto.data.SendAlarm;
 import com.simple.book.domain.alarm.entity.Alarm;
 import com.simple.book.domain.alarm.repository.AlarmRepository;
+import com.simple.book.domain.alarm.repository.AlarmUrlRepository;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
@@ -48,6 +50,9 @@ public class AlarmService {
 	private MemberRepository memberRepository;
 	
 	@Autowired
+	private AlarmUrlRepository alarmUrlRepository;
+	
+	@Autowired
 	private ObjectMapper objectMapper;
 	
 	@Autowired
@@ -71,9 +76,9 @@ public class AlarmService {
 		} catch (Exception e) {
 			throw new RuntimeException("시스템 오류");
 		}
-		long id = Long.valueOf(String.valueOf(map.get("id")));
+		String url = String.valueOf(map.get("url"));
 		
-		messagingTemplate.convertAndSend("/topic/user/" + id, map.get("message"));
+		messagingTemplate.convertAndSend("/topic/user/" + url, message);
 	}
 	
 	/*
@@ -92,63 +97,81 @@ public class AlarmService {
 		messagingTemplate.convertAndSend("/topic/task", message);
 	}
 	
-	public String getAlarmUrl(String userId) {
-		Optional<Long> id = userRepository.findUserIdByAuthenticationUserId(userId);
-		if (id.isPresent()) {
-			return "/topic/user/" + id.get();
-		} else {
-			throw new RuntimeException("시스템 오류가 발생하였습니다.");
-		}
-	}
-	
-	public ResAlarm getAlarmList(String userId) {
-		ResAlarm resAlarm = new ResAlarm();
+	public List<ResAlarm> getAlarmList(String userId) {
+		List<ResAlarm> result = new ArrayList<>();
 		List<Alarm> alarmList = alarmRepository.findByUserId(userId);
-		List<String> result = new ArrayList<>();
 		if (alarmList.size() > 0) {
 			for (Alarm entity : alarmList) {
-				result.add(entity.toDto().getMessage());
+				ResAlarm resAlarm = new ResAlarm();
+				resAlarm.setAlarmId(entity.toDto().getAlarmId());
+				resAlarm.setMessage(entity.toDto().getMessage());
+				resAlarm.setCreatedAt(entity.getCreatedAt());
+				result.add(resAlarm);
 			}
 		} 
-		resAlarm.setMessage(result);
-		return resAlarm;
+		return result;
+	}
+	
+	public void deleteAlarm(UUID alarmId) {
+		try {
+			alarmRepository.deleteById(alarmId);
+		} catch(Exception e) {
+			throw new RuntimeException("시스템 오류가 발생하였습니다.");
+		}
 	}
 	
 	public void sendTaskManager(long memberId) {
 		Optional<User> member = memberRepository.findUserIdByTaskMember(memberId);
 		if (member.isPresent()) {
-			long id = member.get().getId();
+			long userId = member.get().getId();
 			String name = member.get().getUsername();
 			String message = name + " 님이 담당자로 배정 되었습니다.";
 			
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", id);
-			map.put("message", message);
-			
-			try {
-				kafkaTemplate.send("User", objectMapper.writeValueAsString(map));
-			} catch (Exception e) {
+			UUID alarmId = saveAlarm(userId, message);
+			Optional<UUID> url = alarmUrlRepository.findUrlByUser(userRepository.getReferenceById(userId));
+			if (url.isPresent()) {
+				sendAlarm(alarmId, url.get());
+			} else {
 				throw new RuntimeException("시스템 오류가 발생하였습니다.");
 			}
-			saveAlarm(id, message);
 		} else {
 			throw new RuntimeException("시스템 오류가 발생하였습니다.");
 		}
 	}
 	
-	private void saveAlarm(long id, String message) {
+	private UUID saveAlarm(long userId, String message) {
+		UUID result;
 		AlarmDto dto = AlarmDto.builder()
-				.user(userRepository.getReferenceById(id))
+				.user(userRepository.getReferenceById(userId))
 				.message(message).build();
 		try {
-			alarmRepository.save(dto.toEntity());
+			result = alarmRepository.saveAndFlush(dto.toEntity()).toDto().getAlarmId();
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("시스템 오류가 발생하였습니다.");
 		}
+		return result;
 	}
 	
-
+	private void sendAlarm (UUID alarmId, UUID url){
+		Optional<Alarm> alarm = alarmRepository.findById(alarmId);
+		if (alarm.isPresent()) {
+			SendAlarm dto = SendAlarm.builder()
+					.alarmId(alarm.get().toDto().getAlarmId())
+					.url(url)
+					.message(alarm.get().toDto().getMessage())
+					.createdAt(alarm.get().getCreatedAt())
+					.build();
+			try {
+				kafkaTemplate.send("User", objectMapper.writeValueAsString(dto));
+			} catch (Exception e) {
+				throw new RuntimeException("시스템 오류가 발생하였습니다.");
+			}
+		} else {
+			throw new RuntimeException("시스템 오류가 발생하였습니다.");
+		}
+	}
+	
 	@KafkaListener(topics = "test", containerFactory = "kafkaListenerContainerFactory")
 	public void listen(String message) {
 		messagingTemplate.convertAndSend("/topic/messages", message);
