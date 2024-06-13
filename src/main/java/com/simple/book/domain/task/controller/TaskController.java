@@ -7,6 +7,7 @@ import com.simple.book.domain.task.entity.Task;
 import com.simple.book.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 @RestController
@@ -17,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class TaskController {
     private final TaskService taskService;
     @PostMapping("/create")
-    public String createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
-        return taskService.createTask(createTaskRequestDto);
+    public ResponseEntity<Task> createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
+        Task task = taskService.createTask(createTaskRequestDto);
+        return ResponseEntity.ok(task);
     }
     //해당 업무의 모든 하위 업무를 조회합니다.
     @PostMapping("/getSubTasks")

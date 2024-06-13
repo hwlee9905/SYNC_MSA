@@ -36,11 +36,11 @@ public class ProjectService {
 	private final UserTaskRepository userTaskRepository;
 
 	@Transactional(rollbackFor = { Exception.class })
-	public String createProject(ProjectCreateRequestDto projectCreateRequestDto) {
+	public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {
 		Project project = Project.builder().description(projectCreateRequestDto.getDescription())
 				.title(projectCreateRequestDto.getTitle()).build();
 		projectRepository.save(project);
-		return "OK";
+		return project;
 	}
 
     @Transactional(rollbackFor = {Exception.class})

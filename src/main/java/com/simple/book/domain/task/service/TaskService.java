@@ -24,7 +24,7 @@ public class TaskService {
 	private final ProjectRepository projectRepository;
 
 	@Transactional(rollbackFor = { Exception.class })
-	public String createTask(CreateTaskRequestDto createTaskRequestDto) {
+	public Task createTask(CreateTaskRequestDto createTaskRequestDto) {
 		Optional<Project> project = projectRepository.findById(createTaskRequestDto.getProjectId());
 		if (project.isPresent()) {
 			Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
@@ -33,19 +33,17 @@ public class TaskService {
 						.description(createTaskRequestDto.getDescription()).parentTask(parentTask.get())
 						.endDate(createTaskRequestDto.getEndDate()).startDate(createTaskRequestDto.getStartDate())
 						.status(createTaskRequestDto.getStatus()).project(project.get()).build();
-				taskRepository.save(task);
+				return taskRepository.save(task);
 			} else {
 				Task task = Task.builder().title(createTaskRequestDto.getTitle())
 						.description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
 						.startDate(createTaskRequestDto.getStartDate()).status(createTaskRequestDto.getStatus())
 						.project(project.get()).build();
-				taskRepository.save(task);
+				return taskRepository.save(task);
 			}
 		} else {
 			throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + createTaskRequestDto.getProjectId());
 		}
-
-		return "OK";
 	}
 
 	@Transactional(rollbackFor = { Exception.class })

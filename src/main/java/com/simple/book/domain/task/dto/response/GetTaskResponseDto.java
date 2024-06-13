@@ -2,6 +2,7 @@ package com.simple.book.domain.task.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.simple.book.domain.task.entity.Task;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.Date;
@@ -13,14 +14,23 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(description = "해당 업무의 하위 업무를 반환하는 DTO")
 public class GetTaskResponseDto {
+    @Schema(description = "업무 아이디")
     private Long id;
+    @Schema(description = "업무 이름")
     private String title;
+    @Schema(description = "업무 내용")
     private String description;
+    @Schema(description = "업무 시작일")
     private Date startDate;
+    @Schema(description = "업무 종료일")
     private Date endDate;
+    @Schema(description = "업무 진행 상황")
     private Boolean status;
+    @Schema(description = "업무 담당자")
     private Long memberId;
+    @Schema(description = "하위 업무들")
     private List<GetTaskResponseDto> subTasks;
 
     public static GetTaskResponseDto fromEntity(Task task) {

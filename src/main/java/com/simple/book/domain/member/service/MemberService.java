@@ -48,7 +48,7 @@ public class MemberService {
     ALTER TABLE member ADD CONSTRAINT unique_user_project UNIQUE (user_id, project_id);
     */
     @Transactional(rollbackFor = {Exception.class})
-    public String memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
+    public Member memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
         Project project = projectRepository.findById(memberMappingToProjectRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingToProjectRequestDto.getProjectId()));
 
@@ -69,10 +69,10 @@ public class MemberService {
         	throw new RuntimeException("이미 등록 된 담당자 입니다.");
 		}
 
-        return "OK";
+        return member;
     }
     @Transactional(rollbackFor = {Exception.class})
-    public String memberAddToTask(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto){
+    public Member memberAddToTask(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto){
 
         Optional<Member> optionalMember = memberRepository.findById(memberMappingToTaskRequestDto.getMemberId());
         Member member = optionalMember.orElseThrow(() -> new EntityNotFoundException("Member not found with Member ID: " + memberMappingToTaskRequestDto.getMemberId()));
@@ -103,6 +103,6 @@ public class MemberService {
             throw new InvalidValueException("해당 작업과 멤버는 같은 프로젝트 소속이어야 합니다.");
         }
 
-        return "OK";
+        return member;
     }
 }

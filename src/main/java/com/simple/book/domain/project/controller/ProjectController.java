@@ -2,11 +2,12 @@ package com.simple.book.domain.project.controller;
 
 import com.simple.book.domain.project.dto.request.ProjectCreateRequestDto;
 import com.simple.book.domain.project.dto.request.ProjectDeleteRequestDto;
+import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,12 +18,13 @@ public class ProjectController {
     private final ProjectService projectService;
     @ResponseBody
     @PostMapping("/create")
-    public String projectCreate(@RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
-        return projectService.createProject(projectCreateRequestDto);
+    public ResponseEntity<Project> projectCreate(@RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
+        Project project = projectService.createProject(projectCreateRequestDto);
+        return ResponseEntity.ok(project);
     }
     @ResponseBody
     @PostMapping("/delete")
-    public String projectDelete(@RequestBody ProjectDeleteRequestDto projectDeleteRequestDto) {
-        return projectService.deleteProject(projectDeleteRequestDto);
+    public ResponseEntity<String> projectDelete(@RequestBody ProjectDeleteRequestDto projectDeleteRequestDto) {
+        return ResponseEntity.ok(projectService.deleteProject(projectDeleteRequestDto));
     }
 }

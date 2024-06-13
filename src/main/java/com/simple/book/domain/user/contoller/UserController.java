@@ -5,6 +5,7 @@ import com.simple.book.domain.oauth2.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,32 +48,8 @@ public class UserController {
 
 	@ResponseBody
 	@PostMapping("remove")
-	public String removeUser() {
-		return userService.remove(userService.getCurrentUserId());
+	public ResponseEntity<String> removeUser() {
+		return ResponseEntity.ok(userService.remove(userService.getCurrentUserId()));
 	}
 
-//	@PostMapping("/search")
-//	public ResponseEntity<String> search(HttpSession session, @RequestBody HashMap<String, Object> body)
-//			throws Exception {
-//		HashMap<String, Object> result = userService.findUser(session, body);
-//		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
-//	}
-//
-//	@PostMapping("/signup")
-//	public ResponseEntity<String> signup(@RequestBody HashMap<String, Object> body) throws Exception{
-//		HashMap<String, Object> result = userService.signup(body);
-//		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
-//	}
-//
-//	@GetMapping("/delete")
-//	public ResponseEntity<String> deleteId(HttpSession session) throws Exception {
-//		HashMap<String, Object> result = userService.deleteUser(session);
-//		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
-//	}
-//
-//	@PostMapping("/modify")
-//	public ResponseEntity<String> modify(@RequestBody HashMap<String, Object> body, HttpSession session) throws Exception{
-//		HashMap<String, Object> result = userService.modifyUser(body, session);
-//		return new ResponseEntity<>(mapper.writeValueAsString(result), HttpStatus.OK);
-//	}
 }
