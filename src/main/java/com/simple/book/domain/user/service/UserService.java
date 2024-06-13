@@ -60,8 +60,7 @@ public class UserService implements UserDetailsService {
 			authenticationRepository.saveAndFlush(authentication);
 			isSuccess = true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 
 		User user = User.builder()
@@ -75,8 +74,7 @@ public class UserService implements UserDetailsService {
 			id = userRepository.saveAndFlush(user).getId();
 			isSuccess = true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 		
 		if (isSuccess) {
