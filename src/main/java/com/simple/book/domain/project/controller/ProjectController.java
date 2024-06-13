@@ -18,9 +18,9 @@ public class ProjectController {
     private final ProjectService projectService;
     @ResponseBody
     @PostMapping("/create")
-    public ResponseEntity<Project> projectCreate(@RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
-        Project project = projectService.createProject(projectCreateRequestDto);
-        return ResponseEntity.ok(project);
+    public ResponseEntity<String> projectCreate(@RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
+        projectService.createProject(projectCreateRequestDto);
+        return ResponseEntity.ok("OK");
     }
     @ResponseBody
     @PostMapping("/delete")

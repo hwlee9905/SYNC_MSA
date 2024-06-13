@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class TaskController {
     private final TaskService taskService;
     @PostMapping("/create")
-    public ResponseEntity<Task> createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
-        Task task = taskService.createTask(createTaskRequestDto);
-        return ResponseEntity.ok(task);
+    public ResponseEntity<String> createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
+        taskService.createTask(createTaskRequestDto);
+        return ResponseEntity.ok("OK");
     }
     //해당 업무의 모든 하위 업무를 조회합니다.
     @PostMapping("/getSubTasks")

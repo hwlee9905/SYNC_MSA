@@ -20,9 +20,9 @@ public class HomeController {
 
 	@ResponseBody
 	@PostMapping("signup")
-	public ResponseEntity<User> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
-		User user = userService.signup(signupRequestDto);
-		return ResponseEntity.ok(user);
+	public ResponseEntity<String> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
+		userService.signup(signupRequestDto);
+		return ResponseEntity.ok("OK");
 	}
 
 	@GetMapping("")
