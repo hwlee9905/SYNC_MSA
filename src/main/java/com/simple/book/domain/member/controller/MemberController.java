@@ -17,14 +17,14 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/project/member/add")
-    public ResponseEntity<Member> memberAddToProject(@RequestBody MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
-        Member member = memberService.memberAddToProject(memberMappingToProjectRequestDto);
-        return ResponseEntity.ok(member);
+    public ResponseEntity<String> memberAddToProject(@RequestBody MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
+        memberService.memberAddToProject(memberMappingToProjectRequestDto);
+        return ResponseEntity.ok("OK");
     }
 
     @PostMapping("/task/member/add")
-    public ResponseEntity<Member> memberAddToTask(@RequestBody MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
+    public ResponseEntity<String> memberAddToTask(@RequestBody MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
         Member member = memberService.memberAddToTask(memberMappingToTaskRequestDto);
-        return ResponseEntity.ok(member);
+        return ResponseEntity.ok("OK");
     }
 }
