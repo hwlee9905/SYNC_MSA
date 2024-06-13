@@ -15,7 +15,7 @@
 	stompClient.connect({}, function(frame) {
 		console.log('Connected: ' + frame);
 		
-		fetch("/api/user/alarm/getUrl", {
+		fetch("/api/user/alarm/url", {
 			method: "GET",
 		})
 		.then(function(body) {

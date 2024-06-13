@@ -28,32 +28,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ProjectService {
-    private final ProjectRepository projectRepository;
-    private final UserService userService;
-    private final UserRepository userRepository;
-    private final MemberRepository memberRepository;
-    private final TaskRepository taskRepository;
-    private final UserTaskRepository userTaskRepository;
-    private final AlarmService alarmService;
-	
-    @Transactional(rollbackFor = {Exception.class})
-    public String createProject(ProjectCreateRequestDto projectCreateRequestDto){
-        Project project = Project.builder()
-                .description(projectCreateRequestDto.getDescription())
-                .title(projectCreateRequestDto.getTitle())
-                .build();
-        long id = projectRepository.save(project).getId();
+	private final ProjectRepository projectRepository;
+	private final UserService userService;
+	private final UserRepository userRepository;
+	private final MemberRepository memberRepository;
+	private final TaskRepository taskRepository;
+	private final UserTaskRepository userTaskRepository;
 
-        projectRepository.save(project);
-        return "OK";
-    }
-    
+	@Transactional(rollbackFor = { Exception.class })
+	public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {
+		Project project = Project.builder().description(projectCreateRequestDto.getDescription())
+				.title(projectCreateRequestDto.getTitle()).build();
+		projectRepository.save(project);
+		return project;
+	}
+
+    @Transactional(rollbackFor = {Exception.class})
     public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
         Optional<Project> opProject = projectRepository.findById(projectDeleteRequestDto.getProjectId());
-
         User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());
-
-
         try{
             if (opProject.isPresent()){
                 Project project = opProject.get();
@@ -64,19 +57,14 @@ public class ProjectService {
                 for (Task task : tasks) {
                     task.getTaskMembers().clear();
                     userTaskRepository.deleteByTaskId(task.getId());
-
-
                     taskRepository.delete(task);
                 }
-
                 // 연관된 member 삭제
                 List<Member> members = project.getMembers();
                 for (Member member : members) {
                     member.getTaskMembers().clear();
                     memberRepository.delete(member);
                 }
-
-
                 projectRepository.delete(project);
             }else {
                 throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + projectDeleteRequestDto.getProjectId());
@@ -84,8 +72,6 @@ public class ProjectService {
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
         return "OK";
     }
     //프로젝트의 관리자인지 확인합니다.

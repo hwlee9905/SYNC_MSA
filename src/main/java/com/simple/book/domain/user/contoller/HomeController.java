@@ -1,12 +1,12 @@
 package com.simple.book.domain.user.contoller;
 
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
+import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.service.UserService;
-import com.simple.book.global.advice.ErrorCode;
-import com.simple.book.global.exception.BusinessException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +20,9 @@ public class HomeController {
 
 	@ResponseBody
 	@PostMapping("signup")
-	public String signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
-		userService.signup(signupRequestDto);
-
-		return "OK";
+	public ResponseEntity<User> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
+		User user = userService.signup(signupRequestDto);
+		return ResponseEntity.ok(user);
 	}
 
 	@GetMapping("")

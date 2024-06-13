@@ -1,6 +1,7 @@
 package com.simple.book.domain.member.service;
 
 
+import com.simple.book.domain.alarm.service.AlarmService;
 import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
 import com.simple.book.domain.member.dto.request.MemberMappingToTaskRequestDto;
 import com.simple.book.domain.member.entity.Member;
@@ -18,6 +19,9 @@ import com.simple.book.global.exception.EntityNotFoundException;
 import com.simple.book.global.exception.InvalidValueException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +36,9 @@ public class MemberService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final TaskMemberRepository taskMemberRepository;
+    
+    @Autowired
+    private AlarmService alarmService;
     /**
     * @memberAddToProject
     * @Caution
@@ -41,7 +48,7 @@ public class MemberService {
     ALTER TABLE member ADD CONSTRAINT unique_user_project UNIQUE (user_id, project_id);
     */
     @Transactional(rollbackFor = {Exception.class})
-    public String memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
+    public Member memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
         Project project = projectRepository.findById(memberMappingToProjectRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingToProjectRequestDto.getProjectId()));
 
@@ -56,12 +63,16 @@ public class MemberService {
                 .isManager(memberMappingToProjectRequestDto.getIsManager())
                 .user(user)
                 .build();
-        memberRepository.save(member);
+        try {
+        	memberRepository.save(member);
+        } catch (DataIntegrityViolationException e) {
+        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
+		}
 
-        return "OK";
+        return member;
     }
     @Transactional(rollbackFor = {Exception.class})
-    public String memberAddToTask(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto){
+    public Member memberAddToTask(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto){
 
         Optional<Member> optionalMember = memberRepository.findById(memberMappingToTaskRequestDto.getMemberId());
         Member member = optionalMember.orElseThrow(() -> new EntityNotFoundException("Member not found with Member ID: " + memberMappingToTaskRequestDto.getMemberId()));
@@ -79,12 +90,19 @@ public class MemberService {
                     .member(member)
                     .task(task)
                     .build();
-            taskMemberRepository.save(memberTask);
+	        try {
+	            taskMemberRepository.saveAndFlush(memberTask);
+	        } catch (DataIntegrityViolationException e) {
+	        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
+			} catch (Exception e) {
+				throw new RuntimeException("시스템에 문제가 생겼습니다. 관리자에게 문의하세요.");
+			}
+	        alarmService.sendTaskManager(memberMappingToTaskRequestDto.getMemberId());
+        
         }else{
             throw new InvalidValueException("해당 작업과 멤버는 같은 프로젝트 소속이어야 합니다.");
         }
 
-
-        return "OK";
+        return member;
     }
 }
