@@ -6,10 +6,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
 import com.simple.book.domain.user.entity.EmailVerification;
@@ -17,6 +19,8 @@ import com.simple.book.domain.user.repository.EmailVerificationRepository;
 import com.simple.book.global.config.ApplicationConfig;
 import com.simple.book.global.util.ResponseMessage;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -30,6 +34,9 @@ public class EmailVerificationService {
 
 	@Autowired
 	private EmailVerificationRepository emailVerificationRepository;
+	
+	@Autowired
+    private TemplateEngine templateEngine;
 
 	/**
 	 * 이메일 인증 Request
@@ -38,14 +45,47 @@ public class EmailVerificationService {
 	 * @return
 	 * @throws Exception
 	 */
-	public ResponseMessage sendVerificationEmail(EmailVerificationRequestDto dto) throws RuntimeException {
-		SimpleMailMessage message = new SimpleMailMessage();
+//	public ResponseMessage sendVerificationEmail(EmailVerificationRequestDto dto) throws RuntimeException {
+//		SimpleMailMessage message = new SimpleMailMessage();
+//		EmailVerificationRequestDto setTokenDto = createVerificationToken(dto);
+//		
+//		try {
+//			message.setTo(setTokenDto.getEmail());
+//			message.setFrom("sync@sync-team.co.kr");
+//			message.setSubject("[sync] 회원가입 인증 입니다.");
+//			message.setText("Your verification token is: " + setTokenDto.getToken());
+//			javaMailSender.send(message);
+//		} catch (Exception e) {
+//			log.error(e.getStackTrace());
+//			throw new RuntimeException(e);
+//		}
+//
+//		return ResponseMessage.builder().message("전송 완료").build();
+//	}
+	
+	/**
+	 * HTML 기반 이메일 인증
+	 * @param dto
+	 * @return
+	 * @throws MessagingException 
+	 * @throws RuntimeException
+	 */
+	public ResponseMessage sendVerificationEmail(EmailVerificationRequestDto dto) throws MessagingException {
 		EmailVerificationRequestDto setTokenDto = createVerificationToken(dto);
+		
+		MimeMessage message = javaMailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		
+		Context context = new Context();
+        context.setVariable("name", "User");
+        
+        String htmlContent = templateEngine.process("/email/email_template.html", context);
+        
 		try {
-			message.setTo(setTokenDto.getEmail());
-			message.setFrom(applicationConfig.getMailId() + "@naver.com");
-			message.setSubject("Email Verification");
-			message.setText("Your verification token is: " + setTokenDto.getToken());
+	        helper.setTo(setTokenDto.getEmail());
+	        helper.setFrom("sync@sync-team.co.kr");
+	        helper.setSubject("[sync] 회원가입 인증 입니다.");
+	        helper.setText(htmlContent, true);
 			javaMailSender.send(message);
 		} catch (Exception e) {
 			log.error(e.getStackTrace());
