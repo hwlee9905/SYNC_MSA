@@ -25,5 +25,4 @@ public class ApplicationConfig {
 	public String getLogPath() {
 		return this.logPath;
 	}
-	
 }
