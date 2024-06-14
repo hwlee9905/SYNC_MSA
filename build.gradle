@@ -69,15 +69,8 @@ dependencies {
 	// Web Socket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	
-	// 형태소 분석기
-	implementation 'ai.bareun.tagger:bareun:1.4.3'
-	
-	// gRPC
-	implementation 'com.google.protobuf:protobuf-java-util:3.25.3'
-	implementation 'io.grpc:grpc-core:1.62.2'
-	implementation 'io.grpc:grpc-stub:1.62.2'
-	implementation 'io.grpc:grpc-netty-shaded:1.62.2'
-	implementation 'io.grpc:grpc-protobuf:1.62.2'
+	// Elasticsearch
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 }
 
 tasks.named('test') {
