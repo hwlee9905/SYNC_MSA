@@ -147,8 +147,7 @@ public class AlarmService {
 		try {
 			result = alarmRepository.saveAndFlush(dto.toEntity()).toDto().getAlarmId();
 		}catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("시스템 오류가 발생하였습니다.");
+			throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
 		}
 		return result;
 	}
@@ -165,7 +164,7 @@ public class AlarmService {
 			try {
 				kafkaTemplate.send("User", objectMapper.writeValueAsString(dto));
 			} catch (Exception e) {
-				throw new RuntimeException("시스템 오류가 발생하였습니다.");
+				throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
 			}
 		} else {
 			throw new RuntimeException("시스템 오류가 발생하였습니다.");

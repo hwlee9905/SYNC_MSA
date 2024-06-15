@@ -16,8 +16,7 @@ public enum ErrorCode {
     INVALID_TYPE_VALUE(400, "C005", "Invalid Type Value"),
     HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied"),
     BLANK_INPUT_VALUE(400,"C007","Blank Input Value"),
-
-
+    PROJECT_VALIDATE(401,"C008","프로젝트에 같은 멤버가 존재합니다."),
 
     // User 예시
     USERID_DUPLICATE(409, "U001", "UserId is duplicated"),
