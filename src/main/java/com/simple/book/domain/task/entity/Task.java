@@ -3,6 +3,7 @@ package com.simple.book.domain.task.entity;
 import com.simple.book.domain.member.entity.Member;
 import com.simple.book.domain.member.entity.MemberTask;
 import com.simple.book.domain.project.entity.Project;
+import com.simple.book.domain.user.entity.UserTask;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,6 +45,7 @@ public class Task {
     private Task parentTask;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTask> taskMembers = new ArrayList<>();
-
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTask> userTasks = new ArrayList<>();
 
 }

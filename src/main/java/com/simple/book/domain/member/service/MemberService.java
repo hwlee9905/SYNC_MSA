@@ -9,11 +9,14 @@ import com.simple.book.domain.member.entity.MemberTask;
 import com.simple.book.domain.member.entity.MemberTaskId;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.member.repository.TaskMemberRepository;
+import com.simple.book.domain.member.repository.UserTaskRepository;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.ProjectRepository;
 import com.simple.book.domain.task.entity.Task;
 import com.simple.book.domain.task.repository.TaskRepository;
 import com.simple.book.domain.user.entity.User;
+import com.simple.book.domain.user.entity.UserTask;
+import com.simple.book.domain.user.entity.UserTaskId;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.global.exception.EntityNotFoundException;
 import com.simple.book.global.exception.InvalidValueException;
@@ -36,6 +39,7 @@ public class MemberService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final TaskMemberRepository taskMemberRepository;
+    private final UserTaskRepository userTaskRepository;
     
     @Autowired
     private AlarmService alarmService;
@@ -66,8 +70,8 @@ public class MemberService {
         try {
         	memberRepository.save(member);
         } catch (DataIntegrityViolationException e) {
-        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
-		}
+        	throw new RuntimeException("data");
+        }
 
         return member;
     }
@@ -79,8 +83,16 @@ public class MemberService {
         Optional<Task> optionalTask = taskRepository.findById(memberMappingToTaskRequestDto.getTaskId());
         Task task = optionalTask.orElseThrow(() -> new EntityNotFoundException("Task not found with Task ID: " + memberMappingToTaskRequestDto.getTaskId()));
         if(task.getProject().equals(member.getProject())){
-            Optional<User> user = userRepository.findById(member.getUser().getId());
-            user.get().getTasks().add(task);
+            User user = userRepository.getReferenceById(member.getUser().getId());
+            UserTaskId userTaskId = UserTaskId.builder()
+                    .taskId(task.getId())
+                    .userId(user.getId())
+                    .build();
+            UserTask userTask = UserTask.builder()
+                    .id(userTaskId)
+                    .user(user)
+                    .task(task)
+                    .build();
             MemberTaskId memberTaskId = MemberTaskId.builder()
                     .mappingTaskId(task.getId())
                     .mappingMemberId(member.getId())
@@ -92,10 +104,11 @@ public class MemberService {
                     .build();
 	        try {
 	            taskMemberRepository.saveAndFlush(memberTask);
+                userTaskRepository.saveAndFlush(userTask);
 	        } catch (DataIntegrityViolationException e) {
-	        	throw new RuntimeException("이미 등록 된 담당자 입니다.");
+	        	throw new RuntimeException("해당 업무에 이미 등록된 담당자가 있습니다.");
 			} catch (Exception e) {
-				throw new RuntimeException("시스템에 문제가 생겼습니다. 관리자에게 문의하세요.");
+				throw new RuntimeException(e);
 			}
 	        alarmService.sendTaskManager(memberMappingToTaskRequestDto.getMemberId());
         

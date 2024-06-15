@@ -41,8 +41,7 @@ public class AlarmUrlService {
 		try {
 			alarmUrlRepository.saveAndFlush(dto.toEntity());
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("시스템 오류가 발생하였습니다.");
+			throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
 		}
 	}
 }

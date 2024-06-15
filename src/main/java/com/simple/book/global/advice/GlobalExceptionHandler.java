@@ -1,6 +1,7 @@
 package com.simple.book.global.advice;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 import java.util.Map;
 
 import com.simple.book.global.exception.*;
@@ -69,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException e) {
-        log.error("handleBusinessException", e);
+        log.error(e.getMessage(),e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
@@ -81,16 +82,7 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    //아이디 중복 에러
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    protected ResponseEntity<ErrorResponse> DuplicateException(DataIntegrityViolationException e) {
-        log.error("UserIdDuplicateException", e);
 
-//        String message = messageSource.getMessage("user.id.duplicated", null, LocaleContextHolder.getLocale());
-        
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.USERID_DUPLICATE);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USERID_DUPLICATE.getStatus()));
-    }
     /**
      * 권한이 없는 경로에 접근했을때 발생
      */
@@ -101,23 +93,11 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHORIZATION);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHORIZATION.getStatus()));
     }
-//    /**
-//     * 잘못된 비밀번호 입력시 발생
-//     */
-//    @ExceptionHandler(AuthenticationFailureException.class)
-//    protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
-//        log.error("AuthorizationFailureException", e);
-//
-//        final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
-//        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));
-//    }
     /**
      * 잘못된 아이디 입력시 발생
      */
     @ExceptionHandler(AuthenticationFailureException.class)
     protected ResponseEntity<ErrorResponse> AuthenticationFailureException(AuthenticationFailureException e) {
-        log.error("AuthenticationFailureException", e);
-
         final ErrorResponse response = ErrorResponse.of(ErrorCode.USER_FAILED_AUTHENTICATION);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.USER_FAILED_AUTHENTICATION.getStatus()));
     }
@@ -125,17 +105,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> httpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "필수 값을 입력 해 주세요.", "result", false));
     }
-
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> DataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.error(e.getMessage(),e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage(), "result", false));
+    }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> runtimeException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage(), "result", false));
+        log.error(e.getMessage(),e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "여기서 클라이언트한테 보낼 메시지", "result", false));
     }
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> EntityNotFoundException(EntityNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage(), "result", false));
+        log.error(e.getMessage(),e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
     @ExceptionHandler(InvalidValueException.class)
     public ResponseEntity<?> InvalidValueException(InvalidValueException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage(), "result", false));
     }
+
 }
