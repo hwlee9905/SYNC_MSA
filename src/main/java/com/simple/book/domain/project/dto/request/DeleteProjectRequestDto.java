@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Schema(description = "프로젝트를 삭제하기 위한 DTO")
-public class ProjectDeleteRequestDto {
+public class DeleteProjectRequestDto {
     @Schema(description = "프로젝트 아이디")
     private Long projectId;
 }

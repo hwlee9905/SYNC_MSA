@@ -113,10 +113,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> runtimeException(RuntimeException e) {
         log.error(e.getMessage(),e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "여기서 클라이언트한테 보낼 메시지", "result", false));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage(), "result", false));
     }
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> EntityNotFoundException(EntityNotFoundException e) {
+        log.error(e.getMessage(),e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> UserNotFoundException(UserNotFoundException e) {
         log.error(e.getMessage(),e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
