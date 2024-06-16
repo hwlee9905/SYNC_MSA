@@ -77,10 +77,10 @@ public class JWTFilter extends OncePerRequestFilter {
                     .password("temppassword")
                     .build();
             OAuth2UserDto OAuth2user = OAuth2UserDto.builder()
+                    .name(name)
                     .infoSet(infoSet)
                     .username(userId)
                     .role(role)
-                    .name(name)
                     .build();
 
 

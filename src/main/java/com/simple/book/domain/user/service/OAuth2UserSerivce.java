@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class OAuth2UserSerivce extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final AuthenticationRepository authenticationRepository;
+    @Transactional(rollbackFor = {Exception.class})
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -69,8 +71,8 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
             userRepository.save(user);
 
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
-                    .infoSet(infoSet.toString())
                     .name(oAuth2Response.getName())
+                    .infoSet(infoSet.toString())
                     .username(userId)
                     .role(Role.USER.toString())
                     .build();
@@ -78,12 +80,10 @@ public class OAuth2UserSerivce extends DefaultOAuth2UserService {
             return new CustomOAuth2User(oAuth2UserDto);
         }
         else {
-
-
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
+                    .name(oAuth2Response.getName())
                     .infoSet(infoSet.toString())
                     .username(existData.getUserId())
-                    .name(oAuth2Response.getName())
                     .role(Role.USER.toString())
                     .build();
 

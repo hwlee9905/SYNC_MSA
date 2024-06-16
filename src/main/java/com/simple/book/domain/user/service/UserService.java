@@ -87,8 +87,8 @@ public class UserService implements UserDetailsService {
 		
 		return user;
 	}
-
 	//로그인
+	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		//DB에서 조회
