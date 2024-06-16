@@ -20,6 +20,8 @@ import com.simple.book.domain.user.entity.UserTaskId;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.global.exception.EntityNotFoundException;
 import com.simple.book.global.exception.InvalidValueException;
+import com.simple.book.global.exception.MemberDuplicateInProjectException;
+import com.simple.book.global.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,24 +55,22 @@ public class MemberService {
     */
     @Transactional(rollbackFor = {Exception.class})
     public Member memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
-        Project project = projectRepository.findById(memberMappingToProjectRequestDto.getProjectId())
-                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingToProjectRequestDto.getProjectId()));
-
-        String UserId = memberMappingToProjectRequestDto.getUserId();
-        User user = userRepository.findByAuthenticationUserId(UserId);
-        if (user == null) {
-            throw new EntityNotFoundException("User not found with authentication user ID: " + UserId);
-        }
-
-        Member member = Member.builder()
-                .project(project)
-                .isManager(memberMappingToProjectRequestDto.getIsManager())
-                .user(user)
-                .build();
+        Member member;
         try {
+            Project project = projectRepository.findById(memberMappingToProjectRequestDto.getProjectId())
+                    .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + memberMappingToProjectRequestDto.getProjectId()));
+            String UserId = memberMappingToProjectRequestDto.getUserId();
+            User user = userRepository.findByAuthenticationUserId(UserId);
+            member = Member.builder()
+                    .project(project)
+                    .isManager(memberMappingToProjectRequestDto.getIsManager())
+                    .user(user)
+                    .build();
         	memberRepository.save(member);
         } catch (DataIntegrityViolationException e) {
-        	throw new RuntimeException("data");
+            throw new MemberDuplicateInProjectException(e.getMessage());
+         }catch (NullPointerException e) {
+            throw new UserNotFoundException(e.getMessage());
         }
 
         return member;
