@@ -12,6 +12,5 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task,Long> {
     Optional<Task> findById(Optional<Long> parentTaskId);
-    @Query("SELECT t FROM Task t")
-    List<GetTaskResponseDto> findAllProjectedBy();
+
 }
