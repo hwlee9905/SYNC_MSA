@@ -129,6 +129,13 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
+    @ExceptionHandler(MemberDuplicateInProjectException.class)
+    public ResponseEntity<?> MemberDuplicateInProjectException(MemberDuplicateInProjectException e) {
+        log.error(e.getMessage(),e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
     @ExceptionHandler(InvalidValueException.class)
     public ResponseEntity<?> InvalidValueException(InvalidValueException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage(), "result", false));

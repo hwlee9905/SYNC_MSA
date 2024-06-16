@@ -23,8 +23,10 @@ public enum ErrorCode {
     SOCIAL_EMAIL_EXIST(410, "U002", "Email has already been used in social register"),
     USER_FAILED_AUTHORIZATION(411, "U003", "This user is not authorized."),
     USER_FAILED_AUTHENTICATION(412, "U004", "Invalid password for this user."),
-    USER_NOT_FOUND(413, "U005", "해당 유저는 존재하지 않습니다."),
-    // More
+    USER_NOT_FOUND(400, "U005", "해당 유저는 존재하지 않습니다."),
+
+    // Member 예시
+    MEMBER_DUPLICATE_IN_PROJECT(400,"M001","이미 프로젝트에 존재하는 멤버입니다.")
     ;
 
     private final String code;

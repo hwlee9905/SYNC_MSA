@@ -73,9 +73,10 @@ public class ProjectService {
     }
     @Transactional(rollbackFor = {Exception.class})
     public String deleteProject(DeleteProjectRequestDto projectDeleteRequestDto) {
-        Optional<Project> opProject = projectRepository.findById(projectDeleteRequestDto.getProjectId());
-        User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());
+
         try{
+            Optional<Project> opProject = projectRepository.findById(projectDeleteRequestDto.getProjectId());
+            User user = userRepository.findByAuthenticationUserId(userService.getCurrentUserId());
             if (opProject.isPresent()){
                 Project project = opProject.get();
                 project.getTasks().size();
@@ -97,8 +98,8 @@ public class ProjectService {
             }else {
                 throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + projectDeleteRequestDto.getProjectId());
             }
-        }catch (Exception e) {
-            throw new RuntimeException(e);
+        }catch (NullPointerException e) {
+            throw new UserNotFoundException(e.getMessage());
         }
         return "OK";
     }

@@ -8,8 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class OAuth2UserDto {
-    private String role;
     private String name;
+    private String role;
     private String username;
     private String infoSet;
 }
