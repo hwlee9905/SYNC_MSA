@@ -4,21 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
-import com.simple.book.domain.member.service.MemberService;
-import com.simple.book.domain.project.dto.request.GetProjectsRequestDto;
-import com.simple.book.domain.project.dto.response.GetProjectsResponseDto;
-import com.simple.book.global.advice.ErrorCode;
-import com.simple.book.global.exception.InvalidValueException;
-import com.simple.book.global.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
 import com.simple.book.domain.member.entity.Member;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.member.repository.UserTaskRepository;
+import com.simple.book.domain.member.service.MemberService;
 import com.simple.book.domain.project.dto.request.CreateProjectRequestDto;
 import com.simple.book.domain.project.dto.request.DeleteProjectRequestDto;
+import com.simple.book.domain.project.dto.request.GetProjectsRequestDto;
+import com.simple.book.domain.project.dto.response.GetProjectsResponseDto;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.ProjectRepository;
 import com.simple.book.domain.task.entity.Task;
@@ -27,6 +24,8 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.service.UserService;
 import com.simple.book.global.exception.EntityNotFoundException;
+import com.simple.book.global.exception.InvalidValueException;
+import com.simple.book.global.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
