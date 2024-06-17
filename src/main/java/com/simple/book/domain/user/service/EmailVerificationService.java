@@ -17,6 +17,7 @@ import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
 import com.simple.book.domain.user.entity.EmailVerification;
 import com.simple.book.domain.user.repository.EmailVerificationRepository;
 import com.simple.book.global.config.ApplicationConfig;
+import com.simple.book.global.exception.UnknownException;
 import com.simple.book.global.util.ResponseMessage;
 
 import jakarta.mail.MessagingException;
@@ -88,8 +89,7 @@ public class EmailVerificationService {
 	        helper.setText(htmlContent, true);
 			javaMailSender.send(message);
 		} catch (Exception e) {
-			log.error(e.getStackTrace());
-			throw new RuntimeException(e);
+			throw new UnknownException(e.getMessage());
 		}
 
 		return ResponseMessage.builder().message("전송 완료").build();

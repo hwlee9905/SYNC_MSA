@@ -27,8 +27,11 @@ public enum ErrorCode {
 
     // Member 예시
     MEMBER_DUPLICATE_IN_PROJECT(409,"M001","이미 프로젝트에 존재하는 멤버입니다."),
-    MEMBER_DUPLICATE_IN_TASK(409,"M002","이미 업무에 존재하는 멤버입니다.")
-    ;
+    MEMBER_DUPLICATE_IN_TASK(409,"M002","이미 업무에 존재하는 멤버입니다."),
+	
+	// Global
+	UNKNOWN_ERROR(500, "G001", "시스템에 오류가 발생 하였습니다. 관리자에게 문의 해주세요.");
+
 
     private final String code;
     private final String message;

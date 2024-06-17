@@ -26,6 +26,7 @@ import com.simple.book.domain.alarm.repository.AlarmUrlRepository;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
+import com.simple.book.global.exception.UnknownException;
 
 @Service
 public class AlarmService {
@@ -132,10 +133,10 @@ public class AlarmService {
 			if (url.isPresent()) {
 				sendAlarm(alarmId, url.get());
 			} else {
-				throw new RuntimeException("시스템 오류가 발생하였습니다.");
+				throw new UnknownException(null);
 			}
 		} else {
-			throw new RuntimeException("시스템 오류가 발생하였습니다.");
+			throw new UnknownException(null);
 		}
 	}
 	
@@ -147,7 +148,7 @@ public class AlarmService {
 		try {
 			result = alarmRepository.saveAndFlush(dto.toEntity()).toDto().getAlarmId();
 		}catch (Exception e) {
-			throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
+			throw new UnknownException(e.getMessage());
 		}
 		return result;
 	}
@@ -164,10 +165,10 @@ public class AlarmService {
 			try {
 				kafkaTemplate.send("User", objectMapper.writeValueAsString(dto));
 			} catch (Exception e) {
-				throw new RuntimeException("시스템 오류가 발생하였습니다.",e);
+				throw new UnknownException(e.getMessage());
 			}
 		} else {
-			throw new RuntimeException("시스템 오류가 발생하였습니다.");
+			throw new UnknownException(null);
 		}
 	}
 	

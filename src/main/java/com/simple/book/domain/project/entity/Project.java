@@ -34,4 +34,7 @@ public class Project extends BaseEntity {
     private List<Member> members = new ArrayList<>();
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Invite> invite = new ArrayList<>();
 }

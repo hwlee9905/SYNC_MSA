@@ -143,5 +143,13 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(errorCode , e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
+    
+    @ExceptionHandler(UnknownException.class)
+    public ResponseEntity<?> UnknownException(UnknownException e) {
+    	log.error("handleException", e);
+    	final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
 
 }
