@@ -1,11 +1,13 @@
 package com.simple.book.domain.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Schema(description = "멤버를 프로젝트에 할당하기 위한 DTO")
 public class MemberMappingToProjectRequestDto {
     @Schema(description = "유저 로그인 아이디")

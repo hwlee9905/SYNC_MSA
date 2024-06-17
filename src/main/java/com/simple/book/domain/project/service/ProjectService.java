@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
+import com.simple.book.domain.member.service.MemberService;
 import com.simple.book.domain.project.dto.request.GetProjectsRequestDto;
 import com.simple.book.domain.project.dto.response.GetProjectsResponseDto;
 import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.exception.InvalidValueException;
 import com.simple.book.global.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +41,7 @@ public class ProjectService {
 	private final MemberRepository memberRepository;
 	private final TaskRepository taskRepository;
 	private final UserTaskRepository userTaskRepository;
+    private final MemberService memberService;
 
 	@Transactional(rollbackFor = { Exception.class })
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
@@ -47,6 +51,11 @@ public class ProjectService {
                 .endDate(projectCreateRequestDto.getEndDate())
 				.title(projectCreateRequestDto.getTitle()).build();
 		projectRepository.save(project);
+        MemberMappingToProjectRequestDto memberMappingToProjectRequestDto = MemberMappingToProjectRequestDto.builder()
+                .projectId(project.getId())
+                .userId(userService.getCurrentUserId())
+                .isManager(true)
+                .build();
 		return project;
 	}
     @Transactional(rollbackFor = { Exception.class })
@@ -113,10 +122,10 @@ public class ProjectService {
             if (member.get().isManager()) {
                 // 유효한 관리자
             } else {
-                throw new EntityNotFoundException("해당 멤버는 해당 프로젝트의 관리자가 아닙니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
+                throw new InvalidValueException("해당 멤버는 해당 프로젝트의 관리자가 아닙니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
             }
         } else {
-            throw new EntityNotFoundException("해당 멤버는 해당 프로젝트에 소속되어 있지 않습니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
+            throw new InvalidValueException("해당 멤버는 해당 프로젝트에 소속되어 있지 않습니다. ProjectId : " + project.getId() + " UserId : " + user.getAuthentication().getUserId());
         }
     }
 

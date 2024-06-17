@@ -18,10 +18,7 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.entity.UserTask;
 import com.simple.book.domain.user.entity.UserTaskId;
 import com.simple.book.domain.user.repository.UserRepository;
-import com.simple.book.global.exception.EntityNotFoundException;
-import com.simple.book.global.exception.InvalidValueException;
-import com.simple.book.global.exception.MemberDuplicateInProjectException;
-import com.simple.book.global.exception.UserNotFoundException;
+import com.simple.book.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,14 +42,7 @@ public class MemberService {
     
     @Autowired
     private AlarmService alarmService;
-    /**
-    * @memberAddToProject
-    * @Caution
-    * 같은 유저를 여러개의 프로젝트에 추가하기 위해서 member table의 unique 제약조건을 복합키로 설정해야 합니다.
 
-    * user_id와 project_id의 복합키로 고유 제약 조건 추가
-    ALTER TABLE member ADD CONSTRAINT unique_user_project UNIQUE (user_id, project_id);
-    */
     @Transactional(rollbackFor = {Exception.class})
     public Member memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
         Member member;
@@ -106,9 +96,7 @@ public class MemberService {
 	            taskMemberRepository.saveAndFlush(memberTask);
                 userTaskRepository.saveAndFlush(userTask);
 	        } catch (DataIntegrityViolationException e) {
-	        	throw new RuntimeException("해당 업무에 이미 등록된 담당자가 있습니다.");
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+	        	throw new MemberDuplicateInTaskException(e.getMessage());
 			}
 	        alarmService.sendTaskManager(memberMappingToTaskRequestDto.getMemberId());
         

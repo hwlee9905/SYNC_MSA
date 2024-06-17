@@ -32,6 +32,12 @@ public class ErrorResponse {
         this.code = errorCode.getCode();
         this.errors = new ArrayList<>();
     }
+    private ErrorResponse(final ErrorCode errorCode, String message) {
+        this.message = message;
+        this.status = errorCode.getStatus();
+        this.code = errorCode.getCode();
+        this.errors = new ArrayList<>();
+    }
 
     public static ErrorResponse of(final ErrorCode errorCode, final BindingResult bindingResult) {
         return new ErrorResponse(errorCode, FieldError.of(bindingResult));
@@ -39,6 +45,10 @@ public class ErrorResponse {
 
     public static ErrorResponse of(final ErrorCode errorCode) {
         return new ErrorResponse(errorCode);
+    }
+
+    public static ErrorResponse of(final ErrorCode errorCode, String message) {
+        return new ErrorResponse(errorCode, message);
     }
 
     public static ErrorResponse of(MethodArgumentTypeMismatchException e) {

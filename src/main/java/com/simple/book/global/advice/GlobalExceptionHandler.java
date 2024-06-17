@@ -119,7 +119,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> EntityNotFoundException(EntityNotFoundException e) {
         log.error(e.getMessage(),e);
         final ErrorCode errorCode = e.getErrorCode();
-        final ErrorResponse response = ErrorResponse.of(errorCode);
+        final ErrorResponse response = ErrorResponse.of(errorCode , e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
     @ExceptionHandler(UserNotFoundException.class)
@@ -138,7 +138,10 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(InvalidValueException.class)
     public ResponseEntity<?> InvalidValueException(InvalidValueException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage(), "result", false));
+        log.error(e.getMessage(),e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode , e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
 
 }
