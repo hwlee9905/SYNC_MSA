@@ -26,7 +26,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(400, "U005", "해당 유저는 존재하지 않습니다."),
 
     // Member 예시
-    MEMBER_DUPLICATE_IN_PROJECT(400,"M001","이미 프로젝트에 존재하는 멤버입니다.")
+    MEMBER_DUPLICATE_IN_PROJECT(409,"M001","이미 프로젝트에 존재하는 멤버입니다."),
+    MEMBER_DUPLICATE_IN_TASK(409,"M002","이미 업무에 존재하는 멤버입니다.")
     ;
 
     private final String code;
