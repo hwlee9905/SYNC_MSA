@@ -16,12 +16,12 @@ import com.simple.book.domain.weather.service.WeatherService;
 public class WeatherController {
 	@Autowired
 	private ObjectMapper mapper;
-	
+
 	@Autowired
 	private WeatherService weatherService;
 
 	@PostMapping("/weather")
-	public ResponseEntity<String> weather(@RequestBody HashMap<String, Integer> body) throws Exception{
+	public ResponseEntity<String> weather(@RequestBody HashMap<String, Integer> body) throws Exception {
 		HashMap<String, String> weather = weatherService.getWeather(body);
 		return new ResponseEntity<>(mapper.writeValueAsString(weather), HttpStatus.OK);
 	}
