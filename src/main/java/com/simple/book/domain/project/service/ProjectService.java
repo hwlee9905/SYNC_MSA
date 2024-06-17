@@ -56,6 +56,7 @@ public class ProjectService {
                 .userId(userService.getCurrentUserId())
                 .isManager(true)
                 .build();
+        memberService.memberAddToProject(memberMappingToProjectRequestDto);
 		return project;
 	}
     @Transactional(rollbackFor = { Exception.class })
