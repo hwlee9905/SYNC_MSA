@@ -1,7 +1,6 @@
 package com.simple.book.domain.alarm.controller;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,16 +14,14 @@ import com.simple.book.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(value = "/api/user/alarm", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class AlarmController {
-
-	@Autowired
-	private AlarmService alarmService;
-	
-	@Autowired
-	private UserService userService;
+	private final AlarmService alarmService;
+	private final UserService userService;
 
 	@Operation(summary = "과거 알림 불러오기", description = "데이터베이스에 저장 된 알림 정보를 불러옵니다.")
 	@GetMapping("/list")

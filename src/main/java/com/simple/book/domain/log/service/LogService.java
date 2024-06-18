@@ -11,7 +11,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,28 +20,17 @@ import org.springframework.stereotype.Service;
 
 import com.simple.book.global.config.ApplicationConfig;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class LogService {
 	private long lastReadPosition = 0;
-	
 	private final KafkaTemplate<String, String> kafkaTemplate;
+	private final SimpMessagingTemplate messagingTemplate;
+    private final KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory;
+	private final ApplicationConfig applicationConfig;
 	
-	@Autowired
-	private SimpMessagingTemplate messagingTemplate;
-	
-	@Autowired
-    private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory;
-	
-	@Autowired
-	private ApplicationConfig applicationConfig;
-	
-    
-    @Autowired
-	public LogService(KafkaTemplate<String, String> kafkaTemplate) {
-		this.kafkaTemplate=kafkaTemplate;
-	}
-    
-    
 	public void readLog() {
 		Path logDir = Paths.get(applicationConfig.getLogPath());
 

@@ -39,9 +39,7 @@ public class MemberService {
     private final TaskRepository taskRepository;
     private final TaskMemberRepository taskMemberRepository;
     private final UserTaskRepository userTaskRepository;
-    
-    @Autowired
-    private AlarmService alarmService;
+    private final AlarmService alarmService;
 
     @Transactional(rollbackFor = {Exception.class})
     public Member memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto){
