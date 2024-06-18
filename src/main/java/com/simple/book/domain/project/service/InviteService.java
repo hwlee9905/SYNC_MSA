@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,34 +16,30 @@ import com.simple.book.domain.project.entity.Invite;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.InviteReposotiry;
 import com.simple.book.domain.project.repository.ProjectRepository;
+import com.simple.book.global.exception.EntityNotFoundException;
 import com.simple.book.global.exception.UnknownException;
 import com.simple.book.global.util.ResponseMessage;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class InviteService {
-	@Autowired
-	private JavaMailSender javaMailSender;
+	private final JavaMailSender javaMailSender;
+	private final TemplateEngine templateEngine;
+	private final InviteReposotiry inviteReposotiry;
+	private final ProjectRepository projectRepository;
 
-	@Autowired
-	private TemplateEngine templateEngine;
-
-	@Autowired
-	private InviteReposotiry inviteReposotiry;
-
-	@Autowired
-	private ProjectRepository projectRepository;
-
-	public ResponseMessage createLink(long projectId) {
+	public ResponseMessage createLink(Project project) {
 		UUID uuid = UUID.randomUUID();
 		if (inviteReposotiry.existsByToken(uuid)) {
-			createLink(projectId);
+			createLink(project);
 		}
 		String url = "https://www.sync-team.co.kr/project/invite/" + uuid.toString();
 		InviteDto dto = InviteDto.builder()
 				.url(url)
-				.project(projectRepository.getReferenceById(projectId))
+				.project(project)
 				.token(uuid)
 				.build();
 		try {
@@ -60,7 +55,7 @@ public class InviteService {
 		if (inviteInfo.isPresent()) {
 			return ResponseMessage.builder().message(inviteInfo.get().toDto().getUrl()).build();
 		} else {
-			throw new UnknownException(null);
+			throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + projectId);
 		}
 	}
 

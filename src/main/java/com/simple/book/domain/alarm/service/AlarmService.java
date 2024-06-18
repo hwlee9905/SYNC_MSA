@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -28,40 +27,26 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.global.exception.UnknownException;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AlarmService {
-	
+	// kafka
 	private final KafkaTemplate<String, String> kafkaTemplate;
-	
 	private final KafkaAdmin kafkaAdmin;
+	private final KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory;
 	
-	@Autowired
-	private SimpMessagingTemplate messagingTemplate;
-
-	@Autowired
-	private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory;
-
-	@Autowired
-	private AlarmRepository alarmRepository;
+	// reposotiry
+	private final AlarmRepository alarmRepository;
+	private final UserRepository userRepository;
+	private final MemberRepository memberRepository;
+	private final AlarmUrlRepository alarmUrlRepository;
 	
-	@Autowired
-	private UserRepository userRepository;
+	// common
+	private final SimpMessagingTemplate messagingTemplate;
+	private final ObjectMapper objectMapper;
 	
-	@Autowired
-	private MemberRepository memberRepository;
-	
-	@Autowired
-	private AlarmUrlRepository alarmUrlRepository;
-	
-	@Autowired
-	private ObjectMapper objectMapper;
-	
-	@Autowired
-	public AlarmService(KafkaTemplate<String, String> kafkaTemplate, KafkaAdmin kafkaAdmin) {
-		this.kafkaTemplate = kafkaTemplate;
-		this.kafkaAdmin = kafkaAdmin;
-	}
-
 	public void sendMessage(String topic, String message) {
 		kafkaTemplate.send(topic, message);
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import com.simple.book.domain.project.dto.request.GetProjectsRequestDto;
 import com.simple.book.domain.project.dto.response.GetProjectsResponseDto;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.ProjectRepository;
+import com.simple.book.domain.search.service.SearchService;
 import com.simple.book.domain.task.entity.Task;
 import com.simple.book.domain.task.repository.TaskRepository;
 import com.simple.book.domain.user.entity.User;
@@ -41,6 +43,8 @@ public class ProjectService {
 	private final TaskRepository taskRepository;
 	private final UserTaskRepository userTaskRepository;
     private final MemberService memberService;
+    private final SearchService searchService;
+    private final InviteService inviteService;
 
 	@Transactional(rollbackFor = { Exception.class })
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
@@ -56,6 +60,13 @@ public class ProjectService {
                 .isManager(true)
                 .build();
         memberService.memberAddToProject(memberMappingToProjectRequestDto);
+        
+        // elasticsearch index 추가
+        searchService.newInit(project);
+        
+        //초대 URL 생성
+        inviteService.createLink(project);
+        
 		return project;
 	}
     @Transactional(rollbackFor = { Exception.class })

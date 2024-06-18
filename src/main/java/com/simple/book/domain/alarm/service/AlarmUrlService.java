@@ -3,7 +3,6 @@ package com.simple.book.domain.alarm.service;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.simple.book.domain.alarm.dto.AlarmUrlDto;
@@ -11,14 +10,13 @@ import com.simple.book.domain.alarm.repository.AlarmUrlRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AlarmUrlService {
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private AlarmUrlRepository alarmUrlRepository;
+	private final UserRepository userRepository;
+	private final AlarmUrlRepository alarmUrlRepository;
 	
 	public String getAlarmUrl(String userId) {
 		String result = null;
