@@ -69,7 +69,7 @@ public class InviteService {
 			context.setVariable("url", projectInfo.get("url"));
 			context.setVariable("name", projectInfo.get("name"));
 
-			String htmlContent = templateEngine.process("/email/email_template.html", context);
+			String htmlContent = templateEngine.process("email/email_template.html", context);
 			
 			helper.setTo(email);
 			helper.setFrom("sync@sync-team.co.kr");
