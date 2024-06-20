@@ -16,9 +16,9 @@ import com.simple.book.domain.project.entity.Invite;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.InviteReposotiry;
 import com.simple.book.domain.project.repository.ProjectRepository;
+import com.simple.book.global.advice.ResponseMessage;
 import com.simple.book.global.exception.EntityNotFoundException;
 import com.simple.book.global.exception.UnknownException;
-import com.simple.book.global.util.ResponseMessage;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

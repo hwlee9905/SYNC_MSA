@@ -45,6 +45,11 @@ public class UserController {
 		}
 		return "ID : " + userId + " 이름 : " + name + "님 반갑습니다. 유저 컨트롤러입니다.";
 	}
+	
+	@GetMapping("/info")
+	public ResponseEntity<?> getUserInfo(){
+		return ResponseEntity.ok().body(userService.getUserInfo());
+	}
 
 	@ResponseBody
 	@PostMapping("remove")

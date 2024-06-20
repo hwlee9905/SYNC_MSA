@@ -6,6 +6,7 @@ import com.simple.book.domain.jwt.util.JWTUtil;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
 import com.simple.book.domain.user.util.InfoSet;
 import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.advice.ResponseMessage;
 import com.simple.book.global.exception.AuthenticationFailureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -83,7 +84,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // ObjectMapper를 사용하여 JSON으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(userResponse);
+        String jsonResponse = objectMapper.writeValueAsString(ResponseMessage.builder().build());
         response.addHeader("Set-Cookie", jwtCookie.toString());
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");

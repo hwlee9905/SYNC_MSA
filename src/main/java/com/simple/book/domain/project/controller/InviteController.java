@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.project.service.InviteService;
-import com.simple.book.global.util.ResponseMessage;
+import com.simple.book.global.advice.ResponseMessage;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
