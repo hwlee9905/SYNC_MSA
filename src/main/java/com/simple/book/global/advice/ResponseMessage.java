@@ -1,4 +1,4 @@
-package com.simple.book.global.util;
+package com.simple.book.global.advice;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

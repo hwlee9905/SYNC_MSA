@@ -16,9 +16,9 @@ import org.thymeleaf.context.Context;
 import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
 import com.simple.book.domain.user.entity.EmailVerification;
 import com.simple.book.domain.user.repository.EmailVerificationRepository;
+import com.simple.book.global.advice.ResponseMessage;
 import com.simple.book.global.config.ApplicationConfig;
 import com.simple.book.global.exception.UnknownException;
-import com.simple.book.global.util.ResponseMessage;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

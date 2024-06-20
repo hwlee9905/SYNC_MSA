@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
 import com.simple.book.domain.user.service.EmailVerificationService;
-import com.simple.book.global.util.ResponseMessage;
+import com.simple.book.global.advice.ResponseMessage;
 
 import io.swagger.v3.oas.annotations.Operation;
 
