@@ -32,8 +32,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Collections;
-
-
+import java.util.List;
 import java.util.Collections;
 
 @Configuration
@@ -118,7 +117,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
                         //프론트와 협의하여 포트번호를 수정할 것
-                        configuration.setAllowedOrigins(Collections.singletonList("https://localhost:3000"));
+                        configuration.setAllowedOrigins(List.of("https://localhost:3000", "https://localhost:443"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
