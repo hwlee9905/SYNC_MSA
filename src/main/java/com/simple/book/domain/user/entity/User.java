@@ -3,6 +3,8 @@ package com.simple.book.domain.user.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.simple.book.domain.user.util.Role;
 import com.simple.book.global.util.BaseEntity;
 

@@ -3,7 +3,6 @@ package com.simple.book.domain.user.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
+import com.simple.book.domain.member.repository.UserTaskRepository;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
 import com.simple.book.domain.user.entity.Authentication;
 import com.simple.book.domain.user.entity.User;
@@ -39,8 +40,8 @@ public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-	@Autowired
-	private AlarmUrlService alarmUrlService;
+	private final AlarmUrlService alarmUrlService;
+	private final UserTaskRepository userTaskRepository;
 
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage remove(String userId) {
@@ -108,20 +109,49 @@ public class UserService implements UserDetailsService {
 		throw new AuthenticationFailureException("아이디가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
 	}
 
+	/**
+	 * 사용자 정보 가져오기
+	 * 
+	 * @return
+	 */
 	public ResponseMessage getUserInfo() {
-		ResponseMessage result;
+		Map<String, Object> map = new HashMap<>();
 		try {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
-			Map<String, Object> map = new HashMap<>();
 			map.put("username", info.getUsername());
 			map.put("position", info.getPosition());
 			map.put("introduction", info.getIntroduction());
-			result = ResponseMessage.builder().value(map).build();
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
-		return result;
+		return ResponseMessage.builder().value(map).build();
+	}
+
+	/**
+	 * 사용자 정보 수정하기
+	 * 
+	 * @param body
+	 * @return
+	 */
+	@Transactional(rollbackFor = { Exception.class })
+	public ResponseMessage modifyUserInfo(ModifyUserInfoRequestDto body) {
+		String userId = getCurrentUserId();
+		if (userId != null) {
+			User user = userRepository.findByAuthenticationUserId(userId);
+
+			user.setUsername(body.getUsername());
+			user.setPosition(body.getPosition());
+			user.setIntroduction(body.getIntroduction());
+			try {
+				userRepository.saveAndFlush(user);
+			} catch (Exception e) {
+				throw new UnknownException(e.getMessage());
+			}
+		} else {
+			throw new UnknownException(null);
+		}
+		return ResponseMessage.builder().message("수정 되었습니다.").build();
 	}
 
 	public String getCurrentUserId() {
