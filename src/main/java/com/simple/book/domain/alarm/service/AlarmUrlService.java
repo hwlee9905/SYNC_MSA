@@ -9,6 +9,7 @@ import com.simple.book.domain.alarm.dto.AlarmUrlDto;
 import com.simple.book.domain.alarm.repository.AlarmUrlRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
+import com.simple.book.global.advice.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +19,7 @@ public class AlarmUrlService {
 	private final UserRepository userRepository;
 	private final AlarmUrlRepository alarmUrlRepository;
 	
-	public String getAlarmUrl(String userId) {
+	public ResponseMessage getAlarmUrl(String userId) {
 		String result = null;
 		if (userId != null) {
 			Optional<UUID> oldUrl = alarmUrlRepository.findUrlByAuthenticationUserId(userId);
@@ -30,7 +31,7 @@ public class AlarmUrlService {
 		} else {
 			throw new RuntimeException("로그인 후 이용해 주시길 바랍니다.");
 		}
-		return result;
+		return ResponseMessage.builder().value(result).build();
 	}
 
 	public void createAlarmUrl(long id) {

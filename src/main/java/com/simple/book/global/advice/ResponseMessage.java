@@ -13,4 +13,6 @@ public class ResponseMessage {
 	
 	@Builder.Default
 	private boolean result = true;
+	
+	private Object value;
 }

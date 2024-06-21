@@ -1,18 +1,29 @@
 package com.simple.book.domain.user.entity;
 
-import com.simple.book.domain.member.entity.Member;
-import com.simple.book.domain.project.entity.Project;
-import com.simple.book.domain.task.entity.Task;
-import com.simple.book.domain.user.util.Address;
-import com.simple.book.domain.user.util.ProfileImage;
-import com.simple.book.domain.user.util.Role;
-import com.simple.book.domain.user.util.Sex;
-import com.simple.book.global.util.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.simple.book.domain.user.util.Role;
+import com.simple.book.global.util.BaseEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

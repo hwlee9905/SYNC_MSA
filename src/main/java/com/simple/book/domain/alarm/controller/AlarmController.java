@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.alarm.service.AlarmService;
 import com.simple.book.domain.user.service.UserService;
+import com.simple.book.global.advice.ResponseMessage;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,16 +26,15 @@ public class AlarmController {
 
 	@Operation(summary = "과거 알림 불러오기", description = "데이터베이스에 저장 된 알림 정보를 불러옵니다.")
 	@GetMapping("/list")
-	public ResponseEntity<?> getAlarmList() {
+	public ResponseEntity<ResponseMessage> getAlarmList() {
 		String userId = userService.getCurrentUserId();
 		return ResponseEntity.ok().body(alarmService.getAlarmList(userId));
 	}
 	
 	@Operation(summary = "과거 알림 닫기", description = "데이터베이스에 저장 된 알림을 삭제 합니다.")
 	@DeleteMapping("/close")
-	public ResponseEntity<?> deleteAlarm(@Parameter(description = "알림 PK 값") @RequestParam(name="alarmId") UUID alarmId){
-		alarmService.deleteAlarm(alarmId);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<ResponseMessage> deleteAlarm(@Parameter(description = "알림 PK 값") @RequestParam(name="alarmId") UUID alarmId){
+		return ResponseEntity.ok().body(alarmService.deleteAlarm(alarmId));
 	}
 	
 //	@PostMapping("/add/topic")

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.user.service.UserService;
+import com.simple.book.global.advice.ResponseMessage;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class AlarmUrlController {
 	
 	@Operation(summary = "알림 URL 불러오기", description = "사용자 고유 알림 URL을 가져옵니다.")
 	@GetMapping("/get")
-	public ResponseEntity<?> getAlarmUrl(){
+	public ResponseEntity<ResponseMessage> getAlarmUrl(){
 		String userId = userService.getCurrentUserId();
 		return ResponseEntity.ok().body(alarmUrlService.getAlarmUrl(userId));
 	}
