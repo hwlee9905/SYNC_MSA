@@ -1,35 +1,37 @@
 package com.simple.book.domain.task.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.simple.book.domain.task.dto.request.CreateTaskRequestDto;
 import com.simple.book.domain.task.dto.request.GetTaskRequestDto;
-import com.simple.book.domain.task.dto.response.GetTaskResponseDto;
-import com.simple.book.domain.task.entity.Task;
 import com.simple.book.domain.task.service.TaskService;
+import com.simple.book.global.advice.ResponseMessage;
+
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 @RestController
-@Slf4j
-@Controller
 @RequestMapping("api/user/project/task")
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
+    
     @PostMapping("/create")
-    public ResponseEntity<String> createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
-        taskService.createTask(createTaskRequestDto);
-        return ResponseEntity.ok("OK");
+    public ResponseEntity<ResponseMessage> createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
+        return ResponseEntity.ok().body(taskService.createTask(createTaskRequestDto));
     }
+    
     //해당 업무의 모든 하위 업무를 조회합니다.
     @PostMapping("/getSubTasks")
-    public GetTaskResponseDto getSubTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
-        return taskService.getAllSubTask(getTaskRequestDto.getTaskId());
+    public ResponseEntity<ResponseMessage> getSubTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
+    	return ResponseEntity.ok().body(taskService.getAllSubTask(getTaskRequestDto.getTaskId()));
     }
+    
     //해당 업무의 자식 업무만 조회합니다.
     @PostMapping("/getOnlyChildrenTasks")
-    public GetTaskResponseDto getOnlyChildrenTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
-        return taskService.getOnlyChildrenTasks(getTaskRequestDto.getTaskId());
+    public ResponseEntity<ResponseMessage> getOnlyChildrenTasks(@RequestBody GetTaskRequestDto getTaskRequestDto) {
+    	return ResponseEntity.ok().body(taskService.getOnlyChildrenTasks(getTaskRequestDto.getTaskId()));
     }
 }

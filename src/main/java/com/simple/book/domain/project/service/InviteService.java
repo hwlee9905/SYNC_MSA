@@ -53,7 +53,7 @@ public class InviteService {
 	public ResponseMessage getLink(long projectId) {
 		Optional<Invite> inviteInfo = inviteReposotiry.findByProject(projectRepository.getReferenceById(projectId));
 		if (inviteInfo.isPresent()) {
-			return ResponseMessage.builder().message(inviteInfo.get().toDto().getUrl()).build();
+			return ResponseMessage.builder().value(inviteInfo.get().toDto().getUrl()).build();
 		} else {
 			throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + projectId);
 		}

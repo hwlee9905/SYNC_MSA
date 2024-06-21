@@ -1,28 +1,7 @@
 package com.simple.book.domain.user.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.simple.book.domain.alarm.service.AlarmUrlService;
-import com.simple.book.domain.jwt.dto.AuthTokenDto;
-import com.simple.book.domain.jwt.dto.CustomUserDetails;
-import com.simple.book.domain.oauth2.CustomOAuth2User;
-import com.simple.book.domain.user.dto.request.SignupRequestDto;
-import com.simple.book.domain.user.entity.Authentication;
-import com.simple.book.domain.user.entity.User;
-import com.simple.book.domain.user.repository.AuthenticationRepository;
-import com.simple.book.domain.user.util.Address;
-import com.simple.book.domain.user.util.InfoSet;
-import com.simple.book.domain.user.util.Role;
-import com.simple.book.global.advice.ErrorCode;
-import com.simple.book.global.advice.ResponseMessage;
-import com.simple.book.global.exception.AuthenticationFailureException;
-import com.simple.book.global.exception.UnknownException;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,11 +13,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
-import com.simple.book.domain.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.simple.book.domain.alarm.service.AlarmUrlService;
+import com.simple.book.domain.jwt.dto.AuthTokenDto;
+import com.simple.book.domain.jwt.dto.CustomUserDetails;
+import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.SignupRequestDto;
+import com.simple.book.domain.user.entity.Authentication;
+import com.simple.book.domain.user.entity.User;
+import com.simple.book.domain.user.repository.AuthenticationRepository;
+import com.simple.book.domain.user.repository.UserRepository;
+import com.simple.book.domain.user.util.InfoSet;
+import com.simple.book.domain.user.util.Role;
+import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.advice.ResponseMessage;
+import com.simple.book.global.exception.AuthenticationFailureException;
+import com.simple.book.global.exception.UnknownException;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
@@ -48,10 +43,14 @@ public class UserService implements UserDetailsService {
 	private AlarmUrlService alarmUrlService;
 
 	@Transactional(rollbackFor = { Exception.class })
-	public String remove(String userId) {
-		Authentication authentication = authenticationRepository.findByUserId(userId);
-		authenticationRepository.delete(authentication);
-		return "회원탈퇴 완료";
+	public ResponseMessage remove(String userId) {
+		try {
+			Authentication authentication = authenticationRepository.findByUserId(userId);
+			authenticationRepository.delete(authentication);
+		} catch (Exception e) {
+			throw new UnknownException(e.getMessage());
+		}
+		return ResponseMessage.builder().message("success").build();
 	}
 
 	// 회원가입
@@ -118,8 +117,7 @@ public class UserService implements UserDetailsService {
 			map.put("username", info.getUsername());
 			map.put("position", info.getPosition());
 			map.put("introduction", info.getIntroduction());
-			ObjectMapper mapper = new ObjectMapper();
-			result = ResponseMessage.builder().message(mapper.writeValueAsString(map)).build();
+			result = ResponseMessage.builder().value(map).build();
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}

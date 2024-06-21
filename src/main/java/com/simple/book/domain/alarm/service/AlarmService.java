@@ -25,6 +25,7 @@ import com.simple.book.domain.alarm.repository.AlarmUrlRepository;
 import com.simple.book.domain.member.repository.MemberRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
+import com.simple.book.global.advice.ResponseMessage;
 import com.simple.book.global.exception.UnknownException;
 
 import lombok.RequiredArgsConstructor;
@@ -83,8 +84,8 @@ public class AlarmService {
 		messagingTemplate.convertAndSend("/topic/task", message);
 	}
 	
-	public List<ResAlarm> getAlarmList(String userId) {
-		List<ResAlarm> result = new ArrayList<>();
+	public ResponseMessage getAlarmList(String userId) {
+		List<ResAlarm> resultList = new ArrayList<>();
 		List<Alarm> alarmList = alarmRepository.findByUserId(userId);
 		if (alarmList.size() > 0) {
 			for (Alarm entity : alarmList) {
@@ -92,18 +93,19 @@ public class AlarmService {
 				resAlarm.setAlarmId(entity.toDto().getAlarmId());
 				resAlarm.setMessage(entity.toDto().getMessage());
 				resAlarm.setCreatedAt(entity.getCreatedAt());
-				result.add(resAlarm);
+				resultList.add(resAlarm);
 			}
 		} 
-		return result;
+		return ResponseMessage.builder().value(resultList).build();
 	}
 	
-	public void deleteAlarm(UUID alarmId) {
+	public ResponseMessage deleteAlarm(UUID alarmId) {
 		try {
 			alarmRepository.deleteById(alarmId);
 		} catch(Exception e) {
 			throw new RuntimeException("시스템 오류가 발생하였습니다.");
 		}
+		return ResponseMessage.builder().build();
 	}
 	
 	public void sendTaskManager(long memberId) {
@@ -161,6 +163,7 @@ public class AlarmService {
 	public void listen(String message) {
 		messagingTemplate.convertAndSend("/topic/messages", message);
 	}
+	
 
 //	public void createTopic(AlarmDto body) {
 //		NewTopic newTopic = new NewTopic(body.getName(), 1, (short) 1);

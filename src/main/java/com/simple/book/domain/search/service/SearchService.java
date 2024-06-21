@@ -9,6 +9,7 @@ import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.ProjectRepository;
 import com.simple.book.domain.search.document.Search;
 import com.simple.book.domain.search.repository.SearchRepository;
+import com.simple.book.global.advice.ResponseMessage;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,8 @@ public class SearchService {
 		searchRepository.save(document);
 	}
 	
-	public List<Search> search(String keyword) {
-		return searchRepository.findByTitleContainingOrDescriptionContaining(keyword, keyword);
+	public ResponseMessage search(String keyword) {
+		List<Search> result = searchRepository.findByTitleContainingOrDescriptionContaining(keyword, keyword);
+		return ResponseMessage.builder().value(result).build();
 	}
 }
