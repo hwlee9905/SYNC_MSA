@@ -146,7 +146,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(UnknownException.class)
     public ResponseEntity<?> UnknownException(UnknownException e) {
-    	log.error("handleException", e);
+    	log.error("UnknownException", e);
     	final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));

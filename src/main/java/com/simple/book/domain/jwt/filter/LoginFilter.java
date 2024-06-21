@@ -1,43 +1,31 @@
 package com.simple.book.domain.jwt.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.simple.book.domain.jwt.dto.CustomUserDetails;
-import com.simple.book.domain.jwt.util.JWTUtil;
-import com.simple.book.domain.oauth2.CustomOAuth2User;
-import com.simple.book.domain.user.util.InfoSet;
-import com.simple.book.global.advice.ErrorCode;
-import com.simple.book.global.advice.ResponseMessage;
-import com.simple.book.global.exception.AuthenticationFailureException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.simple.book.domain.jwt.dto.CustomUserDetails;
+import com.simple.book.domain.jwt.util.JWTUtil;
+import com.simple.book.global.advice.ErrorCode;
+import com.simple.book.global.advice.ResponseMessage;
+import com.simple.book.global.exception.AuthenticationFailureException;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -84,7 +72,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // ObjectMapper를 사용하여 JSON으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(ResponseMessage.builder().build());
+        String jsonResponse = objectMapper.writeValueAsString(ResponseMessage.builder().message("success").build());
         response.addHeader("Set-Cookie", jwtCookie.toString());
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");

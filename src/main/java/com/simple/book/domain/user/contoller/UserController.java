@@ -7,12 +7,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.service.UserService;
 import com.simple.book.global.advice.ResponseMessage;
 
@@ -49,9 +52,19 @@ public class UserController {
 		return "ID : " + userId + " 이름 : " + name + "님 반갑습니다. 유저 컨트롤러입니다.";
 	}
 	
-	@GetMapping("/info")
+	@GetMapping("id")
+	public ResponseEntity<ResponseMessage> getUserId(){
+		return ResponseEntity.ok().body(ResponseMessage.builder().value(userService.getCurrentUserId()).build());
+	}
+	
+	@GetMapping("info")
 	public ResponseEntity<ResponseMessage> getUserInfo(){
 		return ResponseEntity.ok().body(userService.getUserInfo());
+	}
+	
+	@PutMapping("modify")
+	public ResponseEntity<ResponseMessage> modifyUserInfo(@RequestBody ModifyUserInfoRequestDto body) {
+		return ResponseEntity.ok().body(userService.modifyUserInfo(body));
 	}
 
 	@ResponseBody
