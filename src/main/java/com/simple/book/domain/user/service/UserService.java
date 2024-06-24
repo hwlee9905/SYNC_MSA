@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
-import com.simple.book.domain.member.repository.UserTaskRepository;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
 import com.simple.book.domain.user.entity.Authentication;
@@ -41,7 +41,6 @@ public class UserService implements UserDetailsService {
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final AlarmUrlService alarmUrlService;
-	private final UserTaskRepository userTaskRepository;
 
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage remove(String userId) {
@@ -95,7 +94,6 @@ public class UserService implements UserDetailsService {
 	@Transactional(rollbackFor = { Exception.class })
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		System.out.println("id: " + userId);
 		// DB에서 조회
 		Authentication authentication = authenticationRepository.findByUserId(userId);
 		if (authentication != null) {
@@ -119,7 +117,9 @@ public class UserService implements UserDetailsService {
 		try {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
+			map.put("userId", id);
 			map.put("username", info.getUsername());
+			map.put("nickname", info.getNickname());
 			map.put("position", info.getPosition());
 			map.put("introduction", info.getIntroduction());
 		} catch (Exception e) {
@@ -127,31 +127,74 @@ public class UserService implements UserDetailsService {
 		}
 		return ResponseMessage.builder().value(map).build();
 	}
-
+	
 	/**
-	 * 사용자 정보 수정하기
-	 * 
+	 * 정보 변경
 	 * @param body
+	 * @param userId
 	 * @return
 	 */
 	@Transactional(rollbackFor = { Exception.class })
-	public ResponseMessage modifyUserInfo(ModifyUserInfoRequestDto body) {
-		String userId = getCurrentUserId();
-		if (userId != null) {
-			User user = userRepository.findByAuthenticationUserId(userId);
-
-			user.setUsername(body.getUsername());
-			user.setPosition(body.getPosition());
-			user.setIntroduction(body.getIntroduction());
-			try {
-				userRepository.saveAndFlush(user);
-			} catch (Exception e) {
-				throw new UnknownException(e.getMessage());
-			}
-		} else {
-			throw new UnknownException(null);
+	public ResponseMessage modifyUserInfo(ModifyUserInfoRequestDto body, String userId) {
+		User user = userRepository.findByAuthenticationUserId(userId);
+		user = typeToSet(body, user);
+		try {
+			userRepository.saveAndFlush(user);
+		} catch (Exception e) {
+			throw new UnknownException(e.getMessage());
 		}
 		return ResponseMessage.builder().message("수정 되었습니다.").build();
+	}
+
+	private User typeToSet(ModifyUserInfoRequestDto body, User user) {
+		String type = body.getType();
+		String value = body.getValue();
+		switch (type) {
+		case "N":
+			user.setNickname(value);
+			break;
+		case "P":
+			user.setPosition(value);
+			break;
+		case "I":
+			user.setIntroduction(value);
+			break;
+		default:
+			throw new UnknownException(null);
+		}
+		return user;
+	}
+
+
+	/**
+	 * 비밀번호 변경
+	 * 
+	 * @param body
+	 * @param userDetails
+	 * @return
+	 */
+	@Transactional(rollbackFor = { Exception.class })
+	public ResponseMessage modifyPwd(ModifyPwdRequestDto body, UserDetails userDetails) {
+		ResponseMessage result = null;
+		if (userDetails != null) {
+			String encodedPassword = userDetails.getPassword();
+			boolean isCurrenPwdMatch = bCryptPasswordEncoder.matches(body.getCurrentPwd(), encodedPassword);
+			if (isCurrenPwdMatch) {
+				if (body.getNewPwd().equals(body.getCheckNewPwd())) {
+					Authentication auth = authenticationRepository.findByUserId(userDetails.getUsername());
+					auth.setPassword(bCryptPasswordEncoder.encode(body.getNewPwd()));
+					authenticationRepository.saveAndFlush(auth);
+					result = ResponseMessage.builder().message("success").build();
+				} else {
+					result = ResponseMessage.builder().result(false).message("비밀번호가 일치 하지 않습니다.").build();
+				}
+			} else {
+				result = ResponseMessage.builder().result(false).message("비밀번호를 확인 해 주세요.").build();
+			}
+		} else {
+			result = ResponseMessage.builder().result(false).message("로그인이 만료 되었습니다.").build();
+		}
+		return result;
 	}
 
 	public String getCurrentUserId() {

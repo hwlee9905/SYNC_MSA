@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class ModifyUserInfoRequestDto {
-	private String username;
-	private String position;
-	private String introduction;
+	private String type;
+	private String value;
 }
