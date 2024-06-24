@@ -1,8 +1,6 @@
 package com.simple.book.domain.user.dto.request;
 
-import com.simple.book.domain.user.util.Sex;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
