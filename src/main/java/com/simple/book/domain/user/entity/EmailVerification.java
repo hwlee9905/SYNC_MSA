@@ -2,7 +2,7 @@ package com.simple.book.domain.user.entity;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
+import com.simple.book.domain.user.dto.EmailVerificationDto;
 import com.simple.book.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -28,8 +28,8 @@ public class EmailVerification extends BaseTimeEntity {
     	this.token=token;
     }
 
-    public EmailVerificationRequestDto toDto() {
-    	return EmailVerificationRequestDto.builder()
+    public EmailVerificationDto toDto() {
+    	return EmailVerificationDto.builder()
     			.email(this.email)
     			.token(this.token)
     			.build();
