@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+</head>
+<style>
+body {
+	font-family: Arial, sans-serif;
+}
+
+.header {
+	background-color: #f2f2f2;
+	padding: 10px;
+}
+
+.content {
+	margin: 20px;
+}
+
+.footer {
+	background-color: #f2f2f2;
+	padding: 10px;
+	text-align: center;
+}
+</style>
+<body>
+	<div class="header">
+		<h3>[sync] 회원탈퇴 인증 입니다.</h3>
+	</div>
+	<div class="content">
+		<h4>인증 번호</h4>
+		<h5 th:text="${token}"></h5>
+		<small>이 이메일을 요청하지 않았더라도 걱정하지 마세요. 이메일을 무시하면 됩니다.</small>
+	</div>
+	<div class="footer">
+		<p>&copy; 2024 Our SYNC</p>
+	</div>
+</body>
+</html>

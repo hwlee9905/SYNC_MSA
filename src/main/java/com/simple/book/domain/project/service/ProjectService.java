@@ -79,6 +79,26 @@ public class ProjectService {
 		}
 		return ResponseMessage.builder().value(result).build();
 	}
+	
+	/*
+	 * new
+	 */
+	@Transactional(rollbackFor = { Exception.class })
+	public ResponseMessage getProjects(String userId) {
+		List<GetProjectsResponseDto> result;
+		try {
+			User user = userRepository.findByAuthenticationUserId(userId);
+			List<Project> projects = memberRepository.findProjectsByUserId(user.getId());
+			result = projects.stream()
+					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(),
+							project.getDescription(), project.getStartDate(), project.getEndDate(), project.getMembers()
+							.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
+					.collect(Collectors.toList());
+		} catch (NullPointerException e) {
+			throw new UserNotFoundException(e.getMessage());
+		}
+		return ResponseMessage.builder().value(result).build();
+	}
 
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage deleteProject(DeleteProjectRequestDto projectDeleteRequestDto) {

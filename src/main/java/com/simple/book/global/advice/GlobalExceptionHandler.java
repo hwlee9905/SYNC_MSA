@@ -151,5 +151,12 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
+    
+    @ExceptionHandler(IdenticalValuesCannotChangedException.class)
+    public ResponseEntity<?> IdenticalValuesCannotChangedException(IdenticalValuesCannotChangedException e){
+    	final ErrorCode errorCode = e.getErrorCode();
+    	final ErrorResponse response = ErrorResponse.of(errorCode);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
 
 }

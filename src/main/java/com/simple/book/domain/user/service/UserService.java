@@ -30,6 +30,7 @@ import com.simple.book.domain.user.util.Role;
 import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.advice.ResponseMessage;
 import com.simple.book.global.exception.AuthenticationFailureException;
+import com.simple.book.global.exception.IdenticalValuesCannotChangedException;
 import com.simple.book.global.exception.UnknownException;
 
 import lombok.RequiredArgsConstructor;
@@ -151,12 +152,21 @@ public class UserService implements UserDetailsService {
 		String value = body.getValue();
 		switch (type) {
 		case "N":
+			if (user.getNickname().equals(value)){
+				throw new IdenticalValuesCannotChangedException(value);
+			}
 			user.setNickname(value);
 			break;
 		case "P":
+			if (user.getPosition().equals(value)){
+				throw new IdenticalValuesCannotChangedException(value);
+			}
 			user.setPosition(value);
 			break;
 		case "I":
+			if (user.getIntroduction().equals(value)){
+				throw new IdenticalValuesCannotChangedException(value);
+			}
 			user.setIntroduction(value);
 			break;
 		default:

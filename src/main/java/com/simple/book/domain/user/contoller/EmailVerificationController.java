@@ -17,16 +17,16 @@ import com.simple.book.global.advice.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping(value = "/verify", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/user/delAcc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EmailVerificationController {
 
 	@Autowired
 	private EmailVerificationService emailVerificationService;
 	
-	@Operation(summary = "인증 요청", description = "회원가입 시, 이메일 인증 요청을 보냅니다.")
+	@Operation(summary = "인증 요청", description = "회원탈퇴 시, 이메일 인증 요청을 보냅니다.")
 	@PostMapping("/email/send")
-    public ResponseEntity<ResponseMessage> sendVerifyEmail(@RequestBody EmailVerificationRequestDto dto) throws Exception {
-		ResponseMessage message = emailVerificationService.sendVerificationEmail(dto);
+    public ResponseEntity<ResponseMessage> sendVerifyEmail(@RequestBody EmailVerificationRequestDto body) throws Exception {
+		ResponseMessage message = emailVerificationService.sendVerificationEmail(body);
 		return ResponseEntity.ok(message);
     }
 	

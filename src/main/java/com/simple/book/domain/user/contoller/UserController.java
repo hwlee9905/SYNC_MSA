@@ -32,7 +32,7 @@ public class UserController {
 	private final UserService userService;
 	//.requestMatchers("/user").hasAnyAuthority("USER") USER 계정 로그인 필요
 	@GetMapping("auth")
-	public String userApi() {
+	public ResponseMessage userApi() {
 		String userId = null;
 		String name = null;
 		String infoset = null;
@@ -53,7 +53,8 @@ public class UserController {
 
 			}
 		}
-		return "ID : " + userId + " 이름 : " + name + "님 반갑습니다. 유저 컨트롤러입니다.";
+//		return "ID : " + userId + " 이름 : " + name + "님 반갑습니다. 유저 컨트롤러입니다.";
+		return ResponseMessage.builder().build();
 	}
 	
 	@GetMapping("info")
@@ -79,5 +80,4 @@ public class UserController {
 	public ResponseEntity<ResponseMessage> removeUser() {
 		return ResponseEntity.ok().body(userService.remove(userService.getCurrentUserId()));
 	}
-
 }
