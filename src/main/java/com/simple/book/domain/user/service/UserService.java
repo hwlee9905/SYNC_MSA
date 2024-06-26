@@ -152,19 +152,19 @@ public class UserService implements UserDetailsService {
 		String value = body.getValue();
 		switch (type) {
 		case "N":
-			if (user.getNickname().equals(value)){
+			if (user.getNickname() != null && user.getNickname().equals(value)){
 				throw new IdenticalValuesCannotChangedException(value);
-			}
+			} 
 			user.setNickname(value);
 			break;
 		case "P":
-			if (user.getPosition().equals(value)){
+			if (user.getPosition() != null && user.getPosition().equals(value)){
 				throw new IdenticalValuesCannotChangedException(value);
 			}
 			user.setPosition(value);
 			break;
 		case "I":
-			if (user.getIntroduction().equals(value)){
+			if (user.getIntroduction() != null && user.getIntroduction().equals(value)){
 				throw new IdenticalValuesCannotChangedException(value);
 			}
 			user.setIntroduction(value);
