@@ -1,6 +1,5 @@
 package com.simple.book.domain.user.contoller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,21 +11,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.user.dto.request.EmailVerificationRequestDto;
 import com.simple.book.domain.user.service.EmailVerificationService;
+import com.simple.book.domain.user.service.UserService;
 import com.simple.book.global.advice.ResponseMessage;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(value = "/api/user/delAcc", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class EmailVerificationController {
-
-	@Autowired
-	private EmailVerificationService emailVerificationService;
+	private final EmailVerificationService emailVerificationService;
+	private final UserService userService;
 	
 	@Operation(summary = "인증 요청", description = "회원탈퇴 시, 이메일 인증 요청을 보냅니다.")
 	@PostMapping("/email/send")
     public ResponseEntity<ResponseMessage> sendVerifyEmail(@RequestBody EmailVerificationRequestDto body) throws Exception {
-		ResponseMessage message = emailVerificationService.sendVerificationEmail(body);
+		ResponseMessage message;
+		if(userService.getCurrentUserId().equals(body.getEmail())) {
+			message = emailVerificationService.sendVerificationEmail(body);
+		} else {
+			message = ResponseMessage.builder().result(false).message("이메일을 다시 확인 해 주세요.").build();
+		}
 		return ResponseEntity.ok(message);
     }
 	
