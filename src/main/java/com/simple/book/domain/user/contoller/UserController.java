@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.ModifyProfileImgRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.service.UserService;
@@ -73,6 +74,11 @@ public class UserController {
 	public ResponseEntity<ResponseMessage> modifyUserInfo(@RequestBody ModifyUserInfoRequestDto body) {
 		String userId = userService.getCurrentUserId();
 		return ResponseEntity.ok().body(userService.modifyUserInfo(body, userId));
+	}
+	
+	@PutMapping("modify/profileImg")
+	public ResponseEntity<ResponseMessage> modifyProfileImg(ModifyProfileImgRequestDto body) {
+		return ResponseEntity.ok().body(userService.modifyProfileImg(body));
 	}
 	
 	@ResponseBody

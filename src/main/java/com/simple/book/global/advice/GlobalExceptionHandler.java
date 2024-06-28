@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.simple.book.global.exception.*;
+
+import org.apache.hc.client5.http.ssl.HttpsSupport;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -154,6 +156,22 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(IdenticalValuesCannotChangedException.class)
     public ResponseEntity<?> IdenticalValuesCannotChangedException(IdenticalValuesCannotChangedException e){
+    	final ErrorCode errorCode = e.getErrorCode();
+    	final ErrorResponse response = ErrorResponse.of(errorCode);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+    
+    @ExceptionHandler(ImageFileNotFoundException.class)
+    public ResponseEntity<?> FileNotFoundException(ImageFileNotFoundException e){
+    	log.error("이미지 파일이 존재하지 않습니다: ", e);
+    	final ErrorCode errorCode = e.getErrorCode();
+    	final ErrorResponse response = ErrorResponse.of(errorCode);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+    
+    @ExceptionHandler(ImageDirNotFoundException.class)
+    public ResponseEntity<?> ImageDirNotFoundException(ImageDirNotFoundException e){
+    	log.error("이미지 디렉터리가 존재하지 않습니다: ", e);
     	final ErrorCode errorCode = e.getErrorCode();
     	final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));

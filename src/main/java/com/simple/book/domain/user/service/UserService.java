@@ -1,7 +1,10 @@
 package com.simple.book.domain.user.service;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +21,7 @@ import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.ModifyProfileImgRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
@@ -29,19 +33,25 @@ import com.simple.book.domain.user.util.InfoSet;
 import com.simple.book.domain.user.util.Role;
 import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.advice.ResponseMessage;
+import com.simple.book.global.config.ApplicationConfig;
 import com.simple.book.global.exception.AuthenticationFailureException;
 import com.simple.book.global.exception.IdenticalValuesCannotChangedException;
+import com.simple.book.global.exception.ImageDirNotFoundException;
+import com.simple.book.global.exception.ImageFileNotFoundException;
 import com.simple.book.global.exception.UnknownException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final AlarmUrlService alarmUrlService;
+	private final ApplicationConfig applicationConfig;
 
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage remove(String userId) {
@@ -128,9 +138,10 @@ public class UserService implements UserDetailsService {
 		}
 		return ResponseMessage.builder().value(map).build();
 	}
-	
+
 	/**
 	 * 정보 변경
+	 * 
 	 * @param body
 	 * @param userId
 	 * @return
@@ -152,19 +163,19 @@ public class UserService implements UserDetailsService {
 		String value = body.getValue();
 		switch (type) {
 		case "N":
-			if (user.getNickname() != null && user.getNickname().equals(value)){
+			if (user.getNickname() != null && user.getNickname().equals(value)) {
 				throw new IdenticalValuesCannotChangedException(value);
-			} 
+			}
 			user.setNickname(value);
 			break;
 		case "P":
-			if (user.getPosition() != null && user.getPosition().equals(value)){
+			if (user.getPosition() != null && user.getPosition().equals(value)) {
 				throw new IdenticalValuesCannotChangedException(value);
 			}
 			user.setPosition(value);
 			break;
 		case "I":
-			if (user.getIntroduction() != null && user.getIntroduction().equals(value)){
+			if (user.getIntroduction() != null && user.getIntroduction().equals(value)) {
 				throw new IdenticalValuesCannotChangedException(value);
 			}
 			user.setIntroduction(value);
@@ -175,6 +186,34 @@ public class UserService implements UserDetailsService {
 		return user;
 	}
 
+	public ResponseMessage modifyProfileImg(ModifyProfileImgRequestDto body) {
+		String imgPath = applicationConfig.getImagePath() + File.separator + "profile";
+		String originName;
+		try {
+			originName = body.getProfileImg().getOriginalFilename();
+		} catch (NullPointerException e) {
+			throw new ImageFileNotFoundException(e.getMessage());
+		}
+
+		// 확장자 없을 경우 예외처리 해야함
+		String extension = originName.substring(originName.lastIndexOf(".") + 1);
+		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+		String saveName = uuid + "." + extension;
+		String fileFullPath = Paths.get(imgPath, saveName).toString();
+
+		File dir = new File(imgPath);
+		if (!dir.exists()) {
+			throw new ImageDirNotFoundException(dir.toString());
+		}
+		
+		try {
+			File uploadFile = new File(fileFullPath);
+			body.getProfileImg().transferTo(uploadFile);		
+		} catch (Exception e) {
+			throw new UnknownException(e.getMessage());
+		}
+		return ResponseMessage.builder().message("success").build();
+	}
 
 	/**
 	 * 비밀번호 변경

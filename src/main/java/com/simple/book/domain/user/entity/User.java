@@ -49,6 +49,9 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
     
+    @Column(name="profile_img")
+    private String profileImg;
+    
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authentication_id")
     private Authentication authentication;
