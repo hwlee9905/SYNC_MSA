@@ -92,7 +92,7 @@ public class ProjectService {
 			result = projects.stream()
 					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(),
 							project.getDescription(), project.getStartDate(), project.getEndDate(), project.getMembers()
-							.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
+								.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
 					.collect(Collectors.toList());
 		} catch (NullPointerException e) {
 			throw new UserNotFoundException(e.getMessage());
@@ -140,9 +140,7 @@ public class ProjectService {
 		Optional<Member> member = memberRepository.findByUserIdAndProjectId(userId, project.getId());
 
 		if (member.isPresent()) {
-			if (member.get().isManager()) {
-				// 유효한 관리자
-			} else {
+			if (!member.get().isManager()) {
 				throw new InvalidValueException("해당 멤버는 해당 프로젝트의 관리자가 아닙니다. ProjectId : " + project.getId()
 						+ " UserId : " + user.getAuthentication().getUserId());
 			}
@@ -151,5 +149,15 @@ public class ProjectService {
 					+ " UserId : " + user.getAuthentication().getUserId());
 		}
 	}
+	public void isProjectMember(User user, Project project) {
+		Long userId = user.getId();
 
+		Optional<Member> member = memberRepository.findByUserIdAndProjectId(userId, project.getId());
+
+		if (member.isEmpty()) {
+			// 유효한 멤버
+			throw new InvalidValueException("해당 멤버는 해당 프로젝트에 소속되어 있지 않습니다. ProjectId : " + project.getId()
+					+ " UserId : " + user.getAuthentication().getUserId());
+		}
+	}
 }

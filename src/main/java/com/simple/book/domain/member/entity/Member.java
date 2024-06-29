@@ -28,7 +28,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "member")
+@Table(name = "member",
+    uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(
+            name = "member_uk",
+            columnNames = {"user_id", "project_id"}
+        )
+    }
+)
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
