@@ -35,7 +35,6 @@ public class TaskService {
 	private final ProjectRepository projectRepository;
 	private final UserService userService;
 	private final UserRepository userRepository;
-	private final UserTaskRepository userTaskRepository;
 	private final ProjectService projectService;
 
 	@Transactional(rollbackFor = { Exception.class })
@@ -92,15 +91,7 @@ public class TaskService {
 				Task task = opTask.get();
 				task.getSubTasks().size();
 				projectService.isProjectMember(user, project);
-				// 연관된 task 삭제
-				List<Task> tasks = task.getSubTasks();
-				for (Task getTask : tasks) {
-					getTask.getTaskMembers().clear();
-					userTaskRepository.deleteByTaskId(getTask.getId());
-					taskRepository.delete(task);
-				}
-				task.getTaskMembers().clear();
-				userTaskRepository.deleteByTaskId(task.getId());
+				taskRepository.delete(task);
 			} else {
 				throw new EntityNotFoundException("해당 프로젝트는 존재하지 않습니다. ProjectId : " + deleteTaskRequestDto.getProjectId());
 			}

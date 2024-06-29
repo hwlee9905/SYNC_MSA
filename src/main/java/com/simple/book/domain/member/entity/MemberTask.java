@@ -5,7 +5,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "task_member")
+@Table(name = "task_member",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "task_member_uk"
+            , columnNames = {"task_id", "member_id"}
+        )
+    }
+)
 @Getter
 @Setter
 @AllArgsConstructor

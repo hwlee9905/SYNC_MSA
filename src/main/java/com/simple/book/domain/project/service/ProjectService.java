@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.simple.book.domain.task.dto.request.DeleteTaskRequestDto;
+import com.simple.book.domain.task.service.TaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +40,6 @@ public class ProjectService {
 	private final UserService userService;
 	private final UserRepository userRepository;
 	private final MemberRepository memberRepository;
-	private final TaskRepository taskRepository;
-	private final UserTaskRepository userTaskRepository;
 	private final MemberService memberService;
 	private final SearchService searchService;
 	private final InviteService inviteService;
@@ -97,7 +97,10 @@ public class ProjectService {
 		} catch (NullPointerException e) {
 			throw new UserNotFoundException(e.getMessage());
 		}
-		return ResponseMessage.builder().value(result).build();
+		return ResponseMessage.builder()
+				.value(result)
+				.message("프로젝트 조회 성공")
+				.build();
 	}
 
 	@Transactional(rollbackFor = { Exception.class })
@@ -109,19 +112,20 @@ public class ProjectService {
 				Project project = opProject.get();
 				project.getTasks().size();
 				isProjectManager(user, project);
-				// 연관된 task 삭제
-				List<Task> tasks = project.getTasks();
-				for (Task task : tasks) {
-					task.getTaskMembers().clear();
-					userTaskRepository.deleteByTaskId(task.getId());
-					taskRepository.delete(task);
-				}
-				// 연관된 member 삭제
-				List<Member> members = project.getMembers();
-				for (Member member : members) {
-					member.getTaskMembers().clear();
-					memberRepository.delete(member);
-				}
+
+//				// 연관된 task 삭제
+//				List<Task> tasks = project.getTasks();
+//				for (Task task : tasks) {
+//					task.getTaskMembers().clear();
+//					userTaskRepository.deleteByTaskId(task.getId());
+//					taskRepository.delete(task);
+//				}
+//				// 연관된 member 삭제
+//				List<Member> members = project.getMembers();
+//				for (Member member : members) {
+//					member.getTaskMembers().clear();
+//					memberRepository.delete(member);
+//				}
 				projectRepository.delete(project);
 			} else {
 				throw new EntityNotFoundException(
