@@ -56,7 +56,6 @@ public class GetTaskResponseDto {
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .status(task.getStatus())
-                .memberId(task.getMember() != null ? task.getMember().getId() : null)
                 .subTasks(task.getSubTasks().stream()
                         .map(child -> GetTaskResponseDto.builder()
                                 .id(child.getId())
@@ -65,7 +64,6 @@ public class GetTaskResponseDto {
                                 .startDate(child.getStartDate())
                                 .endDate(child.getEndDate())
                                 .status(child.getStatus())
-                                .memberId(child.getMember() != null ? child.getMember().getId() : null)
                                 // 자식의 자식 업무를 추가하지 않습니다.
                                 .build())
                         .collect(Collectors.toList()))

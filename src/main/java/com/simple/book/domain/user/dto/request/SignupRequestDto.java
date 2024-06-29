@@ -24,7 +24,6 @@ public class SignupRequestDto {
 //    @Size(min = 8, max = 16)
     @Size(min = 5, max = 30)
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
-    @Email
     private String userId;
     
     @Schema(description = "사용자 비밀번호")

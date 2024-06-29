@@ -34,9 +34,6 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
     //순환참조
     @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> subTasks = new ArrayList<>();
