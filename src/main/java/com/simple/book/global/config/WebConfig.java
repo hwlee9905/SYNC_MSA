@@ -1,17 +1,22 @@
 package com.simple.book.global.config;
-import com.simple.book.global.filter.LogInterceptor;
-import com.simple.book.global.filter.LoginCheckInterceptor;
-import org.springframework.context.annotation.Bean;
+import java.io.File;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.net.MalformedURLException;
+import com.simple.book.global.filter.LogInterceptor;
+import com.simple.book.global.filter.LoginCheckInterceptor;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-
+	private final ApplicationConfig applicationConfig;
+	
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LogInterceptor())
@@ -25,6 +30,12 @@ public class WebConfig implements WebMvcConfigurer {
                          "/members/add", "/login", "/logout",
                         "/css/**", "/*.ico", "/error"
                 );
+    }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/api/user/img/**")
+                .addResourceLocations("file:///" + applicationConfig.getImagePath() + File.separator + "profile" + File.separator);
     }
 
 }

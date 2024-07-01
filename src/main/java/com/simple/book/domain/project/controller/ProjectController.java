@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simple.book.domain.project.dto.request.CreateProjectRequestDto;
 import com.simple.book.domain.project.dto.request.DeleteProjectRequestDto;
-import com.simple.book.domain.project.dto.request.GetProjectsRequestDto;
 import com.simple.book.domain.project.service.ProjectService;
 import com.simple.book.domain.user.service.UserService;
 import com.simple.book.global.advice.ResponseMessage;

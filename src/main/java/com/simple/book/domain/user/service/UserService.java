@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
@@ -30,6 +31,7 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.AuthenticationRepository;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.util.InfoSet;
+import com.simple.book.domain.user.util.ProfileImage;
 import com.simple.book.domain.user.util.Role;
 import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.advice.ResponseMessage;
@@ -129,6 +131,8 @@ public class UserService implements UserDetailsService {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
 			map.put("userId", id);
+			String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(info.getProfileImg()).toUriString();
+			map.put("profileImg", imgUrl);
 			map.put("username", info.getUsername());
 			map.put("nickname", info.getNickname());
 			map.put("position", info.getPosition());
@@ -149,16 +153,11 @@ public class UserService implements UserDetailsService {
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage modifyUserInfo(ModifyUserInfoRequestDto body, String userId) {
 		User user = userRepository.findByAuthenticationUserId(userId);
-		user = typeToSet(body, user);
-		try {
-			userRepository.saveAndFlush(user);
-		} catch (Exception e) {
-			throw new UnknownException(e.getMessage());
-		}
+		userInfoUpdate(body, user);
 		return ResponseMessage.builder().message("수정 되었습니다.").build();
 	}
 
-	private User typeToSet(ModifyUserInfoRequestDto body, User user) {
+	private void userInfoUpdate (ModifyUserInfoRequestDto body, User user) {
 		String type = body.getType();
 		String value = body.getValue();
 		switch (type) {
@@ -183,9 +182,9 @@ public class UserService implements UserDetailsService {
 		default:
 			throw new UnknownException(null);
 		}
-		return user;
 	}
 
+	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage modifyProfileImg(ModifyProfileImgRequestDto body) {
 		String imgPath = applicationConfig.getImagePath() + File.separator + "profile";
 		String originName;
@@ -208,7 +207,10 @@ public class UserService implements UserDetailsService {
 		
 		try {
 			File uploadFile = new File(fileFullPath);
-			body.getProfileImg().transferTo(uploadFile);		
+			body.getProfileImg().transferTo(uploadFile);
+			User user = userRepository.findByAuthenticationUserId(getCurrentUserId());
+			user.setProfileImg(saveName);
+			
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
@@ -231,7 +233,6 @@ public class UserService implements UserDetailsService {
 			if (body.getNewPwd().equals(body.getCheckNewPwd())) {
 				Authentication auth = authenticationRepository.findByUserId(userDetails.getUsername());
 				auth.setPassword(bCryptPasswordEncoder.encode(body.getNewPwd()));
-				authenticationRepository.saveAndFlush(auth);
 				result = ResponseMessage.builder().message("success").build();
 			} else {
 				result = ResponseMessage.builder().result(false).message("비밀번호가 일치 하지 않습니다.").build();
@@ -239,12 +240,6 @@ public class UserService implements UserDetailsService {
 		} else {
 			result = ResponseMessage.builder().result(false).message("비밀번호를 확인 해 주세요.").build();
 		}
-// jwt만료시 /user 경로로 접근이 제한되므로 필요 하지 않습니다.
-//		if (userDetails != null) {
-//
-//		} else {
-//			result = ResponseMessage.builder().result(false).message("로그인이 만료 되었습니다.").build();
-//		}
 		return result;
 	}
 
