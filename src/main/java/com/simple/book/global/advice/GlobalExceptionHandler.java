@@ -1,12 +1,8 @@
 package com.simple.book.global.advice;
 
 import java.nio.file.AccessDeniedException;
-import java.util.Arrays;
 import java.util.Map;
 
-import com.simple.book.global.exception.*;
-
-import org.apache.hc.client5.http.ssl.HttpsSupport;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +13,18 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import com.simple.book.global.exception.AuthenticationFailureException;
+import com.simple.book.global.exception.AuthorizationFailureException;
+import com.simple.book.global.exception.BusinessException;
+import com.simple.book.global.exception.EntityNotFoundException;
+import com.simple.book.global.exception.IdenticalValuesCannotChangedException;
+import com.simple.book.global.exception.ImageDirNotFoundException;
+import com.simple.book.global.exception.ImageFileNotFoundException;
+import com.simple.book.global.exception.InvalidValueException;
+import com.simple.book.global.exception.MemberDuplicateInProjectException;
+import com.simple.book.global.exception.UnknownException;
+import com.simple.book.global.exception.UserNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
