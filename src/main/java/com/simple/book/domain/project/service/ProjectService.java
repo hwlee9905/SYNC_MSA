@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.simple.book.domain.task.dto.request.DeleteTaskRequestDto;
+import com.simple.book.domain.task.service.TaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +40,6 @@ public class ProjectService {
 	private final UserService userService;
 	private final UserRepository userRepository;
 	private final MemberRepository memberRepository;
-	private final TaskRepository taskRepository;
-	private final UserTaskRepository userTaskRepository;
 	private final MemberService memberService;
 	private final SearchService searchService;
 	private final InviteService inviteService;
@@ -92,12 +92,15 @@ public class ProjectService {
 			result = projects.stream()
 					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(),
 							project.getDescription(), project.getStartDate(), project.getEndDate(), project.getMembers()
-							.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
+								.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
 					.collect(Collectors.toList());
 		} catch (NullPointerException e) {
 			throw new UserNotFoundException(e.getMessage());
 		}
-		return ResponseMessage.builder().value(result).build();
+		return ResponseMessage.builder()
+				.value(result)
+				.message("프로젝트 조회 성공")
+				.build();
 	}
 
 	@Transactional(rollbackFor = { Exception.class })
@@ -109,19 +112,20 @@ public class ProjectService {
 				Project project = opProject.get();
 				project.getTasks().size();
 				isProjectManager(user, project);
-				// 연관된 task 삭제
-				List<Task> tasks = project.getTasks();
-				for (Task task : tasks) {
-					task.getTaskMembers().clear();
-					userTaskRepository.deleteByTaskId(task.getId());
-					taskRepository.delete(task);
-				}
-				// 연관된 member 삭제
-				List<Member> members = project.getMembers();
-				for (Member member : members) {
-					member.getTaskMembers().clear();
-					memberRepository.delete(member);
-				}
+
+//				// 연관된 task 삭제
+//				List<Task> tasks = project.getTasks();
+//				for (Task task : tasks) {
+//					task.getTaskMembers().clear();
+//					userTaskRepository.deleteByTaskId(task.getId());
+//					taskRepository.delete(task);
+//				}
+//				// 연관된 member 삭제
+//				List<Member> members = project.getMembers();
+//				for (Member member : members) {
+//					member.getTaskMembers().clear();
+//					memberRepository.delete(member);
+//				}
 				projectRepository.delete(project);
 			} else {
 				throw new EntityNotFoundException(
@@ -140,9 +144,7 @@ public class ProjectService {
 		Optional<Member> member = memberRepository.findByUserIdAndProjectId(userId, project.getId());
 
 		if (member.isPresent()) {
-			if (member.get().isManager()) {
-				// 유효한 관리자
-			} else {
+			if (!member.get().isManager()) {
 				throw new InvalidValueException("해당 멤버는 해당 프로젝트의 관리자가 아닙니다. ProjectId : " + project.getId()
 						+ " UserId : " + user.getAuthentication().getUserId());
 			}
@@ -151,5 +153,15 @@ public class ProjectService {
 					+ " UserId : " + user.getAuthentication().getUserId());
 		}
 	}
+	public void isProjectMember(User user, Project project) {
+		Long userId = user.getId();
 
+		Optional<Member> member = memberRepository.findByUserIdAndProjectId(userId, project.getId());
+
+		if (member.isEmpty()) {
+			// 유효한 멤버
+			throw new InvalidValueException("해당 멤버는 해당 프로젝트에 소속되어 있지 않습니다. ProjectId : " + project.getId()
+					+ " UserId : " + user.getAuthentication().getUserId());
+		}
+	}
 }

@@ -2,6 +2,7 @@ package com.simple.book.domain.member.service;
 
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final ProjectRepository projectRepository;
@@ -50,14 +52,14 @@ public class MemberService {
 					.orElseThrow(() -> new EntityNotFoundException(
 							"Project not found with ID: " + memberMappingToProjectRequestDto.getProjectId()));
 			String UserId = memberMappingToProjectRequestDto.getUserId();
-			User user = userRepository.findByAuthenticationUserId(UserId);
+			User user = Optional.ofNullable(userRepository.findByAuthenticationUserId(UserId))
+				.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + UserId));
+
 			Member member = Member.builder().project(project).isManager(memberMappingToProjectRequestDto.getIsManager())
 					.user(user).build();
 			memberRepository.save(member);
 		} catch (DataIntegrityViolationException e) {
 			throw new MemberDuplicateInProjectException(e.getMessage());
-		} catch (NullPointerException e) {
-			throw new UserNotFoundException(e.getMessage());
 		}
 
 		return ResponseMessage.builder().message("success").build();

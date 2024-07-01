@@ -10,7 +10,14 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_task")
+@Table(name = "user_task",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "user_task_uk",
+            columnNames = {"user_id", "task_id"}
+        )
+    }
+)
 public class UserTask {
     @EmbeddedId
     private UserTaskId id;

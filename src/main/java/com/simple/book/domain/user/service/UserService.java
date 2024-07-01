@@ -225,24 +225,26 @@ public class UserService implements UserDetailsService {
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage modifyPwd(ModifyPwdRequestDto body, UserDetails userDetails) {
 		ResponseMessage result = null;
-		if (userDetails != null) {
-			String encodedPassword = userDetails.getPassword();
-			boolean isCurrenPwdMatch = bCryptPasswordEncoder.matches(body.getCurrentPwd(), encodedPassword);
-			if (isCurrenPwdMatch) {
-				if (body.getNewPwd().equals(body.getCheckNewPwd())) {
-					Authentication auth = authenticationRepository.findByUserId(userDetails.getUsername());
-					auth.setPassword(bCryptPasswordEncoder.encode(body.getNewPwd()));
-					authenticationRepository.saveAndFlush(auth);
-					result = ResponseMessage.builder().message("success").build();
-				} else {
-					result = ResponseMessage.builder().result(false).message("비밀번호가 일치 하지 않습니다.").build();
-				}
+		String encodedPassword = userDetails.getPassword();
+		boolean isCurrenPwdMatch = bCryptPasswordEncoder.matches(body.getCurrentPwd(), encodedPassword);
+		if (isCurrenPwdMatch) {
+			if (body.getNewPwd().equals(body.getCheckNewPwd())) {
+				Authentication auth = authenticationRepository.findByUserId(userDetails.getUsername());
+				auth.setPassword(bCryptPasswordEncoder.encode(body.getNewPwd()));
+				authenticationRepository.saveAndFlush(auth);
+				result = ResponseMessage.builder().message("success").build();
 			} else {
-				result = ResponseMessage.builder().result(false).message("비밀번호를 확인 해 주세요.").build();
+				result = ResponseMessage.builder().result(false).message("비밀번호가 일치 하지 않습니다.").build();
 			}
 		} else {
-			result = ResponseMessage.builder().result(false).message("로그인이 만료 되었습니다.").build();
+			result = ResponseMessage.builder().result(false).message("비밀번호를 확인 해 주세요.").build();
 		}
+// jwt만료시 /user 경로로 접근이 제한되므로 필요 하지 않습니다.
+//		if (userDetails != null) {
+//
+//		} else {
+//			result = ResponseMessage.builder().result(false).message("로그인이 만료 되었습니다.").build();
+//		}
 		return result;
 	}
 
