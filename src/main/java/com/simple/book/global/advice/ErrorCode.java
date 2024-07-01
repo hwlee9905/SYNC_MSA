@@ -24,6 +24,8 @@ public enum ErrorCode {
     USER_FAILED_AUTHORIZATION(411, "U003", "This user is not authorized."),
     USER_FAILED_AUTHENTICATION(412, "U004", "Invalid password for this user."),
     USER_NOT_FOUND(400, "U005", "해당 유저는 존재하지 않습니다."),
+    IMAGE_FILE_NOT_FOUND(400, "U006", "이미지가 존재하지 않습니다."),
+    IMAGE_DIR_NOT_FOUND(500, "U007", "이미지를 저장하는 과정에서 문제가 발생하였습니다. 관리자에게 문의 해주세요."),
 
     // Member 예시
     MEMBER_DUPLICATE_IN_PROJECT(409,"M001","이미 프로젝트에 존재하는 멤버입니다."),

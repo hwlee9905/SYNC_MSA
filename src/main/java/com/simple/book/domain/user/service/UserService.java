@@ -1,7 +1,10 @@
 package com.simple.book.domain.user.service;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,11 +16,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.request.ModifyProfileImgRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
@@ -26,22 +31,29 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.AuthenticationRepository;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.util.InfoSet;
+import com.simple.book.domain.user.util.ProfileImage;
 import com.simple.book.domain.user.util.Role;
 import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.advice.ResponseMessage;
+import com.simple.book.global.config.ApplicationConfig;
 import com.simple.book.global.exception.AuthenticationFailureException;
 import com.simple.book.global.exception.IdenticalValuesCannotChangedException;
+import com.simple.book.global.exception.ImageDirNotFoundException;
+import com.simple.book.global.exception.ImageFileNotFoundException;
 import com.simple.book.global.exception.UnknownException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final AlarmUrlService alarmUrlService;
+	private final ApplicationConfig applicationConfig;
 
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage remove(String userId) {
@@ -119,6 +131,8 @@ public class UserService implements UserDetailsService {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
 			map.put("userId", id);
+			String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(info.getProfileImg()).toUriString();
+			map.put("profileImg", imgUrl);
 			map.put("username", info.getUsername());
 			map.put("nickname", info.getNickname());
 			map.put("position", info.getPosition());
@@ -128,9 +142,10 @@ public class UserService implements UserDetailsService {
 		}
 		return ResponseMessage.builder().value(map).build();
 	}
-	
+
 	/**
 	 * 정보 변경
+	 * 
 	 * @param body
 	 * @param userId
 	 * @return
@@ -138,33 +153,28 @@ public class UserService implements UserDetailsService {
 	@Transactional(rollbackFor = { Exception.class })
 	public ResponseMessage modifyUserInfo(ModifyUserInfoRequestDto body, String userId) {
 		User user = userRepository.findByAuthenticationUserId(userId);
-		user = typeToSet(body, user);
-		try {
-			userRepository.saveAndFlush(user);
-		} catch (Exception e) {
-			throw new UnknownException(e.getMessage());
-		}
+		userInfoUpdate(body, user);
 		return ResponseMessage.builder().message("수정 되었습니다.").build();
 	}
 
-	private User typeToSet(ModifyUserInfoRequestDto body, User user) {
+	private void userInfoUpdate (ModifyUserInfoRequestDto body, User user) {
 		String type = body.getType();
 		String value = body.getValue();
 		switch (type) {
 		case "N":
-			if (user.getNickname() != null && user.getNickname().equals(value)){
+			if (user.getNickname() != null && user.getNickname().equals(value)) {
 				throw new IdenticalValuesCannotChangedException(value);
-			} 
+			}
 			user.setNickname(value);
 			break;
 		case "P":
-			if (user.getPosition() != null && user.getPosition().equals(value)){
+			if (user.getPosition() != null && user.getPosition().equals(value)) {
 				throw new IdenticalValuesCannotChangedException(value);
 			}
 			user.setPosition(value);
 			break;
 		case "I":
-			if (user.getIntroduction() != null && user.getIntroduction().equals(value)){
+			if (user.getIntroduction() != null && user.getIntroduction().equals(value)) {
 				throw new IdenticalValuesCannotChangedException(value);
 			}
 			user.setIntroduction(value);
@@ -172,9 +182,40 @@ public class UserService implements UserDetailsService {
 		default:
 			throw new UnknownException(null);
 		}
-		return user;
 	}
 
+	@Transactional(rollbackFor = { Exception.class })
+	public ResponseMessage modifyProfileImg(ModifyProfileImgRequestDto body) {
+		String imgPath = applicationConfig.getImagePath() + File.separator + "profile";
+		String originName;
+		try {
+			originName = body.getProfileImg().getOriginalFilename();
+		} catch (NullPointerException e) {
+			throw new ImageFileNotFoundException(e.getMessage());
+		}
+
+		// 확장자 없을 경우 예외처리 해야함
+		String extension = originName.substring(originName.lastIndexOf(".") + 1);
+		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+		String saveName = uuid + "." + extension;
+		String fileFullPath = Paths.get(imgPath, saveName).toString();
+
+		File dir = new File(imgPath);
+		if (!dir.exists()) {
+			throw new ImageDirNotFoundException(dir.toString());
+		}
+		
+		try {
+			File uploadFile = new File(fileFullPath);
+			body.getProfileImg().transferTo(uploadFile);
+			User user = userRepository.findByAuthenticationUserId(getCurrentUserId());
+			user.setProfileImg(saveName);
+			
+		} catch (Exception e) {
+			throw new UnknownException(e.getMessage());
+		}
+		return ResponseMessage.builder().message("success").build();
+	}
 
 	/**
 	 * 비밀번호 변경
@@ -192,7 +233,6 @@ public class UserService implements UserDetailsService {
 			if (body.getNewPwd().equals(body.getCheckNewPwd())) {
 				Authentication auth = authenticationRepository.findByUserId(userDetails.getUsername());
 				auth.setPassword(bCryptPasswordEncoder.encode(body.getNewPwd()));
-				authenticationRepository.saveAndFlush(auth);
 				result = ResponseMessage.builder().message("success").build();
 			} else {
 				result = ResponseMessage.builder().result(false).message("비밀번호가 일치 하지 않습니다.").build();
@@ -200,12 +240,6 @@ public class UserService implements UserDetailsService {
 		} else {
 			result = ResponseMessage.builder().result(false).message("비밀번호를 확인 해 주세요.").build();
 		}
-// jwt만료시 /user 경로로 접근이 제한되므로 필요 하지 않습니다.
-//		if (userDetails != null) {
-//
-//		} else {
-//			result = ResponseMessage.builder().result(false).message("로그인이 만료 되었습니다.").build();
-//		}
 		return result;
 	}
 
