@@ -58,9 +58,9 @@ public class UserController {
 		return ResponseMessage.builder().build();
 	}
 	
-	@GetMapping("info")
-	public ResponseEntity<ResponseMessage> getUserInfo(){
-		return ResponseEntity.ok().body(userService.getUserInfo());
+	@GetMapping("my/info")
+	public ResponseEntity<ResponseMessage> getMyInfo(){
+		return ResponseEntity.ok().body(userService.getMyInfo());
 	}
 	
 	@PutMapping("modify/pwd")
@@ -79,6 +79,11 @@ public class UserController {
 	@PutMapping("modify/profileImg")
 	public ResponseEntity<ResponseMessage> modifyProfileImg(ModifyProfileImgRequestDto body) {
 		return ResponseEntity.ok().body(userService.modifyProfileImg(body));
+	}
+	
+	@GetMapping("info")
+	public ResponseEntity<ResponseMessage> getUserInfo(@RequestParam(name="userId") String userId){
+		return ResponseEntity.ok().body(userService.getUserInfo(userId));
 	}
 	
 	@ResponseBody
