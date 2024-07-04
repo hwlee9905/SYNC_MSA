@@ -26,6 +26,8 @@ import com.simple.book.domain.user.dto.request.ModifyProfileImgRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
 import com.simple.book.domain.user.dto.request.SignupRequestDto;
+import com.simple.book.domain.user.dto.response.GetMyInfoResponseDto;
+import com.simple.book.domain.user.dto.response.GetUserInfoResponseDto;
 import com.simple.book.domain.user.entity.Authentication;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.AuthenticationRepository;
@@ -121,26 +123,44 @@ public class UserService implements UserDetailsService {
 	}
 
 	/**
-	 * 사용자 정보 가져오기
-	 * 
+	 * 내 정보 조회
 	 * @return
 	 */
-	public ResponseMessage getUserInfo() {
-		Map<String, Object> map = new HashMap<>();
+	public ResponseMessage getMyInfo() {
+		GetMyInfoResponseDto dto = new GetMyInfoResponseDto();
 		try {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
-			map.put("userId", id);
 			String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(info.getProfileImg()).toUriString();
-			map.put("profileImg", imgUrl);
-			map.put("username", info.getUsername());
-			map.put("nickname", info.getNickname());
-			map.put("position", info.getPosition());
-			map.put("introduction", info.getIntroduction());
+			
+			dto.setUserId(id);	
+			dto.setProfileImg(imgUrl);
+			dto.setUsername(info.getUsername());
+			dto.setNickname(info.getNickname());
+			dto.setPosition(info.getPosition());
+			dto.setIntroduction(info.getIntroduction());
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
-		return ResponseMessage.builder().value(map).build();
+		return ResponseMessage.builder().value(dto).build();
+	}
+	
+	public ResponseMessage getUserInfo(String userId) {
+		GetUserInfoResponseDto dto = new GetUserInfoResponseDto();
+		try {
+			User info = userRepository.findByAuthenticationUserId(userId);
+			String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(info.getProfileImg()).toUriString();
+			
+			dto.setUserId(userId);
+			dto.setProfileImg(imgUrl);
+			dto.setUsername(info.getUsername());
+			dto.setNickname(info.getNickname());
+			dto.setPosition(info.getPosition());
+			dto.setIntroduction(info.getIntroduction());
+		}catch (Exception e) {
+			throw new UnknownException(e.getMessage());
+		}
+		return ResponseMessage.builder().value(dto).build();
 	}
 
 	/**

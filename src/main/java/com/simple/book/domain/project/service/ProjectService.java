@@ -4,25 +4,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.simple.book.domain.task.dto.request.DeleteTaskRequestDto;
-import com.simple.book.domain.task.service.TaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
 import com.simple.book.domain.member.entity.Member;
 import com.simple.book.domain.member.repository.MemberRepository;
-import com.simple.book.domain.member.repository.UserTaskRepository;
 import com.simple.book.domain.member.service.MemberService;
 import com.simple.book.domain.project.dto.request.CreateProjectRequestDto;
 import com.simple.book.domain.project.dto.request.DeleteProjectRequestDto;
-import com.simple.book.domain.project.dto.request.GetProjectsRequestDto;
 import com.simple.book.domain.project.dto.response.GetProjectsResponseDto;
 import com.simple.book.domain.project.entity.Project;
 import com.simple.book.domain.project.repository.ProjectRepository;
 import com.simple.book.domain.search.service.SearchService;
-import com.simple.book.domain.task.entity.Task;
-import com.simple.book.domain.task.repository.TaskRepository;
 import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.service.UserService;
@@ -63,22 +57,25 @@ public class ProjectService {
 		return ResponseMessage.builder().message("success").build();
 	}
 
-	@Transactional(rollbackFor = { Exception.class })
-	public ResponseMessage getProjects(GetProjectsRequestDto getProjectsRequestDto) {
-		List<GetProjectsResponseDto> result;
-		try {
-			User user = userRepository.findByAuthenticationUserId(getProjectsRequestDto.getUserId());
-			List<Project> projects = memberRepository.findProjectsByUserId(user.getId());
-			result = projects.stream()
-					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(),
-							project.getDescription(), project.getStartDate(), project.getEndDate(), project.getMembers()
-									.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
-					.collect(Collectors.toList());
-		} catch (NullPointerException e) {
-			throw new UserNotFoundException(e.getMessage());
-		}
-		return ResponseMessage.builder().value(result).build();
-	}
+	/*
+	 * old
+	 */
+//	@Transactional(rollbackFor = { Exception.class })
+//	public ResponseMessage getProjects(GetProjectsRequestDto getProjectsRequestDto) {
+//		List<GetProjectsResponseDto> result;
+//		try {
+//			User user = userRepository.findByAuthenticationUserId(getProjectsRequestDto.getUserId());
+//			List<Project> projects = memberRepository.findProjectsByUserId(user.getId());
+//			result = projects.stream()
+//					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(),
+//							project.getDescription(), project.getStartDate(), project.getEndDate(), project.getMembers()
+//									.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
+//					.collect(Collectors.toList());
+//		} catch (NullPointerException e) {
+//			throw new UserNotFoundException(e.getMessage());
+//		}
+//		return ResponseMessage.builder().value(result).build();
+//	}
 	
 	/*
 	 * new
@@ -90,7 +87,7 @@ public class ProjectService {
 			User user = userRepository.findByAuthenticationUserId(userId);
 			List<Project> projects = memberRepository.findProjectsByUserId(user.getId());
 			result = projects.stream()
-					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(),
+					.map(project -> new GetProjectsResponseDto(project.getId(), project.getTitle(), project.getSubTitle(),
 							project.getDescription(), project.getStartDate(), project.getEndDate(), project.getMembers()
 								.stream().map(member -> member.getUser().getId()).collect(Collectors.toList())))
 					.collect(Collectors.toList());
