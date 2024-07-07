@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.simple.book.domain.alarm.service.AlarmService;
+import com.simple.book.domain.member.dto.request.AdminRequestDto;
 import com.simple.book.domain.member.dto.request.MemberMappingToProjectRequestDto;
 import com.simple.book.domain.member.dto.request.MemberMappingToTaskRequestDto;
 import com.simple.book.domain.member.entity.Member;
@@ -94,4 +95,15 @@ public class MemberService {
 
 		return ResponseMessage.builder().message("success").build();
 	}
+	
+	@Transactional(rollbackFor = { Exception.class })
+	public ResponseMessage memberAddAdminToProject(AdminRequestDto body) { 
+		Optional<Member> member = memberRepository.findById(body.getMemberId());
+		if (member.isPresent()) {
+			Member entity = member.get();
+			entity.setManager(body.isManager());
+		}
+		return ResponseMessage.builder().message("success").build();
+	}
+	
 }
