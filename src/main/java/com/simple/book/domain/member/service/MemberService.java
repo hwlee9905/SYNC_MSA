@@ -97,7 +97,7 @@ public class MemberService {
 	}
 	
 	@Transactional(rollbackFor = { Exception.class })
-	public ResponseMessage memberAddAdminToProject(AdminRequestDto body) {
+	public ResponseMessage memberAddAdminToProject(AdminRequestDto body) { 
 		Optional<Member> member = memberRepository.findById(body.getMemberId());
 		if (member.isPresent()) {
 			Member entity = member.get();

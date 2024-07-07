@@ -31,7 +31,7 @@ public class MemberController {
         return ResponseEntity.ok().body(memberService.memberAddToTask(memberMappingToTaskRequestDto));
     }
     
-    @PutMapping("/project/member/modify/admin")
+    @PutMapping("/project/member/modify/admin") 
     public ResponseEntity<ResponseMessage> memberModifydminToProject(@RequestBody AdminRequestDto body){
     	System.out.println("isManager: " + body.isManager());
     	return ResponseEntity.ok().body(memberService.memberAddAdminToProject(body));
