@@ -40,14 +40,14 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         ResponseCookie jwtCookie = createCookie("JWT_TOKEN",  token);
 
         response.addHeader("Set-Cookie", jwtCookie.toString());
-        response.sendRedirect("http://158.247.197.212/");
+        response.sendRedirect("https://158.247.197.212/");
     }
 
     //쿠키로 JWT 발급
     private ResponseCookie createCookie(String key, String value) {
         ResponseCookie cookie = ResponseCookie.from(key, value)
                 .path("/")
-                .sameSite("None") 
+                .sameSite("None")
                 .httpOnly(false)
                 .secure(true)
                 .maxAge(30 * 60)
