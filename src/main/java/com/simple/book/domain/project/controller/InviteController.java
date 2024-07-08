@@ -27,7 +27,7 @@ public class InviteController {
 	 */
 	@Operation(summary = "프로젝트 초대 URL 가져오기", description = "프로젝트 고유 초대 URL을 가져옵니다.")
 	@GetMapping("/getLink")
-	public ResponseEntity<ResponseMessage> getLink(@Parameter(description = "Project PK 값") @RequestParam(name = "id") long projectId){
+	public ResponseEntity<ResponseMessage> getLink(@Parameter(description = "Project PK 값") @RequestParam(name = "projectId") long projectId){
 		return ResponseEntity.ok().body(inviteService.getLink(projectId));
 	}
 	
@@ -38,7 +38,7 @@ public class InviteController {
 	 */
 	@Operation(summary = "프로젝트 이메일로 초대하기", description = "이메일로 프로젝트 초대장을 전송합니다.")
 	@GetMapping("/emailLink")
-	public ResponseEntity<ResponseMessage> emailLink(@Parameter(description = "Project PK 값") @RequestParam(name = "id") long projectId, 
+	public ResponseEntity<ResponseMessage> emailLink(@Parameter(description = "Project PK 값") @RequestParam(name = "projectId") long projectId, 
 													 @Parameter(description = "전송 할 email") @RequestParam(name = "email") String email){
 		return ResponseEntity.ok().body(inviteService.emailLink(projectId, email));
 	}

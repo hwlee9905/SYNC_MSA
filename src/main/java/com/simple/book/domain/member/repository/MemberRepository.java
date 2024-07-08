@@ -16,8 +16,10 @@ import com.simple.book.domain.user.entity.User;
 public interface MemberRepository extends JpaRepository<Member,Long> {
     @Query("SELECT m FROM Member m WHERE m.user.id = :userId AND m.project.id = :projectId")
     Optional<Member> findByUserIdAndProjectId(@Param("userId") Long userId, @Param("projectId") Long projectId);
+    
     @Query("SELECT m.project FROM Member m WHERE m.user.id = :userId")
     List<Project> findProjectsByUserId(@Param("userId") Long userId);
+    
     @Query("SELECT u FROM Member m INNER JOIN m.user u WHERE m.id = :memberId")
     Optional<User> findUserIdByTaskMember(@Param("memberId") long memberId);
 }
