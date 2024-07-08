@@ -90,8 +90,8 @@ public class AlarmService {
 		if (alarmList.size() > 0) {
 			for (Alarm entity : alarmList) {
 				ResAlarm resAlarm = new ResAlarm();
-				resAlarm.setAlarmId(entity.toDto().getAlarmId());
-				resAlarm.setMessage(entity.toDto().getMessage());
+				resAlarm.setAlarmId(entity.getAlarmId());
+				resAlarm.setMessage(entity.getMessage());
 				resAlarm.setCreatedAt(entity.getCreatedAt());
 				resultList.add(resAlarm);
 			}
@@ -109,11 +109,13 @@ public class AlarmService {
 	}
 	
 	public void sendTaskManager(long memberId) {
-		Optional<User> member = memberRepository.findUserIdByTaskMember(memberId);
-		if (member.isPresent()) {
-			long userId = member.get().getId();
-			String name = member.get().getUsername();
-			String message = name + " 님이 담당자로 배정 되었습니다.";
+		Optional<User> user = memberRepository.findUserIdByTaskMember(memberId);
+		if (user.isPresent()) {
+			User entity = user.get();
+			
+			long userId = entity.getId();
+			String username = entity.getUsername();
+			String message = username + " 님이 담당자로 배정 되었습니다.";
 			
 			UUID alarmId = saveAlarm(userId, message);
 			Optional<UUID> url = alarmUrlRepository.findUrlByUser(userRepository.getReferenceById(userId));
@@ -133,7 +135,7 @@ public class AlarmService {
 				.user(userRepository.getReferenceById(userId))
 				.message(message).build();
 		try {
-			result = alarmRepository.saveAndFlush(dto.toEntity()).toDto().getAlarmId();
+			result = alarmRepository.saveAndFlush(dto.toEntity()).getAlarmId();
 		}catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
@@ -144,9 +146,9 @@ public class AlarmService {
 		Optional<Alarm> alarm = alarmRepository.findById(alarmId);
 		if (alarm.isPresent()) {
 			SendAlarm dto = SendAlarm.builder()
-					.alarmId(alarm.get().toDto().getAlarmId())
+					.alarmId(alarm.get().getAlarmId())
 					.url(url)
-					.message(alarm.get().toDto().getMessage())
+					.message(alarm.get().getMessage())
 					.createdAt(alarm.get().getCreatedAt())
 					.build();
 			try {
