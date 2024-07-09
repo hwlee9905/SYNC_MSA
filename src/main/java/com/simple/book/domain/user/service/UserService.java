@@ -21,7 +21,6 @@ import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
-import com.simple.book.domain.user.dto.UserInfo;
 import com.simple.book.domain.user.dto.request.ModifyProfileImgRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
@@ -152,12 +151,12 @@ public class UserService implements UserDetailsService {
 	public ResponseMessage getUserInfo(long userId) {
 		GetUserInfoResponseDto dto = new GetUserInfoResponseDto();
 		try {
-			Optional<UserInfo> info = userRepository.findUserAndAuthenticationById(userId);
+			Optional<User> info = userRepository.findById(userId);
 			if (info.isPresent()) {
-				UserInfo entity = info.get();
+				User entity = info.get();
 				String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(entity.getProfileImg()).toUriString();
 				
-				dto.setUserId(entity.getUserId());
+				dto.setUserId(entity.getAuthentication().getUserId());
 				dto.setProfileImg(imgUrl);
 				dto.setUsername(entity.getUsername());
 				dto.setNickname(entity.getNickname());
