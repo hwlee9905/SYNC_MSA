@@ -2,8 +2,7 @@ package com.simple.book.domain.user.service;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,6 +21,7 @@ import com.simple.book.domain.alarm.service.AlarmUrlService;
 import com.simple.book.domain.jwt.dto.AuthTokenDto;
 import com.simple.book.domain.jwt.dto.CustomUserDetails;
 import com.simple.book.domain.oauth2.CustomOAuth2User;
+import com.simple.book.domain.user.dto.UserInfo;
 import com.simple.book.domain.user.dto.request.ModifyProfileImgRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyPwdRequestDto;
 import com.simple.book.domain.user.dto.request.ModifyUserInfoRequestDto;
@@ -33,7 +33,6 @@ import com.simple.book.domain.user.entity.User;
 import com.simple.book.domain.user.repository.AuthenticationRepository;
 import com.simple.book.domain.user.repository.UserRepository;
 import com.simple.book.domain.user.util.InfoSet;
-import com.simple.book.domain.user.util.ProfileImage;
 import com.simple.book.domain.user.util.Role;
 import com.simple.book.global.advice.ErrorCode;
 import com.simple.book.global.advice.ResponseMessage;
@@ -145,18 +144,26 @@ public class UserService implements UserDetailsService {
 		return ResponseMessage.builder().value(dto).build();
 	}
 	
-	public ResponseMessage getUserInfo(String userId) {
+	/**
+	 * 유저 정보 조회
+	 * @param userId
+	 * @return
+	 */
+	public ResponseMessage getUserInfo(long userId) {
 		GetUserInfoResponseDto dto = new GetUserInfoResponseDto();
 		try {
-			User info = userRepository.findByAuthenticationUserId(userId);
-			String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(info.getProfileImg()).toUriString();
-			
-			dto.setUserId(userId);
-			dto.setProfileImg(imgUrl);
-			dto.setUsername(info.getUsername());
-			dto.setNickname(info.getNickname());
-			dto.setPosition(info.getPosition());
-			dto.setIntroduction(info.getIntroduction());
+			Optional<UserInfo> info = userRepository.findUserAndAuthenticationById(userId);
+			if (info.isPresent()) {
+				UserInfo entity = info.get();
+				String imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/img/").path(entity.getProfileImg()).toUriString();
+				
+				dto.setUserId(entity.getUserId());
+				dto.setProfileImg(imgUrl);
+				dto.setUsername(entity.getUsername());
+				dto.setNickname(entity.getNickname());
+				dto.setPosition(entity.getPosition());
+				dto.setIntroduction(entity.getIntroduction());
+			}
 		}catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}

@@ -82,7 +82,7 @@ public class UserController {
 	}
 	
 	@GetMapping("info")
-	public ResponseEntity<ResponseMessage> getUserInfo(@RequestParam(name="userId") String userId){
+	public ResponseEntity<ResponseMessage> getUserInfo(@RequestParam(name="userId") long userId){
 		return ResponseEntity.ok().body(userService.getUserInfo(userId));
 	}
 	
