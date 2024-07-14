@@ -49,7 +49,7 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .path("/")
                 .sameSite("None")
                 .httpOnly(false)
-                .secure(false)
+                .secure(true)
                 .maxAge(30 * 60)
                 .build();
         return cookie;
