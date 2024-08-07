@@ -1,1 +1,0 @@
-# SYNC_user_service
