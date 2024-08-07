@@ -43,7 +43,6 @@ public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
 	/**
 	 * 사용자 존재 여부 확인
 	 * @param userId
