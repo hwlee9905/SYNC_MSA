@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<link rel="stylesheet" href="/css/nav_bar.css" type="text/css">
+</head>
+<body>
+	<nav>
+		<div class="nav-container">
+			<ul id="nav-left">
+				<li class="nav-item"><a href="/">main</a></li>
+				<li class="nav-item"><a href="/friend">friend</a></li>
+				<li class="nav-item"><a href="/board">board</a></li>
+			</ul>
+			<ul id="nav-right">
+				<th:block th:if='${session.id == null}'>
+					<li class="nav-user"><a onclick="pageLogin();">login</a></li>
+					<li class="nav-user"><a onclick="pageSignup();">sign up</a></li>
+				</th:block>
+				<th:block th:if='${session.id != null}'>
+					<li class="nav-user"><a onclick="myPage();"><th:block th:text="${session.id}"/> 님</a></li>
+					<li class="nav-user"><a onclick="logout();">logout</a></li>
+				</th:block>
+			</ul>
+
+
+		</div>
+	</nav>
+</body>
+<script src="/js/nav_bar.js"></script>
+</html>

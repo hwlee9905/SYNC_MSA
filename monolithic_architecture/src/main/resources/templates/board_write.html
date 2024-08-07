@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOARD</title>
+<link rel="stylesheet" href="/css/board.css" type="text/css">
+</head>
+<style>
+.write_box {
+	display: flex;
+	flex-direction: column;
+	width: 1200px;
+	height: 500px;
+	margin: auto;
+}
+
+#contents {
+	width: 100%;
+	height: 80%;
+}
+
+.files {
+	cursor: pointer;
+	width: 180px;
+}
+
+.file_box {
+	display: flex;
+	flex-direction: column;
+}
+
+.btn_box {
+	display: flex;
+	justify-content: flex-end;
+}
+</style>
+<body>
+	<div class="container">
+		<th:block th:replace="~{nav/nav_bar}" />
+		<div class="write_box">
+			<input id="contents" type="text" />
+			<div class="file_box">
+				<input class="files" id="image" type="file" accept="image/jpeg, image/png"/>
+			</div>
+			<div class="btn_box">
+				<button onclick="submit()">작성</button>
+				<button onclick="back()">취소</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	function uploadFiles(files){
+		let contents = document.getElementById('contents').value;
+		let formData = new FormData();
+		formData.append('images', files[0]);
+		
+		fetch('/board/add', {
+			method: 'POST',
+			body: contents, formData,
+		})
+		.then(response => {
+			return response.json();
+		})
+		.then(data => {
+			let state = data.result;
+			if (state === true){
+				alert('업로드 성공');
+			}
+			if (state === "no_session"){
+				alert('로그인이 필요합니다.');
+			}
+		})
+	}
+	
+	function back() {
+		window.history.back();
+	}
+</script>
+</html>

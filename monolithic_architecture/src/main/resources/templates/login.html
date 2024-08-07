@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>로그인</title>
+	<link rel="stylesheet" href="/css/login.css" type="text/css">
+</head>
+<body>
+	<div class="container">
+		<th:block th:replace="~{nav/nav_bar}"></th:block>
+		<h1>로그인</h1>
+		아이디 <input id="userId" name="userId" type="text" maxlength="8" required="required"> <br>
+	    비밀번호 <input id="password" name="password" type="password" maxlength="20" required="required">
+		<br>
+		<button type="button" onclick="login();">로그인</button>
+	</div>
+</body>
+
+<script src="/js/login.js">
+	
+</script>
+
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>가입</title>
+	<link rel="stylesheet" href="/css/signup.css" type="text/css">
+</head>
+<body>
+	<div class="container">
+		<th:block th:replace="~{nav/nav_bar}"></th:block>
+		<h1>가입</h1>
+		아이디 <input id="id" name="id" type="text" maxlength="16"
+			required="required"> <br> 비밀번호 <input id="password"
+			name="password" type="password" maxlength="20" required="required">
+		<br> 성 <input id="first_name" name="first_name" type="text"
+			maxlength="12" required="required"> <br> 이름 <input
+			id="last_name" name="last_name" type="text" maxlength="12"
+			required="required" placeholder="성을 제외한 이름"> <br> 생년월일 <input
+			id="birth" name="birth" type="date" maxlength="8" required="required">
+		<br> 성별 <input type="radio" name="gender" value="M"
+			required="required" checked="checked">남 <input type="radio"
+			name="gender" value="F" required="required">여 <br>
+		<button type="button" onclick="signup();">가입</button>
+	</div>
+</body>
+<script src="/js/signup.js">
+</script>
+</html>
