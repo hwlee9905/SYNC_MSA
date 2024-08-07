@@ -221,7 +221,6 @@ public class UserService implements UserDetailsService {
 		}
 		return result;
 	}
-
 	public String getCurrentUserId() {
 		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
