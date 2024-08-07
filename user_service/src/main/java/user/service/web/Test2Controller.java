@@ -11,4 +11,9 @@ public class Test2Controller {
 	public String index(HttpServletResponse response) {
 		return "index.html";
 	}
+	@GetMapping("/test")
+	public String test() {
+		return "hello";
+	}
+
 }

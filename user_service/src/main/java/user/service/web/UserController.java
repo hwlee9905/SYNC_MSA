@@ -32,6 +32,7 @@ public class UserController {
 		String userId = userService.getCurrentUserId();
 		return ResponseEntity.ok().body(userService.modifyUserInfo(body, userId));
 	}
+
 //	@ResponseBody
 //	@DeleteMapping("remove")
 //	public ResponseEntity<ResponseMessage> removeUser() {
