@@ -167,7 +167,6 @@ public class UserService implements UserDetailsService {
 		}
 		return SuccessResponse.builder().message("수정 되었습니다.").build();
 	}
-
 	private User typeToSet(ModifyUserInfoRequestDto body, User user) {
 		String type = body.getType();
 		String value = body.getValue();
