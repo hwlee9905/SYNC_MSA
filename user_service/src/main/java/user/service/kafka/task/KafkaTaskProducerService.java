@@ -7,6 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 import user.service.MemberService;
 import user.service.UserService;
 import user.service.entity.User;
@@ -35,11 +36,16 @@ public class KafkaTaskProducerService {
      * @param createTaskRequestDto
      * @return
      */
-    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto) {
+    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> files) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         // 프로젝트의 멤버인지 확인
         memberService.findMemberByUserIdAndProjectId(user.getId(), createTaskRequestDto.getProjectId());
-        TaskCreateEvent event = new TaskCreateEvent(createTaskRequestDto);
+        TaskCreateEvent event;
+        if (files != null && !files.isEmpty()) {
+            event = new TaskCreateEvent(createTaskRequestDto, files);
+        } else {
+            event = new TaskCreateEvent(createTaskRequestDto);
+        }
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);

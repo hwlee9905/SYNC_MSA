@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import user.service.global.advice.SuccessResponse;
@@ -12,16 +13,19 @@ import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.project.request.UpdateProjectRequestDto;
 import user.service.web.dto.task.request.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class TaskController {
     private final KafkaTaskProducerService kafkaTaskProducerService;
     @Operation(summary = "업무를 생성하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : CreateTaskRequestDto")
-    @PostMapping("/user/api/task")
-    public SuccessResponse createTask(@RequestBody @Valid CreateTaskRequestDto createTaskRequestDto) {
-        return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto);
+    @PostMapping("/user/api/task/v1")
+    public SuccessResponse createTask(@RequestBody @Valid CreateTaskRequestDto createTaskRequestDto, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+        return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto,images);
     }
+
     //해당 업무의 자식 업무만 조회합니다.
     @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 129.213.161.199:31585 <br>" +
             "ValidationDetails : GetTaskRequestDto")

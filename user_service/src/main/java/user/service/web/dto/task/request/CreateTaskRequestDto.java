@@ -7,7 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Setter
@@ -31,4 +34,6 @@ public class CreateTaskRequestDto {
     @Schema(description = "생성할 업무의 프로젝트 아이디")
     @NotNull(message = "프로젝트 아이디는 필수 입력 값 입니다.")
     private Long projectId;
+    @Schema(description = "업무에 첨부할 이미지 파일들")
+    private List<MultipartFile> images;
 }
