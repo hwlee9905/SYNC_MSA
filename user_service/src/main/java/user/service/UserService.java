@@ -1,8 +1,10 @@
 package user.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.*;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,6 +35,7 @@ import user.service.jwt.dto.CustomUserDetails;
 import user.service.oauth2.CustomOAuth2User;
 import user.service.repository.AuthenticationRepository;
 import user.service.repository.UserRepository;
+import user.service.web.dto.UserInfoResponseDto;
 import user.service.web.dto.request.ModifyPwdRequestDto;
 import user.service.web.dto.request.ModifyUserInfoRequestDto;
 import user.service.web.dto.request.SignupRequestDto;
@@ -135,21 +138,34 @@ public class UserService implements UserDetailsService {
 	 * @return
 	 */
 	public SuccessResponse getUserInfo() {
-		Map<String, Object> map = new HashMap<>();
 		try {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
-			map.put("userId", id);
-			map.put("username", info.getUsername());
-			map.put("nickname", info.getNickname());
-			map.put("position", info.getPosition());
-			map.put("introduction", info.getIntroduction());
+			UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+			userInfoResponseDto.setUsername(info.getUsername());
+			userInfoResponseDto.setNickname(info.getNickname());
+			userInfoResponseDto.setPosition(info.getPosition());
+			return SuccessResponse.builder().value(userInfoResponseDto).build();
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
-		return SuccessResponse.builder().value(map).build();
 	}
-	
+	public SuccessResponse getUsersInfo(List<Long> userIds) {
+		List<UserInfoResponseDto> userInfoList = userIds.stream()
+			.map(this::findById)
+			.map(user -> {
+				UserInfoResponseDto dto = new UserInfoResponseDto();
+				dto.setUsername(user.getUsername());
+				dto.setNickname(user.getNickname());
+				dto.setPosition(user.getPosition());
+				return dto;
+			})
+			.collect(Collectors.toList());
+		return SuccessResponse.builder()
+				.message("유저 정보 조회 성공")
+				.value(userInfoList)
+				.build();
+	}
 	/**
 	 * 정보 변경
 	 * @param body
@@ -233,6 +249,10 @@ public class UserService implements UserDetailsService {
 			}
 		}
 		return null; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
+	}
+	public User findById(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 	}
 	public Long getUserEntityId(String userId) {
 		User user = userRepository.findByAuthenticationUserId(userId);
