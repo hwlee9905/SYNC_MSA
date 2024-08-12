@@ -1,6 +1,8 @@
 package project.service.global;
 
 import lombok.extern.slf4j.Slf4j;
+import project.service.global.exception.LinkCannotBeSavedException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Locale;
 import java.util.Map;
 
 @ControllerAdvice
@@ -74,5 +77,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> runtimeException(RuntimeException e) {
         log.error(e.getMessage(),e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage(), "result", false));
+    }
+    
+    /**
+     * Invite
+     */
+    @ExceptionHandler(LinkCannotBeSavedException.class)
+    protected ResponseEntity<ErrorResponse> handleLinkCannotBeSavedException(Locale locale, LinkCannotBeSavedException e){
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.LINK_SAVE_ERROR);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.LINK_SAVE_ERROR.getStatus()));
     }
 }

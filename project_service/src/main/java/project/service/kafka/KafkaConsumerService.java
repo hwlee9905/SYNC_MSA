@@ -3,6 +3,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import project.service.InviteService;
 import project.service.ProjectService;
 import project.service.TaskService;
 import project.service.dto.request.CreateProjectRequestDto;
@@ -18,6 +20,7 @@ import project.service.kafka.event.*;
 public class KafkaConsumerService {
     private final ProjectService projectService;
     private final TaskService taskService;
+    private final InviteService inviteService;
     private final KafkaProducerService kafkaProducerService;
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "task-create-topic";
@@ -36,7 +39,8 @@ public class KafkaConsumerService {
             Project project = projectService.createProject(projectCreateRequestDto);
             log.warn("project.getId() : " + project.getId());
             kafkaProducerService.sendAddMemberToProjectEvent(userId ,project.getId());
-
+            // 초대 링크 생성
+            inviteService.createLink(project);
             // 처리 로그 출력
             log.info("Processed ProjectCreateEvent for userId: " + userId);
         } catch (Exception e) {
