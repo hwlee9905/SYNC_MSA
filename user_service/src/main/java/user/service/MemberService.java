@@ -1,28 +1,27 @@
 package user.service;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
-import user.service.global.exception.InvalidValueException;
-import user.service.kafka.member.KafkaMemberProducerService;
-import user.service.kafka.member.event.RollbackMemberAddToProjectEvent;
-import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
-import user.service.entity.Member;
-import user.service.entity.User;
-import user.service.global.advice.SuccessResponse;
-import user.service.global.exception.EntityNotFoundException;
-import user.service.global.exception.MemberDuplicateInProjectException;
-import user.service.repository.MemberRepository;
-import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
-import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import user.service.entity.Member;
+import user.service.entity.User;
+import user.service.global.advice.SuccessResponse;
+import user.service.global.exception.EntityNotFoundException;
+import user.service.global.exception.InvalidValueException;
+import user.service.global.exception.MemberDuplicateInProjectException;
+import user.service.kafka.member.KafkaMemberProducerService;
+import user.service.kafka.member.event.RollbackMemberAddToProjectEvent;
+import user.service.repository.MemberRepository;
+import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
+import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
+import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,31 @@ public class MemberService {
      * @param memberMappingToProjectRequestDto
      * @return
      */
+//    @Transactional(rollbackFor = { Exception.class })
+//    public SuccessResponse memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
+//        List<String> userIds = memberMappingToProjectRequestDto.getUserIds();
+//        Long projectId = memberMappingToProjectRequestDto.getProjectId();
+//        int isManager = memberMappingToProjectRequestDto.getIsManager();
+//
+//        userIds.forEach(userId -> {
+//            try {
+//                User user = userService.findUserEntity(userId);
+//                Member member = Member.builder()
+//                        .isManager(isManager)
+//                        .projectId(projectId)
+//                        .user(user)
+//                        .build();
+//                memberRepository.save(member);
+//            } catch (DataIntegrityViolationException e) {
+//                throw new MemberDuplicateInProjectException(e.getMessage());
+//            }
+//        });
+//        //프로젝트 존재하지 않을시 보상 트랜잭션 처리
+//        kafkaMemberProducerService.isExistProjectByMemberAddToProject(projectId, userIds);
+//        return new SuccessResponse("멤버 추가 성공", userIds);
+//    }
+    // New
+    // 수정자 : 강민경
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
         List<String> userIds = memberMappingToProjectRequestDto.getUserIds();
@@ -57,8 +81,10 @@ public class MemberService {
         });
         //프로젝트 존재하지 않을시 보상 트랜잭션 처리
         kafkaMemberProducerService.isExistProjectByMemberAddToProject(projectId, userIds);
-        return new SuccessResponse("멤버 추가 성공", true, userIds);
+        return SuccessResponse.builder().message("멤버 추가 성공").data(userIds).build();
+//        return new SuccessResponse("멤버 추가 성공", userIds);
     }
+    
     /**
      * 프로젝트에 속한 멤버를 조회합니다.
      * @param projectId, userId
@@ -86,6 +112,28 @@ public class MemberService {
      * @param memberMappingToTaskRequestDto
      * @return
      */
+//    @Transactional(rollbackFor = { Exception.class })
+//    public SuccessResponse allMembersInSameProject(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
+//        List<Long> memberIds = memberMappingToTaskRequestDto.getMemberIds();
+//        Set<Long> uniqueProjectIds = memberIds.stream()
+//                .map(memberId -> memberRepository.findById(memberId)
+//                        .orElseThrow(() -> new EntityNotFoundException("Member not found for ID: " + memberId)))
+//                .map(Member::getProjectId)
+//                .collect(Collectors.toSet());
+//
+//        if (uniqueProjectIds.size() == 1) {
+//            // 모든 멤버가 같은 프로젝트에 속해 있을 경우
+//            List<Long> userIds = memberIds.stream()
+//                    .map(memberId -> memberRepository.findById(memberId).get().getUser().getId())
+//                    .collect(Collectors.toList());
+//            return new SuccessResponse("모든 멤버가 같은 프로젝트에 속해 있습니다.", userIds);
+//        } else {
+//            // 멤버들이 서로 다른 프로젝트에 속해 있을 경우
+//            return new SuccessResponse("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.", memberIds);
+//        }
+//    }
+    // New
+    // 수정자 : 강민경
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse allMembersInSameProject(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
         List<Long> memberIds = memberMappingToTaskRequestDto.getMemberIds();
@@ -100,12 +148,13 @@ public class MemberService {
             List<Long> userIds = memberIds.stream()
                     .map(memberId -> memberRepository.findById(memberId).get().getUser().getId())
                     .collect(Collectors.toList());
-            return new SuccessResponse("모든 멤버가 같은 프로젝트에 속해 있습니다.", true, userIds);
+            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있습니다.").data(userIds).build();
         } else {
             // 멤버들이 서로 다른 프로젝트에 속해 있을 경우
-            return new SuccessResponse("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.", false, memberIds);
+            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.").data(memberIds).build();
         }
     }
+    
     /**
      * 프로젝트에 속해있는 멤버들을 삭제합니다.
      * @param projectId

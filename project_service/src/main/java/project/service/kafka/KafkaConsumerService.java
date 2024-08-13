@@ -1,15 +1,23 @@
 package project.service.kafka;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import project.service.ProjectService;
 import project.service.TaskService;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.CreateTaskRequestDto;
 import project.service.entity.Project;
 import project.service.global.ResponseMessage;
-import project.service.kafka.event.*;
+import project.service.kafka.event.IsExistProjectByMemberAddToProjectEvent;
+import project.service.kafka.event.ProjectCreateEvent;
+import project.service.kafka.event.ProjectDeleteEvent;
+import project.service.kafka.event.ProjectUpdateEvent;
+import project.service.kafka.event.TaskCreateEvent;
+import project.service.kafka.event.TaskDeleteEvent;
+import project.service.kafka.event.TaskUpdateEvent;
+import project.service.kafka.event.UserAddToTaskEvent;
 
 
 @Service
@@ -27,6 +35,7 @@ public class KafkaConsumerService {
     private static final String TOPIC5 = "project-update-topic";
     private static final String TOPIC6 = "task-update-topic";
     private static final String TOPIC7 = "is-exist-project-by-member-add-to-project-topic";
+    
     @KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaProjectCreateEventListenerContainerFactory")
     public void listenProjectCreateEvent(ProjectCreateEvent event) {
         try {
@@ -36,13 +45,15 @@ public class KafkaConsumerService {
             Project project = projectService.createProject(projectCreateRequestDto);
             log.warn("project.getId() : " + project.getId());
             kafkaProducerService.sendAddMemberToProjectEvent(userId ,project.getId());
-
+            // 초대 링크 생성
+            kafkaProducerService.sendAddLinkToProjectEvent(project.getId());
             // 처리 로그 출력
             log.info("Processed ProjectCreateEvent for userId: " + userId);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
+    
     @KafkaListener(topics = TOPIC1, groupId = "task-create-group", containerFactory = "kafkaTaskCreateEventListenerContainerFactory")
     public void listenTaskCreateEvent(TaskCreateEvent event) {
         try {
