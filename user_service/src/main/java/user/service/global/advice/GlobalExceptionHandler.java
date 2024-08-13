@@ -1,6 +1,7 @@
 package user.service.global.advice;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +22,7 @@ import user.service.global.exception.BusinessException;
 import user.service.global.exception.EntityNotFoundException;
 import user.service.global.exception.IdenticalValuesCannotChangedException;
 import user.service.global.exception.InvalidValueException;
+import user.service.global.exception.LinkCannotBeSavedException;
 import user.service.global.exception.MemberDuplicateInProjectException;
 import user.service.global.exception.UnknownException;
 import user.service.global.exception.UserIdDuplicatedException;
@@ -166,6 +168,16 @@ public class GlobalExceptionHandler {
     	final ErrorCode errorCode = e.getErrorCode();
     	final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+    
+    /**
+     * Invite
+     */
+    @ExceptionHandler(LinkCannotBeSavedException.class)
+    protected ResponseEntity<ErrorResponse> handleLinkCannotBeSavedException(Locale locale, LinkCannotBeSavedException e){
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.LINK_SAVE_ERROR);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.LINK_SAVE_ERROR.getStatus()));
     }
 
 }
