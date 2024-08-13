@@ -11,6 +11,8 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+
+import user.service.kafka.invite.event.UserAddToProjectLinkEvent;
 import user.service.kafka.member.event.RollbackMemberAddToProjectEvent;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
@@ -44,6 +46,12 @@ public class KafkaConsumerConfig {
 		factory.setConcurrency(3);
 		return factory;
 	}
+	
+	@Bean
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaSendAddLinkToProjectEventListenerContainerFactory() {
+		return createFactory(UserAddToProjectLinkEvent.class.getName());
+	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaSendAddMemberToProjectEventListenerContainerFactory() {
 		return createFactory(UserAddToProjectEvent.class.getName());

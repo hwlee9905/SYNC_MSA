@@ -49,7 +49,7 @@ public class KafkaTaskProducerService {
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
-        return new SuccessResponse("업무 생성 이벤트 생성", true, createTaskRequestDto);
+        return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(createTaskRequestDto).build();
     }
     /**
      * 업무 담당자 배정 이벤트 생성
@@ -60,14 +60,14 @@ public class KafkaTaskProducerService {
         SuccessResponse responseMessage = memberService.allMembersInSameProject(memberMappingToTaskRequestDto);
         if(responseMessage.isResult()){
             @SuppressWarnings("unchecked")
-            List<Long> userIds = (List<Long>) responseMessage.getValue();
+            List<Long> userIds = (List<Long>) responseMessage.getData();
             UserAddToTaskEvent event = new UserAddToTaskEvent(userIds, memberMappingToTaskRequestDto.getTaskId());
             ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
             record.headers().remove("spring.json.header.types");
             kafkaTemplate.send(record);
-            return new SuccessResponse("업무 담당자 배정 이벤트 생성", true, memberMappingToTaskRequestDto);
-        }else{
-            return new SuccessResponse(responseMessage.getMessage(), false, responseMessage.getValue());
+            return SuccessResponse.builder().message("업무 담당자 배정 이벤트 생성").data(memberMappingToTaskRequestDto).build();
+        } else{
+            return SuccessResponse.builder().message(responseMessage.getMessage()).data(responseMessage.getData()).build();
         }
     }
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {
@@ -78,7 +78,7 @@ public class KafkaTaskProducerService {
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC2, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
-        return new SuccessResponse("업무 삭제 이벤트 생성", true, deleteTaskRequestDto);
+        return SuccessResponse.builder().message("업무 삭제 이벤트 생성").data(deleteTaskRequestDto).build();
     }
     public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
@@ -87,6 +87,6 @@ public class KafkaTaskProducerService {
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC3, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
-        return new SuccessResponse("업무 수정 이벤트 생성", true, updateTaskRequestDto);
+        return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
     }
 }

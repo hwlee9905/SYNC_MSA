@@ -1,24 +1,14 @@
 package user.service.kafka.member;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import user.service.MemberService;
-import user.service.UserService;
-import user.service.entity.User;
+
+import lombok.RequiredArgsConstructor;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.member.event.IsExistProjectByMemberAddToProjectEvent;
-import user.service.kafka.task.event.TaskCreateEvent;
-import user.service.kafka.task.event.TaskDeleteEvent;
-import user.service.kafka.task.event.TaskUpdateEvent;
-import user.service.kafka.task.event.UserAddToTaskEvent;
-import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
-import user.service.web.dto.task.request.CreateTaskRequestDto;
-import user.service.web.dto.task.request.DeleteTaskRequestDto;
-import user.service.web.dto.task.request.UpdateTaskRequestDto;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +20,20 @@ public class KafkaMemberProducerService {
      * @param projectId, userIds
      * @return
      */
+//    public SuccessResponse isExistProjectByMemberAddToProject(Long projectId, List<String> userIds) {
+//        IsExistProjectByMemberAddToProjectEvent event = new IsExistProjectByMemberAddToProjectEvent(projectId, userIds);
+//        ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
+//        record.headers().remove("spring.json.header.types");
+//        kafkaTemplate.send(record);
+//        return new SuccessResponse("업무 생성 이벤트 생성", event);
+//    }
+    // New
+    // 작성자 : 강민경
     public SuccessResponse isExistProjectByMemberAddToProject(Long projectId, List<String> userIds) {
         IsExistProjectByMemberAddToProjectEvent event = new IsExistProjectByMemberAddToProjectEvent(projectId, userIds);
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
-        return new SuccessResponse("업무 생성 이벤트 생성", true, event);
+        return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(event).build();
     }
 }
