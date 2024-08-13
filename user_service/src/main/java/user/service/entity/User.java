@@ -25,8 +25,7 @@ public class User extends BaseEntity {
     private String introduction;
     @Enumerated(EnumType.STRING)
     private Role role;
-    //lazy 추가할것
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "authentication_id")
     private Authentication authentication;
 }
