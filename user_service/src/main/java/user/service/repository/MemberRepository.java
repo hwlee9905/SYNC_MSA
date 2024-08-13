@@ -17,7 +17,8 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     List<Member> findByProjectId(Long projectId);
     @Query("SELECT m.projectId FROM Member m WHERE m.user.id = :userId")
     List<Long> findProjectIdsByUserId(@Param("userId") Long userId);
-    @Query("SELECT m.id FROM Member m WHERE m.projectId = :projectId")
+    @Query("SELECT m.user FROM Member m WHERE m.projectId = :projectId")
     List<Long> findMemberIdsByProjectId(@Param("projectId") Long projectId);
-    List<Member> findByUserId(Long userId);
+    @Query("SELECT m FROM Member m JOIN FETCH m.user u WHERE u.id IN :userIds")
+    List<Member> findMembersByUserIds(List<Long> userIds);
 }

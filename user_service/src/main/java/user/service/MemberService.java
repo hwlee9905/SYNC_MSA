@@ -2,6 +2,7 @@ package user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -9,6 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import user.service.global.exception.InvalidValueException;
 import user.service.kafka.member.KafkaMemberProducerService;
 import user.service.kafka.member.event.RollbackMemberAddToProjectEvent;
+import user.service.web.MemberInfoResponseDto;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.entity.Member;
 import user.service.entity.User;
@@ -130,16 +132,20 @@ public class MemberService {
      * @param projectIds
      * @return
      */
-    public List<GetUserIdsByProjectsResponseDto> getUsersFromProjects(List<Long> projectIds) {
-        return projectIds.stream()
-                .map(projectId -> {
-                    List<Long> userIds = memberRepository.findMemberIdsByProjectId(projectId);
-                    if (userIds.isEmpty()) {
-                        throw new EntityNotFoundException("No members found for ProjectId: " + projectId);
-                    }
-                    return new GetUserIdsByProjectsResponseDto(projectId, userIds);
-                })
-                .collect(Collectors.toList());
+    public SuccessResponse getUsersFromProjects(List<Long> projectIds) {
+        List<GetUserIdsByProjectsResponseDto> dto = projectIds.stream()
+            .map(projectId -> {
+                List<Long> userIds = memberRepository.findMemberIdsByProjectId(projectId);
+                if (userIds.isEmpty()) {
+                    throw new EntityNotFoundException("No members found for ProjectId: " + projectId);
+                }
+                return new GetUserIdsByProjectsResponseDto(projectId, userIds);
+            })
+            .collect(Collectors.toList());
+        return SuccessResponse.builder()
+                .message("프로젝트 멤버 조회 성공")
+                .value(dto)
+                .build();
     }
 
     public void rollbackMemberAddToProject(RollbackMemberAddToProjectEvent event) {
@@ -150,5 +156,22 @@ public class MemberService {
                     .orElseThrow(() -> new EntityNotFoundException("Member not found with UserId: " + userId + " and ProjectId: " + projectId));
             memberRepository.delete(member);
         });
+    }
+    public SuccessResponse getMembersByUserIds(List<Long> userIds) {
+        List<Member> members = memberRepository.findMembersByUserIds(userIds);
+        List<MemberInfoResponseDto> dtos =
+            members.stream()
+                .map(member -> {
+                    MemberInfoResponseDto dto = new MemberInfoResponseDto();
+                    dto.setUserId(member.getUser().getId());
+                    dto.setProjectId(member.getProjectId());
+                    dto.setIsManager(member.getIsManager());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return SuccessResponse.builder()
+                .message("멤버 조회 성공")
+                .value(dtos)
+                .build();
     }
 }

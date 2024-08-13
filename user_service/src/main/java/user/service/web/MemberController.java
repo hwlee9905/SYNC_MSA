@@ -37,9 +37,14 @@ public class MemberController {
     @GetMapping("/project/task/api/v1/users")
     public void getUsersFromTask(@RequestParam Long taskId) {
     }
+    @Operation(summary = "유저들의 멤버목록을 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
+    @GetMapping("user/api/member/v1")
+    public SuccessResponse getMembersByUserIds(@RequestParam List<Long> userIds) {
+        return memberService.getMembersByUserIds(userIds);
+    }
     @Operation(summary = "프로젝트의 멤버들을 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
-    @GetMapping("/api/v1/users")
-    public List<GetUserIdsByProjectsResponseDto> getUsersFromProject(@RequestParam List<Long> projectIds) {
+    @GetMapping("user/api/member/v2")
+    public SuccessResponse getUsersFromProject(@RequestParam List<Long> projectIds) {
         return memberService.getUsersFromProjects(projectIds);
     }
 }

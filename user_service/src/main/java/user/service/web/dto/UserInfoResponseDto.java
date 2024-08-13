@@ -9,4 +9,5 @@ public class UserInfoResponseDto {
     private String username;
     private String nickname;
     private String position;
+    private int isManager;
 }
