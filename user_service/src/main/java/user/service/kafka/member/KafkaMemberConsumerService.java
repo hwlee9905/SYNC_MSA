@@ -18,6 +18,7 @@ public class KafkaMemberConsumerService {
     private final MemberService memberService;
     private static final String TOPIC = "member-add-to-project-topic";
     private static final String TOPIC1 = "rollback-member-add-to-project-topic";
+    
     @KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaSendAddMemberToProjectEventListenerContainerFactory")
     public void listenAddMemberToProjectEvent(UserAddToProjectEvent event) {
         try {

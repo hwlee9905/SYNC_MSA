@@ -1,6 +1,9 @@
 package user.service.global.advice;
 
-import lombok.extern.slf4j.Slf4j;
+import java.nio.file.AccessDeniedException;
+import java.util.Locale;
+import java.util.Map;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +15,18 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import jakarta.servlet.http.HttpServletRequest;
-import user.service.global.exception.*;
-
-import java.nio.file.AccessDeniedException;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import user.service.global.exception.AuthenticationFailureException;
+import user.service.global.exception.AuthorizationFailureException;
+import user.service.global.exception.BusinessException;
+import user.service.global.exception.EntityNotFoundException;
+import user.service.global.exception.IdenticalValuesCannotChangedException;
+import user.service.global.exception.InvalidValueException;
+import user.service.global.exception.LinkCannotBeSavedException;
+import user.service.global.exception.MemberDuplicateInProjectException;
+import user.service.global.exception.UnknownException;
+import user.service.global.exception.UserIdDuplicatedException;
+import user.service.global.exception.UserNotFoundException;
 
 @ControllerAdvice
 @Slf4j
@@ -148,7 +158,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnknownException.class)
     public ResponseEntity<?> UnknownException(UnknownException e) {
     	log.error("UnknownException", e);
-    	final ErrorCode errorCode = e.getErrorCode();
+    	final ErrorCode errorCode = ErrorCode.UNKNOWN_ERROR;
         final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
@@ -158,6 +168,16 @@ public class GlobalExceptionHandler {
     	final ErrorCode errorCode = e.getErrorCode();
     	final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+    
+    /**
+     * Invite
+     */
+    @ExceptionHandler(LinkCannotBeSavedException.class)
+    protected ResponseEntity<ErrorResponse> handleLinkCannotBeSavedException(Locale locale, LinkCannotBeSavedException e){
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.LINK_SAVE_ERROR);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.LINK_SAVE_ERROR.getStatus()));
     }
 
 }

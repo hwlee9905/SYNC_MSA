@@ -1,16 +1,16 @@
 package user.service.kafka.project;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
+import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
 import user.service.web.dto.project.request.CreateProjectRequestDto;
-import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.web.dto.project.request.DeleteProjectRequestDto;
 import user.service.web.dto.project.request.UpdateProjectRequestDto;
 
@@ -24,12 +24,14 @@ public class KafkaProjectProducerService {
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "project-delete-topic";
     private static final String TOPIC2 = "project-update-topic";
+    
     public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, String userId) {
         ProjectCreateEvent event = new ProjectCreateEvent(projectCreateRequestDto, userId);
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
     }
+    
     public void sendDeleteProjectEvent(DeleteProjectRequestDto projectDeleteRequestDto, String userId) {
         ProjectDeleteEvent event = new ProjectDeleteEvent(projectDeleteRequestDto.getProjectId(), userId);
         //프로젝트 생성자인지 확인
