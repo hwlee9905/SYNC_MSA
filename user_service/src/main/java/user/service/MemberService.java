@@ -20,6 +20,7 @@ import user.service.global.exception.MemberDuplicateInProjectException;
 import user.service.kafka.member.KafkaMemberProducerService;
 import user.service.kafka.member.event.RollbackMemberAddToProjectEvent;
 import user.service.repository.MemberRepository;
+import user.service.web.MemberInfoResponseDto;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
 import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
@@ -195,7 +196,7 @@ public class MemberService {
             .collect(Collectors.toList());
         return SuccessResponse.builder()
                 .message("프로젝트 멤버 조회 성공")
-                .value(dto)
+                .data(dto)
                 .build();
     }
 
@@ -222,7 +223,7 @@ public class MemberService {
                 .collect(Collectors.toList());
         return SuccessResponse.builder()
                 .message("멤버 조회 성공")
-                .value(dtos)
+                .data(dtos)
                 .build();
     }
 }

@@ -144,11 +144,10 @@ public class UserService implements UserDetailsService {
 			userInfoResponseDto.setUsername(info.getUsername());
 			userInfoResponseDto.setNickname(info.getNickname());
 			userInfoResponseDto.setPosition(info.getPosition());
-			return SuccessResponse.builder().value(userInfoResponseDto).build();
+			return SuccessResponse.builder().data(userInfoResponseDto).build();
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
-		return SuccessResponse.builder().data(map).build();
 	}
 	public SuccessResponse getUsersInfo(List<Long> userIds) {
 		List<UserInfoResponseDto> userInfoList = userIds.stream()
@@ -163,7 +162,7 @@ public class UserService implements UserDetailsService {
 			.collect(Collectors.toList());
 		return SuccessResponse.builder()
 				.message("유저 정보 조회 성공")
-				.value(userInfoList)
+				.data(userInfoList)
 				.build();
 	}
 	/**
