@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -149,6 +148,7 @@ public class UserService implements UserDetailsService {
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
+		return SuccessResponse.builder().data(map).build();
 	}
 	public SuccessResponse getUsersInfo(List<Long> userIds) {
 		List<UserInfoResponseDto> userInfoList = userIds.stream()
@@ -229,10 +229,10 @@ public class UserService implements UserDetailsService {
 				authenticationRepository.saveAndFlush(auth);
 				result = SuccessResponse.builder().message("success").build();
 			} else {
-				result = SuccessResponse.builder().result(false).message("비밀번호가 일치 하지 않습니다.").build();
+				result = SuccessResponse.builder().message("비밀번호가 일치 하지 않습니다.").build();
 			}
 		} else {
-			result = SuccessResponse.builder().result(false).message("비밀번호를 확인 해 주세요.").build();
+			result = SuccessResponse.builder().message("비밀번호를 확인 해 주세요.").build();
 		}
 		return result;
 	}

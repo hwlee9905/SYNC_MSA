@@ -1,9 +1,5 @@
 package user.service.global.advice;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +13,5 @@ public class SuccessResponse {
 	@Builder.Default
 	private boolean result = true;
 	
-	private Object value;
+	private Object data;
 }
