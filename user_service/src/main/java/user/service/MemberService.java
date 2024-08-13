@@ -135,7 +135,10 @@ public class MemberService {
     public SuccessResponse getUsersFromProjects(List<Long> projectIds) {
         List<GetUserIdsByProjectsResponseDto> dto = projectIds.stream()
             .map(projectId -> {
-                List<Long> userIds = memberRepository.findMemberIdsByProjectId(projectId);
+                List<User> users = memberRepository.findMemberIdsByProjectId(projectId);
+                List<Long> userIds = users.stream()
+                    .map(User::getId)
+                    .collect(Collectors.toList());
                 if (userIds.isEmpty()) {
                     throw new EntityNotFoundException("No members found for ProjectId: " + projectId);
                 }
