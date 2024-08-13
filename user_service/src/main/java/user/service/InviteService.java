@@ -17,14 +17,20 @@ public class InviteService {
 	private final InviteRepository inviteRepository;
 	
 	@Transactional(rollbackFor = { Exception.class })
-	public void createLink(UserAddToProjectLinkEvent even) {
+	public void createLink(UserAddToProjectLinkEvent event) {
 		UUID uuid = UUID.randomUUID();
 		if (inviteRepository.existsByToken(uuid)) {
-			createLink(even);
+			createLink(event);
 		}
 		String url = "https://www.sync-team.co.kr/project/invite/" + uuid.toString();
-		Invite entity = new Invite();
-		entity.createLink(url, even.getProjectId(), uuid);
+//		Invite entity = new Invite();
+//		entity.createLink(url, even.getProjectId(), uuid);
+		
+		Invite entity = Invite.builder()
+				.url(url)
+				.projectId(event.getProjectId())
+				.token(uuid)
+				.build();
 		try {
 			inviteRepository.saveAndFlush(entity);
 		} catch (Exception e) {

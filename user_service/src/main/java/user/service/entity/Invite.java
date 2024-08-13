@@ -1,6 +1,5 @@
 package user.service.entity;
 
-import java.sql.Date;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
