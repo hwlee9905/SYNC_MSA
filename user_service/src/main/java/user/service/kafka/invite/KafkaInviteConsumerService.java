@@ -12,15 +12,10 @@ import user.service.kafka.invite.event.UserAddToProjectLinkEvent;
 public class KafkaInviteConsumerService {
 	private final InviteService inviteService;
 	private static final String TOPIC = "link-add-to-project-topic";
-
-//	@KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaSendAddMemberToProjectEventListenerContainerFactory")
-//	public void createLink(UserAddToProjectLinkEvent event) {
-//		inviteService.createLink(event);
-//	}
-	@KafkaListener(topics = TOPIC, groupId = "link-add-to-project-group", containerFactory = "kafkaSendAddMemberToProjectEventListenerContainerFactory")
+	
+	@KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaSendAddLinkToProjectEventListenerContainerFactory")
 	public void createLink(UserAddToProjectLinkEvent event) {
-//		inviteService.createLink(event);
-		System.out.println("★★★★message: " + event);
+		inviteService.createLink(event);
 	}
 	
 }
