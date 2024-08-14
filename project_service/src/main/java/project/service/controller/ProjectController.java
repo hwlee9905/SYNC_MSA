@@ -1,14 +1,15 @@
 package project.service.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 import project.service.ProjectService;
-import project.service.dto.request.GetProjectsRequestDto;
-import project.service.dto.response.GetProjectsResponseDto;
-import project.service.global.ResponseMessage;
-
-import java.util.List;
+import project.service.global.SuccessResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class ProjectController {
 //        return projectService.getProjects(getProjectsRequestDto);
 //    }
     @GetMapping("/project/api/v1")
-    public ResponseMessage getProjects(@RequestParam List<Long> projectIds)  {
+    public SuccessResponse getProjects(@RequestParam List<Long> projectIds)  {
         return projectService.getProjects(projectIds);
     }
 }

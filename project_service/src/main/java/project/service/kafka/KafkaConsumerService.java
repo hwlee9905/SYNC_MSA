@@ -9,7 +9,7 @@ import project.service.TaskService;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.CreateTaskRequestDto;
 import project.service.entity.Project;
-import project.service.global.ResponseMessage;
+import project.service.global.SuccessResponse;
 import project.service.kafka.event.IsExistProjectByMemberAddToProjectEvent;
 import project.service.kafka.event.ProjectCreateEvent;
 import project.service.kafka.event.ProjectDeleteEvent;
@@ -125,7 +125,7 @@ public class KafkaConsumerService {
     public void listenIsExistProjectByMemberAddToProjectEventEvent(IsExistProjectByMemberAddToProjectEvent event) {
         try {
             // 이벤트 처리
-            ResponseMessage responseMessage = projectService.findProject(event.getProjectId());
+        	SuccessResponse responseMessage = projectService.findProject(event.getProjectId());
             if (!responseMessage.isResult()) {
                 kafkaProducerService.sendRollbackMemberAddToProjectEvent(event.getProjectId(), event.getUserIds());
             }

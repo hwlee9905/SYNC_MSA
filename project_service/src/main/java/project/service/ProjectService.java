@@ -1,20 +1,22 @@
 package project.service;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.response.GetProjectsResponseDto;
 import project.service.entity.Project;
-import project.service.global.ResponseMessage;
+import project.service.global.SuccessResponse;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
 import project.service.repository.ProjectRepository;
 import project.service.repository.TaskRepository;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +33,15 @@ public class ProjectService {
 				.title(projectCreateRequestDto.getTitle()).build();
 		return projectRepository.save(project);
 	}
+	
 	@Transactional(rollbackFor = { Exception.class })
-	public ResponseMessage findProject(Long projectId) {
+	public SuccessResponse findProject(Long projectId) {
 		try {
-			Project project = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(String.valueOf(projectId)));
+			projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(String.valueOf(projectId)));
 
-			return new ResponseMessage("프로젝트 조회 성공", true, "");
+			return SuccessResponse.builder().message("프로젝트 조회 성공").build();
 		} catch (EntityNotFoundException e) {
-			return new ResponseMessage("해당 프로젝트는 존재하지 않습니다.", false, projectId);
+			return SuccessResponse.builder().message("해당 프로젝트는 존재하지 않습니다.").result(false).data(projectId).build();
 		}
 	}
 	@Transactional(rollbackFor = { Exception.class })
@@ -47,8 +50,9 @@ public class ProjectService {
 		//프로젝트가 존재하지 않을 경우 에러 처리 로직 추가
 		projectRepository.delete(project.get());
     }
+	
 	@Transactional(rollbackFor = { Exception.class })
-	public ResponseMessage getProjects(List<Long> projectIds) {
+	public SuccessResponse getProjects(List<Long> projectIds) {
 		List<GetProjectsResponseDto> result = projectIds.stream()
 				.map(projectRepository::findById)
 				.filter(Optional::isPresent)
@@ -67,8 +71,10 @@ public class ProjectService {
 					);
 				})
 				.collect(Collectors.toList());
-		return new ResponseMessage("프로젝트 조회 완료", true, result);
+		return SuccessResponse.builder().message("프로젝트 조회 완료").data(result).build();
 	}
+	
+	
 	@Transactional(rollbackFor = { Exception.class })
 	public void updateProject(ProjectUpdateEvent event) {
 		UpdateProjectRequestDto updateProjectRequestDto = event.getProjectUpdateRequestDto();

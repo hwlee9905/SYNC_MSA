@@ -7,8 +7,11 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class ResponseMessage {
+public class SuccessResponse {
 	private String message;
-	private boolean result;
-	private Object value;
+	
+	@Builder.Default
+	private boolean result = true;
+	
+	private Object data;
 }
