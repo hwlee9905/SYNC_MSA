@@ -209,6 +209,7 @@ public class MemberService {
             memberRepository.delete(member);
         });
     }
+    
     public SuccessResponse getMembersByUserIds(List<Long> userIds) {
         List<Member> members = memberRepository.findMembersByUserIds(userIds);
         List<MemberInfoResponseDto> dtos =

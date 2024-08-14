@@ -34,7 +34,9 @@ public enum ErrorCode {
 	IDENTICAL_VALUE(400, "G002", "동일한 값은 변경할 수 없습니다."),
 	
 	// Invite
-	LINK_SAVE_ERROR(400, "I001", "링크 생성에 실패 하였습니다.");
+	LINK_SAVE_ERROR(400, "I001", "링크 생성에 실패 하였습니다."),
+	PROJECT_NOT_FOUND(400, "I002", "해당 프로젝트는 존재하지 않습니다."),
+	SEND_EMAIL_ERROR(400, "I003", "이메일 전송이 실패되었습니다.");
 
 
     private final String code;
