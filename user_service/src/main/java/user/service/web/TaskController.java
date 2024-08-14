@@ -39,11 +39,11 @@ public class TaskController {
     public SuccessResponse deleteTask(@RequestBody @Valid DeleteTaskRequestDto deleteTaskRequestDto) {
         return kafkaTaskProducerService.sendDeleteTaskEvent(deleteTaskRequestDto);
     }
-    @Operation(summary = "업무를 수정하기 위한 API", description = "HOST = 150.136.153.235:30080")
-    @PutMapping("/user/api/task")
-    public SuccessResponse updateTask(@RequestBody @Valid UpdateTaskRequestDto updateTaskRequestDto) {
-        //업무 업데이트 이벤트 생성 로직 추가
-        return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto);
-    }
+//    @Operation(summary = "업무를 수정하기 위한 API", description = "HOST = 150.136.153.235:30080")
+//    @PutMapping("/user/api/task")
+//    public SuccessResponse updateTask(@RequestBody @Valid UpdateTaskRequestDto updateTaskRequestDto) {
+//        //업무 업데이트 이벤트 생성 로직 추가
+//        return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto);
+//    }
 
 }

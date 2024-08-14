@@ -24,6 +24,7 @@ import user.service.global.exception.IdenticalValuesCannotChangedException;
 import user.service.global.exception.InvalidValueException;
 import user.service.global.exception.LinkCannotBeSavedException;
 import user.service.global.exception.MemberDuplicateInProjectException;
+import user.service.global.exception.ProjectNotFoundException;
 import user.service.global.exception.UnknownException;
 import user.service.global.exception.UserIdDuplicatedException;
 import user.service.global.exception.UserNotFoundException;
@@ -178,6 +179,13 @@ public class GlobalExceptionHandler {
     	log.error(e.getMessage());
     	final ErrorResponse response = ErrorResponse.of(ErrorCode.LINK_SAVE_ERROR);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.LINK_SAVE_ERROR.getStatus()));
+    }
+    
+    @ExceptionHandler(ProjectNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleProjectNotFoundException(Locale locale, ProjectNotFoundException e){
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.PROJECT_NOT_FOUND);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.PROJECT_NOT_FOUND.getStatus()));
     }
 
 }

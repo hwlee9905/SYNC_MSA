@@ -1,5 +1,6 @@
 package user.service.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,5 @@ import user.service.entity.Invite;
 public interface InviteRepository extends JpaRepository<Invite, String>{
 	void deleteByProjectId(Long projectId);
 	boolean existsByToken(UUID token);
+	Optional<Invite> findByProjectId(Long projectId);
 }

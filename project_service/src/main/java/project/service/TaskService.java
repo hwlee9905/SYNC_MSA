@@ -1,13 +1,15 @@
 package project.service;
 
-import jakarta.persistence.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
-import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
 import project.service.dto.response.GetTaskResponseDto;
@@ -15,17 +17,13 @@ import project.service.entity.Project;
 import project.service.entity.Task;
 import project.service.entity.UserTask;
 import project.service.entity.UserTaskId;
-import project.service.global.ResponseMessage;
-import project.service.kafka.event.ProjectUpdateEvent;
+import project.service.global.SuccessResponse;
 import project.service.kafka.event.TaskDeleteEvent;
 import project.service.kafka.event.TaskUpdateEvent;
 import project.service.kafka.event.UserAddToTaskEvent;
 import project.service.repository.ProjectRepository;
 import project.service.repository.TaskRepository;
 import project.service.repository.UserTaskRepository;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,22 +60,20 @@ public class TaskService {
         }
         taskRepository.save(task);
     }
+    
     @Transactional(rollbackFor = { Exception.class })
-    public ResponseMessage getOnlyChildrenTasks(Long taskId) {
+    public SuccessResponse getOnlyChildrenTasks(Long taskId) {
         Optional<Task> taskOptional = taskRepository.findById(taskId);
         if (!taskOptional.isPresent()) {
-            return ResponseMessage.builder()
-                    .result(false)
-                    .build();
-        }else{
+            return SuccessResponse.builder().result(false).build();
+        } else{
             Task task = taskOptional.get();
             GetTaskResponseDto result = GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
-            return ResponseMessage.builder()
-                    .result(true)
-                    .value(result).build();
+            return SuccessResponse.builder().data(result).build();
         }
 
     }
+    
     @Transactional(rollbackFor = { Exception.class })
     public void addUserToTask(UserAddToTaskEvent userAddToTaskEvent) {
         Optional<Task> task = taskRepository.findById(userAddToTaskEvent.getTaskId());
@@ -113,7 +109,7 @@ public class TaskService {
         taskRepository.save(task.get());
     }
 
-    public ResponseMessage getUserIdsFromTask(Long taskId) {
+    public SuccessResponse getUserIdsFromTask(Long taskId) {
         List<UserTask> userTasks = userTaskRepository.findByTaskId(taskId);
         GetMemberFromTaskResponseDto result = GetMemberFromTaskResponseDto.builder()
             .userIds(userTasks.stream()
@@ -121,14 +117,13 @@ public class TaskService {
                 .collect(Collectors.toList()))
             .build();
         if (userTasks.isEmpty()) {
-            return ResponseMessage.builder()
-                .result(false)
+            return SuccessResponse.builder()
                 .message("해당 업무에는 배정된 담당자가 없습니다.")
+                .result(false)
                 .build();
         }
-        return ResponseMessage.builder()
-            .result(true)
-            .value(result)
+        return SuccessResponse.builder()
+            .data(result)
             .build();
     }
 }
