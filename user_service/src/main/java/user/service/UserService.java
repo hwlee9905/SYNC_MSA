@@ -136,6 +136,7 @@ public class UserService implements UserDetailsService {
 	 * 
 	 * @return
 	 */
+	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse getUserInfo() {
 		try {
 			String id = getCurrentUserId();
@@ -149,14 +150,16 @@ public class UserService implements UserDetailsService {
 			throw new UnknownException(e.getMessage());
 		}
 	}
-	public SuccessResponse getUsersInfo(List<String> userIds) {
+	@Transactional(rollbackFor = { Exception.class })
+	public SuccessResponse getUsersInfo(List<Long> userIds) {
 		List<UserInfoResponseDto> userInfoList = userIds.stream()
-			.map(this::findUserByLoginId)
+			.map(this::findById)
 			.map(user -> {
 				UserInfoResponseDto dto = new UserInfoResponseDto();
 				dto.setUsername(user.getUsername());
 				dto.setNickname(user.getNickname());
 				dto.setPosition(user.getPosition());
+				dto.setUserLoginId(user.getAuthentication().getUserId());
 				return dto;
 			})
 			.collect(Collectors.toList());
@@ -249,12 +252,12 @@ public class UserService implements UserDetailsService {
 		}
 		return null; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
 	}
-	public User findUserById(Long userId) {
+	public User findById(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 	}
-	public User findUserByLoginId(String userId) {
+	public Long getUserEntityId(String userId) {
 		User user = userRepository.findByAuthenticationUserId(userId);
-		return user;
+		return user.getId();
 	}
 }
