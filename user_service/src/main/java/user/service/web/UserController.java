@@ -28,7 +28,7 @@ public class UserController {
 	}
 	@Operation(summary = "유저들의 정보를 가져오는 API", description = "HOST = 150.136.153.235:30080")
 	@GetMapping("info/v2")
-	public SuccessResponse getUsersInfo(@Parameter(description = "존재하지 않는 유저 아이디 입력시 오류 발생") @RequestParam List<Long> userIds){
+	public SuccessResponse getUsersInfo(@Parameter(description = "존재하지 않는 유저 아이디 입력시 오류 발생") @RequestParam List<String> userIds){
 		return userService.getUsersInfo(userIds);
 	}
 	@PutMapping("pwd")
@@ -42,7 +42,6 @@ public class UserController {
 //		String userId = userService.getCurrentUserId();
 //		return ResponseEntity.ok().body(userService.modifyUserInfo(body, userId));
 //	}
-
 //	@ResponseBody
 //	@DeleteMapping("remove")
 //	public ResponseEntity<ResponseMessage> removeUser() {

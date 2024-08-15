@@ -149,9 +149,9 @@ public class UserService implements UserDetailsService {
 			throw new UnknownException(e.getMessage());
 		}
 	}
-	public SuccessResponse getUsersInfo(List<Long> userIds) {
+	public SuccessResponse getUsersInfo(List<String> userIds) {
 		List<UserInfoResponseDto> userInfoList = userIds.stream()
-			.map(this::findById)
+			.map(this::findUserByLoginId)
 			.map(user -> {
 				UserInfoResponseDto dto = new UserInfoResponseDto();
 				dto.setUsername(user.getUsername());
@@ -249,12 +249,12 @@ public class UserService implements UserDetailsService {
 		}
 		return null; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
 	}
-	public User findById(Long userId) {
+	public User findUserById(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 	}
-	public Long getUserEntityId(String userId) {
+	public User findUserByLoginId(String userId) {
 		User user = userRepository.findByAuthenticationUserId(userId);
-		return user.getId();
+		return user;
 	}
 }

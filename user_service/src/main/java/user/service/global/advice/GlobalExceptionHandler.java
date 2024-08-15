@@ -16,23 +16,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import lombok.extern.slf4j.Slf4j;
-import user.service.global.exception.AuthenticationFailureException;
-import user.service.global.exception.AuthorizationFailureException;
-import user.service.global.exception.BusinessException;
-import user.service.global.exception.EntityNotFoundException;
-import user.service.global.exception.IdenticalValuesCannotChangedException;
-import user.service.global.exception.InvalidValueException;
-import user.service.global.exception.LinkCannotBeSavedException;
-import user.service.global.exception.MemberDuplicateInProjectException;
-import user.service.global.exception.ProjectNotFoundException;
-import user.service.global.exception.UnknownException;
-import user.service.global.exception.UserIdDuplicatedException;
-import user.service.global.exception.UserNotFoundException;
+import user.service.global.exception.*;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-	
+
     /**
      * 파라미터 바인딩 에러 발생
      */
@@ -92,6 +81,7 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     /**
      * 권한이 없는 경로에 접근했을때 발생
@@ -170,7 +160,7 @@ public class GlobalExceptionHandler {
     	final ErrorResponse response = ErrorResponse.of(errorCode);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
-    
+
     /**
      * Invite
      */
