@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
-	
     // Common
     INVALID_INPUT_VALUE(400, "C001", "Invalid Input Value"),
     METHOD_NOT_ALLOWED(405, "C002", "Invalid Input Value"),
@@ -37,7 +36,6 @@ public enum ErrorCode {
 	LINK_SAVE_ERROR(400, "I001", "링크 생성에 실패 하였습니다."),
 	PROJECT_NOT_FOUND(400, "I002", "해당 프로젝트는 존재하지 않습니다."),
 	SEND_EMAIL_ERROR(400, "I003", "이메일 전송이 실패되었습니다.");
-
 
     private final String code;
     private final String message;
