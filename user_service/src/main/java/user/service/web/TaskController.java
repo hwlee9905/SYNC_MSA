@@ -27,7 +27,7 @@ public class TaskController {
     }
 
     //해당 업무의 자식 업무만 조회합니다.
-    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 129.213.161.199:31585 <br>" +
+    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : GetTaskRequestDto")
     @GetMapping("api/task/OnlyChildrenTasks,")
     public void getOnlyChildrenTasks(@RequestBody @Valid GetTaskRequestDto getTaskRequestDto) {
