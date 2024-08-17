@@ -14,4 +14,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     int countByProjectIdAndDepth(Long projectId);
     @Query("SELECT COUNT(t) FROM Task t WHERE t.project.id = :projectId AND t.depth = 0 AND t.status = 2")
     int countByProjectIdAndDepthAndStatus(Long projectId);
+    @Query("SELECT (SUM(CASE WHEN t.status = 2 THEN 1 ELSE 0 END) * 1.0 / COUNT(t)) FROM Task t WHERE t.project.id = :projectId AND t.depth = 0")
+    Float countTotalAndCompletedTasksByProjectId(Long projectId);
 }

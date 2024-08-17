@@ -50,7 +50,7 @@ public class ProjectService {
 		//프로젝트가 존재하지 않을 경우 에러 처리 로직 추가
 		projectRepository.delete(project.get());
     }
-	
+
 	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse getProjects(List<Long> projectIds) {
 		List<GetProjectsResponseDto> result = projectIds.stream()
@@ -58,9 +58,7 @@ public class ProjectService {
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.map(project -> {
-					int totalTasks = taskRepository.countByProjectIdAndDepth(project.getId());
-					int completedTasks = taskRepository.countByProjectIdAndDepthAndStatus(project.getId());
-					float progress = totalTasks > 0 ? (float) completedTasks / totalTasks : 0;
+					Float progress = Optional.ofNullable(taskRepository.countTotalAndCompletedTasksByProjectId(project.getId())).orElse(0.0f);
 					return new GetProjectsResponseDto(
 							project.getId(),
 							project.getTitle(),
