@@ -62,6 +62,7 @@ public class ProjectService {
 					return new GetProjectsResponseDto(
 							project.getId(),
 							project.getTitle(),
+							project.getSubTitle(),
 							project.getDescription(),
 							project.getStartDate(),
 							project.getEndDate(),
@@ -71,8 +72,7 @@ public class ProjectService {
 				.collect(Collectors.toList());
 		return SuccessResponse.builder().message("프로젝트 조회 완료").data(result).build();
 	}
-	
-	
+
 	@Transactional(rollbackFor = { Exception.class })
 	public void updateProject(ProjectUpdateEvent event) {
 		UpdateProjectRequestDto updateProjectRequestDto = event.getProjectUpdateRequestDto();
