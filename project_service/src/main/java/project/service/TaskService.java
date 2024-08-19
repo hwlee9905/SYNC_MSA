@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,34 +45,29 @@ public class TaskService {
                 throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
             }
             task = Task.builder().title(createTaskRequestDto.getTitle())
-                    .description(createTaskRequestDto.getDescription())
-                    .parentTask(parentTask.get())
-                    .depth(parentTask.get().getDepth() + 1)
-                    .endDate(createTaskRequestDto.getEndDate())
-                    .startDate(createTaskRequestDto.getStartDate())
-                    .status(createTaskRequestDto.getStatus())
-                    .project(project.get()).build();
+                .description(createTaskRequestDto.getDescription())
+                .parentTask(parentTask.get())
+                .depth(parentTask.get().getDepth() + 1)
+                .endDate(createTaskRequestDto.getEndDate())
+                .startDate(createTaskRequestDto.getStartDate())
+                .status(createTaskRequestDto.getStatus())
+                .project(project.get()).build();
         } else {
             task = Task.builder().title(createTaskRequestDto.getTitle())
-                    .depth(0)
-                    .description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
-                    .startDate(createTaskRequestDto.getStartDate()).status(createTaskRequestDto.getStatus())
-                    .project(project.get()).build();
+                .depth(0)
+                .description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
+                .startDate(createTaskRequestDto.getStartDate()).status(createTaskRequestDto.getStatus())
+                .project(project.get()).build();
         }
         taskRepository.save(task);
     }
     
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getOnlyChildrenTasks(Long taskId) {
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (!taskOptional.isPresent()) {
-            return SuccessResponse.builder().result(false).build();
-        } else{
-            Task task = taskOptional.get();
-            GetTaskResponseDto result = GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
-            return SuccessResponse.builder().data(result).build();
-        }
-
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
+        GetTaskResponseDto result = GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
+        return SuccessResponse.builder().data(result).build();
     }
     
     @Transactional(rollbackFor = { Exception.class })
@@ -81,12 +77,12 @@ public class TaskService {
         List<Long> userIds = userAddToTaskEvent.getUserIds();
         userIds.stream().forEach(userId -> {
             UserTaskId userTaskId = UserTaskId.builder()
-                    .userId(userId)
-                    .taskId(task.get().getId())
-                    .build();
+                .userId(userId)
+                .taskId(task.get().getId())
+                .build();
             UserTask userTask = UserTask.builder()
-                    .task(task.get())
-                    .id(userTaskId).build();
+                .task(task.get())
+                .id(userTaskId).build();
             userTaskRepository.save(userTask);
         });
     }

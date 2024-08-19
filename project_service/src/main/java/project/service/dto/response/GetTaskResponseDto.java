@@ -19,23 +19,8 @@ public class GetTaskResponseDto {
     private Date startDate;
     private Date endDate;
     private int status;
+    private int depth;
     private List<GetTaskResponseDto> subTasks;
-//
-//    public static GetTaskResponseDto fromEntity(Task task) {
-//        List<GetTaskResponseDto> subTaskDtos = task.getSubTasks().stream()
-//                .map(GetTaskResponseDto::fromEntity)
-//                .collect(Collectors.toList());
-//
-//        return GetTaskResponseDto.builder()
-//                .id(task.getId())
-//                .title(task.getTitle())
-//                .description(task.getDescription())
-//                .startDate(task.getStartDate())
-//                .endDate(task.getEndDate())
-//                .status(task.getStatus())
-//                .subTasks(subTaskDtos)
-//                .build();
-//    }
     public static GetTaskResponseDto fromEntityOnlyChildrenTasks(Task task) {
         return GetTaskResponseDto.builder()
             .id(task.getId())
@@ -44,17 +29,18 @@ public class GetTaskResponseDto {
             .startDate(task.getStartDate())
             .endDate(task.getEndDate())
             .status(task.getStatus())
+            .depth(task.getDepth())
             .subTasks(task.getSubTasks().stream()
-                    .map(child -> GetTaskResponseDto.builder()
-                            .id(child.getId())
-                            .title(child.getTitle())
-                            .description(child.getDescription())
-                            .startDate(child.getStartDate())
-                            .endDate(child.getEndDate())
-                            .status(child.getStatus())
-                            // 자식의 자식 업무를 추가하지 않습니다.
-                            .build())
-                    .collect(Collectors.toList()))
+                .map(child -> GetTaskResponseDto.builder()
+                    .id(child.getId())
+                    .title(child.getTitle())
+                    .description(child.getDescription())
+                    .startDate(child.getStartDate())
+                    .endDate(child.getEndDate())
+                    .status(child.getStatus())
+                    .depth(child.getDepth())
+                    .build())
+                .collect(Collectors.toList()))
             .build();
     }
 
