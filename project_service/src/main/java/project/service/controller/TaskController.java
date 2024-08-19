@@ -15,7 +15,7 @@ import project.service.global.SuccessResponse;
 @Slf4j
 public class TaskController {
     private final TaskService taskService;
-    @GetMapping("project/tasks/api/v1/getChildren")
+    @GetMapping("api/task/OnlyChildrenTasks")
     public SuccessResponse getOnlyChildrenTasks(GetTaskRequestDto getTaskRequestDto)  {
         return taskService.getOnlyChildrenTasks(getTaskRequestDto.getTaskId());
     }
