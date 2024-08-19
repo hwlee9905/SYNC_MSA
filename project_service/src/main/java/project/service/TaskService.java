@@ -35,9 +35,11 @@ public class TaskService {
     private final UserTaskRepository userTaskRepository;
     @Transactional(rollbackFor = { Exception.class })
     public void createTask(CreateTaskRequestDto createTaskRequestDto) {
-        Optional<Project> project = projectRepository.findById(createTaskRequestDto.getProjectId());
-        //project id 존재하지 않는경우 예외처리 해야함 (추가)
+        Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
+
         Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
+
         Task task;
 
         if (parentTask.isPresent()) {
@@ -51,13 +53,13 @@ public class TaskService {
                 .endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate())
                 .status(createTaskRequestDto.getStatus())
-                .project(project.get()).build();
+                .project(project).build();
         } else {
             task = Task.builder().title(createTaskRequestDto.getTitle())
                 .depth(0)
                 .description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate()).status(createTaskRequestDto.getStatus())
-                .project(project.get()).build();
+                .project(project).build();
         }
         taskRepository.save(task);
     }
