@@ -26,6 +26,8 @@ public class Task {
     private Date endDate;
     private int status;
     private int depth;
+    private int childCount;
+    private int childCompleteCount;
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
