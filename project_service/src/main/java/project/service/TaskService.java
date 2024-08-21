@@ -46,15 +46,18 @@ public class TaskService {
             if (parentTask.get().getDepth() == 2) {
                 throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
             }
+            Task parentTaskEntity = parentTask.get();
+                parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
             task = Task.builder().title(createTaskRequestDto.getTitle())
                 .description(createTaskRequestDto.getDescription())
-                .parentTask(parentTask.get())
+                .parentTask(parentTaskEntity)
                 .depth(parentTask.get().getDepth() + 1)
                 .endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate())
                 .status(createTaskRequestDto.getStatus())
                 .project(project).build();
         } else {
+            //이곳에 projecttask의 childtask ++ 할것
             task = Task.builder().title(createTaskRequestDto.getTitle())
                 .depth(0)
                 .description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
