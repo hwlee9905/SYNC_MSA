@@ -101,15 +101,37 @@ public class TaskService {
     public void updateTask(TaskUpdateEvent event) {
         UpdateTaskRequestDto updateTaskRequestDto = event.getUpdateTaskRequestDto();
         Optional<Task> task = taskRepository.findById(updateTaskRequestDto.getTaskId());
-        //task id 존재하지 않는경우 예외처리 해야함 (추가)
-        task.get().setTitle(updateTaskRequestDto.getTitle());
-        task.get().setDescription(updateTaskRequestDto.getDescription());
-        task.get().setStartDate(updateTaskRequestDto.getStartDate());
-        task.get().setEndDate(updateTaskRequestDto.getEndDate());
-        task.get().setStatus(updateTaskRequestDto.getStatus());
-        taskRepository.save(task.get());
-    }
+        if (!task.isPresent()) {
+            throw new EntityNotFoundException("Task not found with ID: " + updateTaskRequestDto.getTaskId());
+        }
 
+        Task taskEntity = task.get();
+        int oldStatus = taskEntity.getStatus();
+        int newStatus = updateTaskRequestDto.getStatus();
+
+        taskEntity.setTitle(updateTaskRequestDto.getTitle());
+        taskEntity.setDescription(updateTaskRequestDto.getDescription());
+        taskEntity.setStartDate(updateTaskRequestDto.getStartDate());
+        taskEntity.setEndDate(updateTaskRequestDto.getEndDate());
+        taskEntity.setStatus(newStatus);
+
+        if (taskEntity.getParentTask() != null) {
+            Task parentTask = taskEntity.getParentTask();
+            updateChildCompleteCount(parentTask, oldStatus, newStatus);
+            taskRepository.save(parentTask);
+        }
+
+        taskRepository.save(taskEntity);
+    }
+    private void updateChildCompleteCount(Task parentTask, int oldStatus, int newStatus) {
+        Optional.of(parentTask)
+                .filter(task -> oldStatus != 2 && newStatus == 2)
+                .ifPresent(task -> task.setChildCompleteCount(task.getChildCompleteCount() + 1));
+
+        Optional.of(parentTask)
+                .filter(task -> oldStatus == 2 && newStatus != 2)
+                .ifPresent(task -> task.setChildCompleteCount(task.getChildCompleteCount() - 1));
+    }
     public SuccessResponse getUserIdsFromTask(Long taskId) {
         List<UserTask> userTasks = userTaskRepository.findByTaskId(taskId);
         GetMemberFromTaskResponseDto result = GetMemberFromTaskResponseDto.builder()
