@@ -25,6 +25,8 @@ public class ProjectService {
 	@Transactional(rollbackFor = { Exception.class })
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
 		Project project = Project.builder()
+				.childCount(0)
+				.childCompleteCount(0)
 				.description(projectCreateRequestDto.getDescription())
 				.subTitle(projectCreateRequestDto.getSubTitle())
 				.startDate(projectCreateRequestDto.getStartDate())

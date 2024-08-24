@@ -48,7 +48,10 @@ public class TaskService {
             }
             Task parentTaskEntity = parentTask.get();
                 parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
-            task = Task.builder().title(createTaskRequestDto.getTitle())
+            task = Task.builder()
+                .title(createTaskRequestDto.getTitle())
+                .childCompleteCount(0)
+                .childCount(0)
                 .description(createTaskRequestDto.getDescription())
                 .parentTask(parentTaskEntity)
                 .depth(parentTask.get().getDepth() + 1)
@@ -58,10 +61,15 @@ public class TaskService {
                 .project(project).build();
         } else {
             project.setChildCount(project.getChildCount() + 1);
-            task = Task.builder().title(createTaskRequestDto.getTitle())
+            task = Task.builder()
+                .title(createTaskRequestDto.getTitle())
+                .childCompleteCount(0)
+                .childCount(0)
                 .depth(0)
-                .description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
-                .startDate(createTaskRequestDto.getStartDate()).status(createTaskRequestDto.getStatus())
+                .description(createTaskRequestDto.getDescription())
+                .endDate(createTaskRequestDto.getEndDate())
+                .startDate(createTaskRequestDto.getStartDate())
+                .status(createTaskRequestDto.getStatus())
                 .project(project).build();
         }
         taskRepository.save(task);
