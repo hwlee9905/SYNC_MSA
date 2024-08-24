@@ -57,7 +57,7 @@ public class TaskService {
                 .depth(parentTask.get().getDepth() + 1)
                 .endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate())
-                .status(createTaskRequestDto.getStatus())
+                .status(0)
                 .project(project).build();
         } else {
             project.setChildCount(project.getChildCount() + 1);
@@ -69,7 +69,7 @@ public class TaskService {
                 .description(createTaskRequestDto.getDescription())
                 .endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate())
-                .status(createTaskRequestDto.getStatus())
+                .status(0)
                 .project(project).build();
         }
         taskRepository.save(task);
