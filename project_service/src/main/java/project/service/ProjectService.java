@@ -27,7 +27,7 @@ public class ProjectService {
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
 		Project project = Project.builder()
 				.description(projectCreateRequestDto.getDescription())
-				.subTitle(projectCreateRequestDto.getSubTitle())
+				.subtitle(projectCreateRequestDto.getSubTitle())
 				.startDate(projectCreateRequestDto.getStartDate())
 				.endDate(projectCreateRequestDto.getEndDate())
 				.title(projectCreateRequestDto.getTitle()).build();
@@ -53,16 +53,20 @@ public class ProjectService {
 
 	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse getProjects(List<Long> projectIds) {
+
 		List<GetProjectsResponseDto> result = projectIds.stream()
 				.map(projectRepository::findById)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.map(project -> {
-					Float progress = Optional.ofNullable(taskRepository.countTotalAndCompletedTasksByProjectId(project.getId())).orElse(0.0f);
+					float progress = 0.0f;
+					if (project.getChildCount() > 0) {
+						progress = (float) project.getChildCompleteCount() / project.getChildCount();
+					}
 					return new GetProjectsResponseDto(
 							project.getId(),
 							project.getTitle(),
-							project.getSubTitle(),
+							project.getSubtitle(),
 							project.getDescription(),
 							project.getStartDate(),
 							project.getEndDate(),
@@ -79,7 +83,7 @@ public class ProjectService {
 		Optional<Project> project = projectRepository.findById(updateProjectRequestDto.getProjectId());
 		Project getProject = project.get();
 		getProject.setDescription(updateProjectRequestDto.getDescription());
-		getProject.setSubTitle(updateProjectRequestDto.getSubTitle());
+		getProject.setSubtitle(updateProjectRequestDto.getSubTitle());
 		getProject.setStartDate(updateProjectRequestDto.getStartDate());
 		getProject.setEndDate(updateProjectRequestDto.getEndDate());
 		getProject.setTitle(updateProjectRequestDto.getTitle());

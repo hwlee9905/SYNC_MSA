@@ -57,7 +57,7 @@ public class TaskService {
                 .status(createTaskRequestDto.getStatus())
                 .project(project).build();
         } else {
-            //이곳에 projecttask의 childtask ++ 할것
+            project.setChildCount(project.getChildCount() + 1);
             task = Task.builder().title(createTaskRequestDto.getTitle())
                 .depth(0)
                 .description(createTaskRequestDto.getDescription()).endDate(createTaskRequestDto.getEndDate())
@@ -94,7 +94,21 @@ public class TaskService {
     @Transactional(rollbackFor = { Exception.class })
     public void deleteTask(TaskDeleteEvent event) {
         Optional<Task> task = taskRepository.findById(event.getTaskId());
-        //task id 존재하지 않는경우 예외처리 해야함 (추가)
+        if (!task.isPresent()) {
+            throw new EntityNotFoundException("Task not found with ID: " + event.getTaskId());
+        }
+        Task taskEntity = task.get();
+        if (taskEntity.getParentTask() == null) {
+            Project project = taskEntity.getProject();
+            project.setChildCount(project.getChildCount() - 1);
+            project.setChildCompleteCount(project.getChildCompleteCount() - 1);
+            projectRepository.save(project);
+        } else {
+            Task parentTask = taskEntity.getParentTask();
+            parentTask.setChildCount(parentTask.getChildCount() - 1);
+            parentTask.setChildCompleteCount(parentTask.getChildCompleteCount() - 1);
+            taskRepository.save(parentTask);
+        }
         taskRepository.delete(task.get());
     }
 
@@ -119,9 +133,22 @@ public class TaskService {
             Task parentTask = taskEntity.getParentTask();
             updateChildCompleteCount(parentTask, oldStatus, newStatus);
             taskRepository.save(parentTask);
+        } else {
+            Project project = taskEntity.getProject();
+            updateChildCompleteCountForProject(project, oldStatus, newStatus);
+            projectRepository.save(project);
         }
 
         taskRepository.save(taskEntity);
+    }
+    private void updateChildCompleteCountForProject(Project project, int oldStatus, int newStatus) {
+        Optional.of(project)
+                .filter(proj -> oldStatus != 2 && newStatus == 2)
+                .ifPresent(proj -> proj.setChildCompleteCount(proj.getChildCompleteCount() + 1));
+
+        Optional.of(project)
+                .filter(proj -> oldStatus == 2 && newStatus != 2)
+                .ifPresent(proj -> proj.setChildCompleteCount(proj.getChildCompleteCount() - 1));
     }
     private void updateChildCompleteCount(Task parentTask, int oldStatus, int newStatus) {
         Optional.of(parentTask)
