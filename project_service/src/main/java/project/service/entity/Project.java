@@ -27,9 +27,9 @@ public class Project{
     @Column(name = "end_date")
     private Date endDate;
     @Column(name = "child_count")
-    private int childCount;
+    private Integer childCount = 0;
     @Column(name = "child_complete_count")
-    private int childCompleteCount;
+    private Integer childCompleteCount = 0;
     // Add this for the one-to-many relationship with Task
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();

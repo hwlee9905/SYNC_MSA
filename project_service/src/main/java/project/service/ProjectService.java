@@ -22,7 +22,6 @@ import project.service.repository.TaskRepository;
 @RequiredArgsConstructor
 public class ProjectService {
 	private final ProjectRepository projectRepository;
-	private final TaskRepository taskRepository;
 	@Transactional(rollbackFor = { Exception.class })
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
 		Project project = Project.builder()

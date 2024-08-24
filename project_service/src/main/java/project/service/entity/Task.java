@@ -27,9 +27,9 @@ public class Task {
     private int status;
     private int depth;
     @Column(name = "child_count")
-    private int childCount;
+    private Integer childCount = 0;
     @Column(name = "child_complete_count")
-    private int childCompleteCount;
+    private Integer childCompleteCount = 0;
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
