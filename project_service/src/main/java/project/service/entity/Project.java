@@ -20,7 +20,7 @@ public class Project{
     @Column(name = "project_id")
     private long id;
     private String title;
-    private String subtitle;
+    private String subTitle;
     private String description;
     @Column(name = "start_date")
     private Date startDate;

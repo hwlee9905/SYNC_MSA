@@ -26,7 +26,7 @@ public class ProjectService {
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
 		Project project = Project.builder()
 				.description(projectCreateRequestDto.getDescription())
-				.subtitle(projectCreateRequestDto.getSubTitle())
+				.subTitle(projectCreateRequestDto.getSubTitle())
 				.startDate(projectCreateRequestDto.getStartDate())
 				.endDate(projectCreateRequestDto.getEndDate())
 				.title(projectCreateRequestDto.getTitle()).build();
@@ -65,7 +65,7 @@ public class ProjectService {
 					return new GetProjectsResponseDto(
 							project.getId(),
 							project.getTitle(),
-							project.getSubtitle(),
+							project.getSubTitle(),
 							project.getDescription(),
 							project.getStartDate(),
 							project.getEndDate(),
@@ -82,7 +82,7 @@ public class ProjectService {
 		Optional<Project> project = projectRepository.findById(updateProjectRequestDto.getProjectId());
 		Project getProject = project.get();
 		getProject.setDescription(updateProjectRequestDto.getDescription());
-		getProject.setSubtitle(updateProjectRequestDto.getSubTitle());
+		getProject.setSubTitle(updateProjectRequestDto.getSubTitle());
 		getProject.setStartDate(updateProjectRequestDto.getStartDate());
 		getProject.setEndDate(updateProjectRequestDto.getEndDate());
 		getProject.setTitle(updateProjectRequestDto.getTitle());
