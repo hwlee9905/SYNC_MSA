@@ -109,6 +109,12 @@ public class MemberService {
             throw new InvalidValueException("해당 멤버는 생성자가 아닙니다.");
         }
     }
+    public void isCreator(Long memberId) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        if (member.get().getIsManager() != 2) {
+            throw new InvalidValueException("해당 멤버는 생성자가 아닙니다.");
+        }
+    }
     /**
      * 모든 멤버가 같은 프로젝트에 소속되어 있는지 확인합니다.
      * @param memberMappingToTaskRequestDto
