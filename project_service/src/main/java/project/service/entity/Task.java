@@ -17,7 +17,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
-    private Long id;
+    private long id;
     private String title;
     private String description;
     @Column(name = "start_date")
@@ -26,6 +26,10 @@ public class Task {
     private Date endDate;
     private int status;
     private int depth;
+    @Column(name = "child_count")
+    private Integer childCount = 0;
+    @Column(name = "child_complete_count")
+    private Integer childCompleteCount = 0;
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;

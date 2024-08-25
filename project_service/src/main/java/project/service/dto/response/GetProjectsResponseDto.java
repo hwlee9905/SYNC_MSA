@@ -10,6 +10,7 @@ public class GetProjectsResponseDto {
     private Long projectId;
     private String title;
     private String description;
+    private String subTitle;
     private Date startDate;
     private Date endDate;
     private Float progress;

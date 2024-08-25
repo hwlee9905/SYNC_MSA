@@ -14,6 +14,6 @@ import java.io.Serializable;
 @Builder
 public class UserTaskId implements Serializable {
     @Column(name = "user_id")
-    private Long userId;
-    private Long taskId;
+    private long userId;
+    private long taskId;
 }

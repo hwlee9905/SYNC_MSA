@@ -20,16 +20,17 @@ import java.util.List;
 public class TaskController {
     private final KafkaTaskProducerService kafkaTaskProducerService;
     @Operation(summary = "업무를 생성하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
-            "ValidationDetails : CreateTaskRequestDto")
+            "ValidationDetails : CreateTaskRequestDto <br>" +
+            "depth는 parentTask의 depth에 따라 결정 되며, 최상위 업무는 0, 그 하위 업무는 1, 그 하위 업무는 2로 결정됩니다. parentTask의 depth가 2일 경우, 생성되지 않습니다.")
     @PostMapping("/user/api/task/v1")
     public SuccessResponse createTask(@RequestBody @Valid CreateTaskRequestDto createTaskRequestDto, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto,images);
     }
 
     //해당 업무의 자식 업무만 조회합니다.
-    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 129.213.161.199:31585 <br>" +
+    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:31585 <br>" +
             "ValidationDetails : GetTaskRequestDto")
-    @GetMapping("api/task/OnlyChildrenTasks,")
+    @GetMapping("api/task/OnlyChildrenTasks")
     public void getOnlyChildrenTasks(@RequestBody @Valid GetTaskRequestDto getTaskRequestDto) {
     }
     //해당 업무를 삭제합니다.
