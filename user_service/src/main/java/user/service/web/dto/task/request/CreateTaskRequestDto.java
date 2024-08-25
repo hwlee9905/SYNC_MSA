@@ -1,10 +1,7 @@
 package user.service.web.dto.task.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +20,6 @@ public class CreateTaskRequestDto {
     private Date endDate;
     @Schema(description = "업무 시작일")
     private Date startDate;
-    @NotNull(message = "상태는 필수 입력 값 입니다.")
-    @Schema(description = "업무 상태 ( 0: 진행중, 1: 완료, 2: 보류)")
-    private int status;
     @NotBlank(message = "이름은 필수 입력 값 입니다.")
     @Schema(description = "업무 이름")
     private String title;

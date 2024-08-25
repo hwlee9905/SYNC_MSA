@@ -136,6 +136,7 @@ public class UserService implements UserDetailsService {
 	 * 
 	 * @return
 	 */
+	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse getUserInfo() {
 		try {
 			String id = getCurrentUserId();
@@ -149,6 +150,7 @@ public class UserService implements UserDetailsService {
 			throw new UnknownException(e.getMessage());
 		}
 	}
+	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse getUsersInfo(List<Long> userIds) {
 		List<UserInfoResponseDto> userInfoList = userIds.stream()
 			.map(this::findById)
@@ -157,6 +159,7 @@ public class UserService implements UserDetailsService {
 				dto.setUsername(user.getUsername());
 				dto.setNickname(user.getNickname());
 				dto.setPosition(user.getPosition());
+				dto.setUserLoginId(user.getAuthentication().getUserId());
 				return dto;
 			})
 			.collect(Collectors.toList());
