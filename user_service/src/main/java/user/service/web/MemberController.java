@@ -1,29 +1,35 @@
 package user.service.web;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 import user.service.MemberService;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
-import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
     private final KafkaTaskProducerService kafkaTaskProducerService;
+    
     @Operation(summary = "프로젝트에 멤버를 추가하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : MemberMappingToProjectRequestDto")
     @PostMapping("user/api/member/project")
     public SuccessResponse memberAddToProject(@RequestBody @Valid MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
         return memberService.memberAddToProject(memberMappingToProjectRequestDto);
     }
+    
     @Operation(summary = "업무에 담당자를 추가하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : MemberMappingToTaskRequestDto")
     @PostMapping("user/api/member/task")
@@ -31,17 +37,20 @@ public class MemberController {
         //없는 task id인 경우 보상트랜잭션 필요
         return kafkaTaskProducerService.sendAddUserToTaskEvent(memberMappingToTaskRequestDto);
     }
+    
     //멤버 삭제 api
     //담당자 삭제 api
     @Operation(summary = "업무의 담당자들을 가져오기 위한 API", description = "HOST = 150.136.153.235:31585")
     @GetMapping("/project/task/api/v1/users")
     public void getUsersFromTask(@RequestParam Long taskId) {
     }
+    
     @Operation(summary = "유저들의 멤버정보를 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
     @GetMapping("user/api/member/v1")
     public SuccessResponse getMembersByUserIds(@RequestParam List<Long> userIds) {
         return memberService.getMembersByUserIds(userIds);
     }
+    
     @Operation(summary = "프로젝트의 멤버들을 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
     @GetMapping("user/api/member/v2")
     public SuccessResponse getUsersFromProject(@RequestParam List<Long> projectIds) {

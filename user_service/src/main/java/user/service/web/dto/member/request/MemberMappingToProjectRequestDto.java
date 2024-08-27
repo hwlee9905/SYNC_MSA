@@ -1,12 +1,15 @@
 package user.service.web.dto.member.request;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -23,8 +26,7 @@ public class MemberMappingToProjectRequestDto {
     @NotNull(message = "프로젝트 아이디는 필수값입니다.")
     private Long projectId;
     
-    @Schema(description = "해당 유저의 관리자 지정 여부, " +
-        "0: 일반 유저, 1: 관리자, 2: 프로젝트 생성자")
+    @Schema(description = "해당 유저의 관리자 지정 여부, 0: 일반 유저, 1: 관리자, 2: 프로젝트 생성자")
     @NotNull(message = "관리자 지정 여부는 필수값입니다.")
-    private int isManager;
+    private Integer isManager;
 }
