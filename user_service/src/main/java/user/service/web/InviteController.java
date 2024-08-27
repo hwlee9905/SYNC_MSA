@@ -1,5 +1,9 @@
 package user.service.web;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,13 +15,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import user.service.InviteService;
+import user.service.MemberService;
+import user.service.UserService;
 import user.service.global.advice.SuccessResponse;
+import user.service.web.dto.invite.request.ProjectInviteRequestDto;
 import user.service.web.dto.invite.request.SendLinkRequestDto;
+import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 
 @RestController
 @RequiredArgsConstructor
 public class InviteController {
 	private final InviteService inviteService;
+	private final UserService userService;
+	private final MemberService memberService;
 	
 	/**
 	 * 초대링크 가져오기
@@ -27,7 +37,7 @@ public class InviteController {
 	@Operation(summary = "프로젝트 초대 URL 가져오기", description = "프로젝트 고유 초대 URL을 가져옵니다.")
 	@GetMapping("/user/api/link")
 	public ResponseEntity<SuccessResponse> getLink(@Parameter(description = "Project PK 값") @RequestParam(name = "projectId") long projectId){
-		return ResponseEntity.ok().body(inviteService.getLink(projectId));
+		return ResponseEntity.ok(inviteService.getLink(projectId));
 	}
 	
 	/**
@@ -38,6 +48,27 @@ public class InviteController {
 	@Operation(summary = "프로젝트 이메일로 초대하기", description = "이메일로 프로젝트 초대장을 전송합니다.")
 	@PostMapping("/user/api/email")
 	public ResponseEntity<SuccessResponse> sendEmailLink(@RequestBody SendLinkRequestDto body){
-		return ResponseEntity.ok().body(inviteService.sendEmailLink(body));
+		return ResponseEntity.ok(inviteService.sendEmailLink(body));
+	}
+	
+	@Operation(summary = "프로젝트 초대수락", description = "프로젝트 초대를 수락 합니다.")
+	@PostMapping("/user/api/invite")
+	public ResponseEntity<SuccessResponse> acceInvite(@RequestBody ProjectInviteRequestDto body){
+		String userId = userService.getCurrentUserId();
+		Long projectId = inviteService.getProjectId(body.getToken());
+		MemberMappingToProjectRequestDto dto = setMemberMappingToProjectRequestDto(userId, projectId);
+		return ResponseEntity.ok(memberService.memberAddToProject(dto));
+	}
+	
+	private MemberMappingToProjectRequestDto setMemberMappingToProjectRequestDto(String userId, Long projectId) {
+		List<String> userIds = new ArrayList<>();
+		userIds.add(userId);
+		
+		MemberMappingToProjectRequestDto dto = MemberMappingToProjectRequestDto.builder()
+				.userIds(userIds)
+				.projectId(projectId)
+				.isManager(0)
+				.build();
+		return dto;
 	}
 }
