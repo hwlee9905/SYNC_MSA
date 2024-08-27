@@ -93,4 +93,17 @@ public class InviteService {
 
 		return SuccessResponse.builder().message("전송 완료").build();
 	}
+	
+	public SuccessResponse acceInvite(String userId) {
+		return null;
+	}
+	
+	public Long getProjectId(UUID token) {
+		Optional<Invite> inviteInfo = inviteRepository.findByToken(token);
+		if (inviteInfo.isPresent()) {
+			Invite entity = inviteInfo.get();
+			return entity.getProjectId();
+		}
+		throw new ProjectNotFoundException();
+	}
 }
