@@ -28,5 +28,5 @@ public class MemberMappingToProjectRequestDto {
     
     @Schema(description = "해당 유저의 관리자 지정 여부, 0: 일반 유저, 1: 관리자, 2: 프로젝트 생성자")
     @NotNull(message = "관리자 지정 여부는 필수값입니다.")
-    private Integer isManager;
+    private int isManager;
 }

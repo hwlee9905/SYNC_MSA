@@ -19,6 +19,9 @@ public class Task {
     @Column(name = "task_id")
     private long id;
     private String title;
+    @Column(name = "title_img")
+    private String titleimg;
+    @Lob
     private String description;
     @Column(name = "start_date")
     private Date startDate;
@@ -41,4 +44,6 @@ public class Task {
     private Task parentTask;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTask> userTasks = new ArrayList<>();
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskImage> images = new ArrayList<>();
 }
