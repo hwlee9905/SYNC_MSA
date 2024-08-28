@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,29 +36,6 @@ public class MemberService {
      * @param memberMappingToProjectRequestDto
      * @return
      */
-//    @Transactional(rollbackFor = { Exception.class })
-//    public SuccessResponse memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
-//        List<String> userIds = memberMappingToProjectRequestDto.getUserIds();
-//        Long projectId = memberMappingToProjectRequestDto.getProjectId();
-//        int isManager = memberMappingToProjectRequestDto.getIsManager();
-//
-//        userIds.forEach(userId -> {
-//            try {
-//                User user = userService.findUserEntity(userId);
-//                Member member = Member.builder()
-//                        .isManager(isManager)
-//                        .projectId(projectId)
-//                        .user(user)
-//                        .build();
-//                memberRepository.save(member);
-//            } catch (DataIntegrityViolationException e) {
-//                throw new MemberDuplicateInProjectException(e.getMessage());
-//            }
-//        });
-//        //프로젝트 존재하지 않을시 보상 트랜잭션 처리
-//        kafkaMemberProducerService.isExistProjectByMemberAddToProject(projectId, userIds);
-//        return new SuccessResponse("멤버 추가 성공", userIds);
-//    }
     // New
     // 수정자 : 강민경
     @Transactional(rollbackFor = { Exception.class })
@@ -120,26 +96,6 @@ public class MemberService {
      * @param memberMappingToTaskRequestDto
      * @return
      */
-//    @Transactional(rollbackFor = { Exception.class })
-//    public SuccessResponse allMembersInSameProject(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
-//        List<Long> memberIds = memberMappingToTaskRequestDto.getMemberIds();
-//        Set<Long> uniqueProjectIds = memberIds.stream()
-//                .map(memberId -> memberRepository.findById(memberId)
-//                        .orElseThrow(() -> new EntityNotFoundException("Member not found for ID: " + memberId)))
-//                .map(Member::getProjectId)
-//                .collect(Collectors.toSet());
-//
-//        if (uniqueProjectIds.size() == 1) {
-//            // 모든 멤버가 같은 프로젝트에 속해 있을 경우
-//            List<Long> userIds = memberIds.stream()
-//                    .map(memberId -> memberRepository.findById(memberId).get().getUser().getId())
-//                    .collect(Collectors.toList());
-//            return new SuccessResponse("모든 멤버가 같은 프로젝트에 속해 있습니다.", userIds);
-//        } else {
-//            // 멤버들이 서로 다른 프로젝트에 속해 있을 경우
-//            return new SuccessResponse("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.", memberIds);
-//        }
-//    }
     // New
     // 수정자 : 강민경
     @Transactional(rollbackFor = { Exception.class })
@@ -232,5 +188,15 @@ public class MemberService {
                 .message("멤버 조회 성공")
                 .data(dtos)
                 .build();
+    }
+    
+    /**
+     * 프로젝트에 소속한 멤버의 인원 수
+     * @param projectId
+     * @return
+     */
+    public Long countMember(Long projectId) {
+    	Long count = memberRepository.countByProjectId(projectId);
+    	return count;
     }
 }
