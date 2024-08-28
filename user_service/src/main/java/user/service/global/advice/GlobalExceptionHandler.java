@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartException;
 import user.service.global.exception.*;
 
 @ControllerAdvice
@@ -176,6 +177,12 @@ public class GlobalExceptionHandler {
     	log.error(e.getMessage());
     	final ErrorResponse response = ErrorResponse.of(ErrorCode.PROJECT_NOT_FOUND);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.PROJECT_NOT_FOUND.getStatus()));
+    }
+    @ExceptionHandler(value = MultipartException.class)
+    public ResponseEntity<ErrorResponse> handleFileUploadingError(Exception exception) {
+        log.warn("Failed to upload attachment", exception);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()));
     }
 
 }

@@ -1,15 +1,18 @@
 package project.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 import project.service.dto.request.CreateTaskRequestDto;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
@@ -19,6 +22,7 @@ import project.service.entity.Task;
 import project.service.entity.UserTask;
 import project.service.entity.UserTaskId;
 import project.service.global.SuccessResponse;
+import project.service.kafka.event.TaskCreateEvent;
 import project.service.kafka.event.TaskDeleteEvent;
 import project.service.kafka.event.TaskUpdateEvent;
 import project.service.kafka.event.UserAddToTaskEvent;
@@ -33,46 +37,45 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserTaskRepository userTaskRepository;
+    private final FileStorageService fileStorageService;
     @Transactional(rollbackFor = { Exception.class })
-    public void createTask(CreateTaskRequestDto createTaskRequestDto) {
+    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files) throws IOException {
         Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
-
         Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
-
         Task task;
-
         if (parentTask.isPresent()) {
             if (parentTask.get().getDepth() == 2) {
                 throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
             }
             Task parentTaskEntity = parentTask.get();
-                parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
+            parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
             task = Task.builder()
-                .title(createTaskRequestDto.getTitle())
-                .childCompleteCount(0)
-                .childCount(0)
-                .description(createTaskRequestDto.getDescription())
-                .parentTask(parentTaskEntity)
-                .depth(parentTask.get().getDepth() + 1)
-                .endDate(createTaskRequestDto.getEndDate())
-                .startDate(createTaskRequestDto.getStartDate())
-                .status(0)
-                .project(project).build();
+                    .title(createTaskRequestDto.getTitle())
+                    .childCompleteCount(0)
+                    .childCount(0)
+                    .description(createTaskRequestDto.getDescription())
+                    .parentTask(parentTaskEntity)
+                    .depth(parentTask.get().getDepth() + 1)
+                    .endDate(createTaskRequestDto.getEndDate())
+                    .startDate(createTaskRequestDto.getStartDate())
+                    .status(0)
+                    .project(project).build();
         } else {
             project.setChildCount(project.getChildCount() + 1);
             task = Task.builder()
-                .title(createTaskRequestDto.getTitle())
-                .childCompleteCount(0)
-                .childCount(0)
-                .depth(0)
-                .description(createTaskRequestDto.getDescription())
-                .endDate(createTaskRequestDto.getEndDate())
-                .startDate(createTaskRequestDto.getStartDate())
-                .status(0)
-                .project(project).build();
+                    .title(createTaskRequestDto.getTitle())
+                    .childCompleteCount(0)
+                    .childCount(0)
+                    .depth(0)
+                    .description(createTaskRequestDto.getDescription())
+                    .endDate(createTaskRequestDto.getEndDate())
+                    .startDate(createTaskRequestDto.getStartDate())
+                    .status(0)
+                    .project(project).build();
         }
         taskRepository.save(task);
+        fileStorageService.saveFiles(task, files);
     }
     
     @Transactional(rollbackFor = { Exception.class })

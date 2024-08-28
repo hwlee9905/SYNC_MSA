@@ -1,7 +1,11 @@
 package user.service.kafka.task;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -36,19 +40,22 @@ public class KafkaTaskProducerService {
      * @param createTaskRequestDto
      * @return
      */
-    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> files) {
+    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> descriptionFiles) throws IOException {
         User user = userService.findUserEntity(userService.getCurrentUserId());
-        // 프로젝트의 멤버인지 확인
         memberService.findMemberByUserIdAndProjectId(user.getId(), createTaskRequestDto.getProjectId());
-        TaskCreateEvent event;
-        if (files != null && !files.isEmpty()) {
-            event = new TaskCreateEvent(createTaskRequestDto, files);
-        } else {
-            event = new TaskCreateEvent(createTaskRequestDto);
-        }
-        ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
-        record.headers().remove("spring.json.header.types");
-        kafkaTemplate.send(record);
+
+        List<TaskCreateEvent.FileData> fileDataList = descriptionFiles.stream()
+                .map(file -> {
+                    try {
+                        return new TaskCreateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to convert file", e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        TaskCreateEvent event = new TaskCreateEvent(createTaskRequestDto, fileDataList);
+        kafkaTemplate.send(TOPIC, event);
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(createTaskRequestDto).build();
     }
     /**
