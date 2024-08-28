@@ -59,7 +59,7 @@ public class KafkaConsumerService {
         try {
             CreateTaskRequestDto createTaskRequestDto = event.getCreateTaskRequestDto();
             // 이벤트 처리
-            taskService.createTask(createTaskRequestDto);
+            taskService.createTask(createTaskRequestDto, event.getFiles());
             // 처리 로그 출력
             log.info("Processed TaskCreateEvent");
         } catch (Exception e) {

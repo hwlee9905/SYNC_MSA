@@ -11,7 +11,5 @@ import java.util.List;
 public class TaskCreateEvent {
     private CreateTaskRequestDto createTaskRequestDto;
     private List<MultipartFile> files;
-    public TaskCreateEvent(CreateTaskRequestDto createTaskRequestDto) {
-        this.createTaskRequestDto = createTaskRequestDto;
-    }
+
 }

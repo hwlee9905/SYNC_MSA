@@ -36,16 +36,11 @@ public class KafkaTaskProducerService {
      * @param createTaskRequestDto
      * @return
      */
-    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> files) {
+    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> descriptionfiles) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         // 프로젝트의 멤버인지 확인
         memberService.findMemberByUserIdAndProjectId(user.getId(), createTaskRequestDto.getProjectId());
-        TaskCreateEvent event;
-        if (files != null && !files.isEmpty()) {
-            event = new TaskCreateEvent(createTaskRequestDto, files);
-        } else {
-            event = new TaskCreateEvent(createTaskRequestDto);
-        }
+        TaskCreateEvent event = new TaskCreateEvent(createTaskRequestDto, descriptionfiles);
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
