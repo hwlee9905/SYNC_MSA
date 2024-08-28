@@ -1,4 +1,5 @@
 package user.service.kafka.task.event;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import user.service.web.dto.task.request.CreateTaskRequestDto;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,12 @@ import java.util.List;
 @Getter
 public class TaskCreateEvent {
     private CreateTaskRequestDto createTaskRequestDto;
-    private List<MultipartFile> files;
-
+    private List<FileData> files;
+    @AllArgsConstructor
+    @NoArgsConstructor // 기본 생성자 추가
+    @Getter
+    public static class FileData {
+        private String fileName;
+        private byte[] content;
+    }
 }
