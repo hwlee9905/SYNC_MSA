@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
+	<meta charset="UTF-8">
 </head>
 <style>
 body {
@@ -24,14 +24,38 @@ body {
 }
 </style>
 <body>
-	<div class="header">
-		<h3 th:text="'[' + ${name} + '] 프로젝트의 초대 입니다.'"></h3>
+<div style="display: flex; justify-content: center; align-items: center;">
+	<div class="container" style="margin: 100px; width: 500px;">
+		<div class="header" style="margin-bottom: 30px;">
+			<span style="font-weight: bold; font-size: 15px;" th:text="${userId}"></span><span style="font-size: 15px;"> 님이 나를 </span><span style="font-weight: bold; font-size: 15px;" th:text="${projectName}"></span><span style="font-size: 15px;"> 워크스페이스에 초대했습니다.</span>
+		</div>
+		<div class="content">
+			<a th:href="${projectUrl}" >
+				<button style="margin-bottom: 30px; font-weight: bold; font-size: 14px; background-color: #FFD880; width: 500px; height: 40px; border-radius: 5px;" type="button">초대 수락</button>
+			</a>
+		<table style="margin-bottom: 30px;">
+			<tr>
+				<td>이미지</td>
+				<td>
+					<p style="font-weight: bold; margin-bottom: 5px;" th:text="${projectName}"></p>
+					<p style="margin-top: 5px;">멤버 <span th:text="${countMembers}"></span>명</p>
+				</td>
+			</tr>
+		</table>
+		</div>
+		<div class="footer">
+			<hr style="border:0; height:1px; background: #F4F4F4; margin-bottom: 30px;">
+			<table>
+			<tr>
+				<td>로고</td>
+				<td>
+					<p style="font-size: 13px; color: #8F8F8F;">새로운 방식의 업무 일정 관리 협업 서비스</p>
+					<p style="font-size: 13px; color: #8F8F8F;">SYNC</p>
+				</td>
+			</tr>
+		</table>
+		</div>
 	</div>
-	<div class="content">
-		<a th:href="${url}">수락 하기</a>
-	</div>
-	<div class="footer">
-		<p>&copy; 2024 Our SYNC</p>
-	</div>
+</div>
 </body>
 </html>

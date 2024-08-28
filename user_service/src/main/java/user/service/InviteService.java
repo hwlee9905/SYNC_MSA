@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -25,6 +26,7 @@ import user.service.web.dto.invite.request.SendLinkRequestDto;
 @Service
 @RequiredArgsConstructor
 public class InviteService {
+	private final WebClient.Builder webClient;
 	private final JavaMailSender javaMailSender;
 	private final TemplateEngine templateEngine;
 	private final InviteRepository inviteRepository;
@@ -60,7 +62,7 @@ public class InviteService {
 		}
 	}
 	
-	public SuccessResponse sendEmailLink(SendLinkRequestDto body) {
+	public SuccessResponse sendEmailLink(SendLinkRequestDto body, String userId, Long countMembers) {
 		String projectUrl;
 		String projectName;
 		Optional<Invite> inviteInfo = inviteRepository.findByProjectId(body.getProjectId());
@@ -77,8 +79,10 @@ public class InviteService {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 			
 			Context context = new Context();
-			context.setVariable("url", projectUrl);
-			context.setVariable("name", projectName);
+			context.setVariable("userId", userId);
+			context.setVariable("projectUrl", projectUrl);
+			context.setVariable("projectName", projectName);
+			context.setVariable("countMembers", countMembers);
 
 			String htmlContent = templateEngine.process("email/email_template.html", context);
 
@@ -94,7 +98,7 @@ public class InviteService {
 		return SuccessResponse.builder().message("전송 완료").build();
 	}
 	
-	public SuccessResponse acceInvite(String userId) {
+	public SuccessResponse getProjectInfo(String userId) {
 		return null;
 	}
 	
