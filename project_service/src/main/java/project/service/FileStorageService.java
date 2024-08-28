@@ -25,7 +25,7 @@ public class FileStorageService {
         if (files != null) {
             for (TaskCreateEvent.FileData fileData : files) {
                 String uniqueFileName = UUID.randomUUID().toString() + "_" + fileData.getFileName();
-                Path copyLocation = Paths.get(uploadDir);
+                Path copyLocation = Paths.get(uploadDir + File.separator + uniqueFileName);
                 Files.createDirectories(copyLocation.getParent());
                 Files.write(copyLocation, fileData.getContent(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 TaskImage taskImage = TaskImage.builder()
