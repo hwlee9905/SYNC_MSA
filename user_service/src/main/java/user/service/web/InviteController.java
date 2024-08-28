@@ -2,7 +2,6 @@ package user.service.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,16 +40,23 @@ public class InviteController {
 	}
 	
 	/**
-	 * 이메일로 초대링크 전송
-	 * @param projectId
+	 * 이메일 초대 링크 전송
+	 * @param body
 	 * @return
 	 */
 	@Operation(summary = "프로젝트 이메일로 초대하기", description = "이메일로 프로젝트 초대장을 전송합니다.")
 	@PostMapping("/user/api/email")
 	public ResponseEntity<SuccessResponse> sendEmailLink(@RequestBody SendLinkRequestDto body){
-		return ResponseEntity.ok(inviteService.sendEmailLink(body));
+		String userId = userService.getCurrentUserId();
+		Long countMembers = memberService.countMember(body.getProjectId());
+		return ResponseEntity.ok(inviteService.sendEmailLink(body, userId, countMembers));
 	}
 	
+	/**
+	 * 초대 수락
+	 * @param body
+	 * @return
+	 */
 	@Operation(summary = "프로젝트 초대수락", description = "프로젝트 초대를 수락 합니다.")
 	@PostMapping("/user/api/invite")
 	public ResponseEntity<SuccessResponse> acceInvite(@RequestBody ProjectInviteRequestDto body){
