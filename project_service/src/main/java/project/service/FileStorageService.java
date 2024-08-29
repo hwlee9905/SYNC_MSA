@@ -18,9 +18,7 @@ import project.service.repository.TaskImageRepository;
 public class FileStorageService {
     @Value("${files.upload-dir.task.description}")
     private String uploadDir;
-
     private final TaskImageRepository taskImageRepository;
-
     public void saveFiles(Task task, List<TaskCreateEvent.FileData> files) throws IOException {
         if (files != null) {
             for (TaskCreateEvent.FileData fileData : files) {
@@ -29,9 +27,9 @@ public class FileStorageService {
                 Files.createDirectories(copyLocation.getParent());
                 Files.write(copyLocation, fileData.getContent(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 TaskImage taskImage = TaskImage.builder()
-                        .imagePath(copyLocation.toString())
-                        .task(task)
-                        .build();
+                    .imagePath(copyLocation.toString())
+                    .task(task)
+                    .build();
                 taskImageRepository.save(taskImage);
             }
         }

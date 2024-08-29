@@ -1,32 +1,30 @@
 package project.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
 import project.service.dto.request.CreateTaskRequestDto;
+import project.service.dto.response.GetTaskResponseDto;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
-import project.service.dto.response.GetTaskResponseDto;
-import project.service.entity.Project;
-import project.service.entity.Task;
-import project.service.entity.UserTask;
-import project.service.entity.UserTaskId;
+import project.service.dto.response.GetTasksResponseDto;
+import project.service.entity.*;
 import project.service.global.SuccessResponse;
 import project.service.kafka.event.TaskCreateEvent;
 import project.service.kafka.event.TaskDeleteEvent;
 import project.service.kafka.event.TaskUpdateEvent;
 import project.service.kafka.event.UserAddToTaskEvent;
 import project.service.repository.ProjectRepository;
+import project.service.repository.TaskImageRepository;
 import project.service.repository.TaskRepository;
 import project.service.repository.UserTaskRepository;
 
@@ -38,6 +36,7 @@ public class TaskService {
     private final ProjectRepository projectRepository;
     private final UserTaskRepository userTaskRepository;
     private final FileStorageService fileStorageService;
+    private final TaskImageRepository taskImageRepository;
     @Transactional(rollbackFor = { Exception.class })
     public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files) throws IOException {
         Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
@@ -51,41 +50,72 @@ public class TaskService {
             Task parentTaskEntity = parentTask.get();
             parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
             task = Task.builder()
-                    .title(createTaskRequestDto.getTitle())
-                    .childCompleteCount(0)
-                    .childCount(0)
-                    .description(createTaskRequestDto.getDescription())
-                    .parentTask(parentTaskEntity)
-                    .depth(parentTask.get().getDepth() + 1)
-                    .endDate(createTaskRequestDto.getEndDate())
-                    .startDate(createTaskRequestDto.getStartDate())
-                    .status(0)
-                    .project(project).build();
+                .title(createTaskRequestDto.getTitle())
+                .childCompleteCount(0)
+                .childCount(0)
+                .description(createTaskRequestDto.getDescription())
+                .parentTask(parentTaskEntity)
+                .depth(parentTask.get().getDepth() + 1)
+                .endDate(createTaskRequestDto.getEndDate())
+                .startDate(createTaskRequestDto.getStartDate())
+                .status(0)
+                .project(project).build();
         } else {
             project.setChildCount(project.getChildCount() + 1);
             task = Task.builder()
-                    .title(createTaskRequestDto.getTitle())
-                    .childCompleteCount(0)
-                    .childCount(0)
-                    .depth(0)
-                    .description(createTaskRequestDto.getDescription())
-                    .endDate(createTaskRequestDto.getEndDate())
-                    .startDate(createTaskRequestDto.getStartDate())
-                    .status(0)
-                    .project(project).build();
+                .title(createTaskRequestDto.getTitle())
+                .childCompleteCount(0)
+                .childCount(0)
+                .depth(0)
+                .description(createTaskRequestDto.getDescription())
+                .endDate(createTaskRequestDto.getEndDate())
+                .startDate(createTaskRequestDto.getStartDate())
+                .status(0)
+                .project(project).build();
         }
         taskRepository.save(task);
         fileStorageService.saveFiles(task, files);
     }
-    
+    @Transactional(rollbackFor = { Exception.class })
+    public SuccessResponse getTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
+
+        // TaskImage 엔티티를 조회하여 이미지 목록을 가져옴
+        List<TaskImage> taskImages = taskImageRepository.findByTaskId(taskId);
+        List<File> imageFiles = taskImages.stream()
+            .map(taskImage -> {
+                String filePath = taskImage.getImagePath();
+                File file = new File(filePath);
+                if (file.exists()) {
+                    return file;
+                } else {
+                    log.warn("File not found: " + filePath);
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+        // GetTaskResponseDto 객체 생성
+        GetTaskResponseDto result = GetTaskResponseDto.fromEntity(task, imageFiles);
+
+        return SuccessResponse.builder().data(result).build();
+    }
+
+    private String removeUUIDFromFileName(String filePath) {
+        String fileName = Paths.get(filePath).getFileName().toString();
+        int underscoreIndex = fileName.indexOf("_");
+        return fileName.substring(underscoreIndex + 1);
+    }
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getOnlyChildrenTasks(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
-        GetTaskResponseDto result = GetTaskResponseDto.fromEntityOnlyChildrenTasks(task);
+        GetTasksResponseDto result = GetTasksResponseDto.fromEntityOnlyChildrenTasks(task);
         return SuccessResponse.builder().data(result).build();
     }
-    
+
     @Transactional(rollbackFor = { Exception.class })
     public void addUserToTask(UserAddToTaskEvent userAddToTaskEvent) {
         Optional<Task> task = taskRepository.findById(userAddToTaskEvent.getTaskId());

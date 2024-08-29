@@ -15,7 +15,7 @@ import project.service.global.SuccessResponse;
 @Slf4j
 public class TaskController {
     private final TaskService taskService;
-    @GetMapping("api/task/OnlyChildrenTasks")
+    @GetMapping("/api/task/OnlyChildrenTasks")
     public SuccessResponse getOnlyChildrenTasks(GetTaskRequestDto getTaskRequestDto)  {
         //progress 로직 추가
         return taskService.getOnlyChildrenTasks(getTaskRequestDto.getTaskId());
@@ -28,5 +28,9 @@ public class TaskController {
     @GetMapping("/user/api/test")
     public void projectAPITest() {
         log.info("projectAPITest");
+    }
+    @GetMapping("/api/task")
+    public SuccessResponse getTask(@RequestParam Long taskId) {
+        return taskService.getTask(taskId);
     }
 }
