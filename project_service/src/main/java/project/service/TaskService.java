@@ -94,7 +94,7 @@ public class TaskService {
                     return null;
                 }
             })
-            .filter(Objects::nonNull)
+            .filter(Objects::nonNull) // null이 아닌 것만 필터링(ㅁ)
             .collect(Collectors.toList());
 
         // GetTaskResponseDto 객체 생성
@@ -152,7 +152,7 @@ public class TaskService {
         }
         taskRepository.delete(task.get());
     }
-
+    @Transactional(rollbackFor = { Exception.class })
     public void updateTask(TaskUpdateEvent event) {
         UpdateTaskRequestDto updateTaskRequestDto = event.getUpdateTaskRequestDto();
         Optional<Task> task = taskRepository.findById(updateTaskRequestDto.getTaskId());
