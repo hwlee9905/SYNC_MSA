@@ -2,12 +2,15 @@ package project.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +78,34 @@ public class TaskService {
         }
         taskRepository.save(task);
         fileStorageService.saveFiles(task, files);
+    }
+    public SuccessResponse getImages(List<String> filenames) {
+        try {
+            List<Resource> resources = filenames.stream().map(filename -> {
+                try {
+                    Path filePath = Paths.get(filename).normalize();
+                    return new UrlResource(filePath.toUri());
+                } catch (Exception e) {
+                    return null;
+                }
+            }).collect(Collectors.toList());
+
+            if (resources.contains(null)) {
+                return SuccessResponse.builder()
+                    .message("Some files were not found.")
+                    .result(false)
+                    .build();
+            }
+
+            return SuccessResponse.builder()
+                .data(resources)
+                .build();
+        } catch (Exception e) {
+            return SuccessResponse.builder()
+                .message("Internal server error.")
+                .result(false)
+                .build();
+        }
     }
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getTask(Long taskId) {
