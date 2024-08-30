@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
@@ -16,6 +18,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @Entity
 @Table(name = "project")
+@DynamicInsert
+@DynamicUpdate 
 public class Project{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,11 +42,11 @@ public class Project{
     private Date endDate;
     
     @ColumnDefault("0")
-    @Column(name = "child_count")
+    @Column(name = "child_count", nullable = false)
     private Integer childCount;
     
     @ColumnDefault("0")
-    @Column(name = "child_complete_count")
+    @Column(name = "child_complete_count", nullable = false)
     private Integer childCompleteCount;
     
     // Add this for the one-to-many relationship with Task
