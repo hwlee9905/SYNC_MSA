@@ -35,6 +35,7 @@ public class KafkaTaskProducerService {
     private static final String TOPIC1 = "task-add-user-topic";
     private static final String TOPIC2 = "task-delete-topic";
     private static final String TOPIC3 = "task-update-topic";
+    
     /**
      * 업무 생성 이벤트 생성
      * @param createTaskRequestDto
@@ -58,6 +59,7 @@ public class KafkaTaskProducerService {
         kafkaTemplate.send(TOPIC, event);
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(createTaskRequestDto).build();
     }
+    
     /**
      * 업무 담당자 배정 이벤트 생성
      * @param memberMappingToTaskRequestDto
@@ -77,6 +79,7 @@ public class KafkaTaskProducerService {
             return SuccessResponse.builder().message(responseMessage.getMessage()).data(responseMessage.getData()).build();
         }
     }
+    
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         // 프로젝트의 멤버인지 확인
@@ -87,6 +90,7 @@ public class KafkaTaskProducerService {
         kafkaTemplate.send(record);
         return SuccessResponse.builder().message("업무 삭제 이벤트 생성").data(deleteTaskRequestDto).build();
     }
+    
     public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         memberService.findMemberByUserIdAndProjectId(user.getId(), updateTaskRequestDto.getProjectId());

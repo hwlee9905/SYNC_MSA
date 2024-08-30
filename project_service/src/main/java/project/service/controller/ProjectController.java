@@ -25,7 +25,7 @@ public class ProjectController {
 //        return projectService.getProjects(getProjectsRequestDto);
 //    }
     @GetMapping("/project/api/v1")
-    public SuccessResponse getProjects(@RequestParam List<Long> projectIds)  {
+    public SuccessResponse getProjects(@RequestParam(name="projectIds") List<Long> projectIds)  {
         return projectService.getProjects(projectIds);
     }
 }

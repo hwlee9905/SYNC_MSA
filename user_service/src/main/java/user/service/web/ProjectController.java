@@ -36,6 +36,7 @@ public class ProjectController {
         kafkaProducerService.sendDeleteProjectEvent(projectDeleteRequestDto, userId);
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 삭제 이벤트 생성").build());
     }
+    
     //optional로 수정
     @Operation(summary = "프로젝트를 수정하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : UpdateProjectRequestDto")
@@ -50,20 +51,12 @@ public class ProjectController {
     public void getProjects(@Parameter(description = "존재하지 않는 프로젝트 아이디 입력시 오류 발생") @RequestParam List<Long> projectIds) {
     }
     
-//    @Operation(summary = "유저가 속해있는 프로젝트들의 ID를 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
-//    @GetMapping("/project/api/v2")
-//    public SuccessResponse getProjectsByUserLoginId(@Parameter(description = "존재하지 않는 로그인 아이디 입력시 오류 발생") @RequestParam String userId) {
-//        Long userEntityId = userService.getUserEntityId(userId);
-//        List<Long> projectIds = memberService.getProjectIdsByUserId(userEntityId);
-//        return new SuccessResponse("해당 유저의 프로젝트 아이디 조회 완료", projectIds);
-//    }
     // New
     // 작성자 : 강민경
     @Operation(summary = "유저가 속해있는 프로젝트들의 ID를 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
     @GetMapping("/project/api/v2")
-    public SuccessResponse getProjectsByUserLoginId(@Parameter(description = "존재하지 않는 로그인 아이디 입력시 오류 발생") @RequestParam String userId) {
+    public ResponseEntity<SuccessResponse> getProjectsByUserLoginId(@Parameter(description = "존재하지 않는 로그인 아이디 입력시 오류 발생") @RequestParam String userId) {
         Long userEntityId = userService.getUserEntityId(userId);
-        List<Long> projectIds = memberService.getProjectIdsByUserId(userEntityId);
-        return SuccessResponse.builder().message("해당 유저의 프로젝트 아이디 조회 완료").data(projectIds).build();
+        return ResponseEntity.ok(memberService.getProjectIdsByUserId(userEntityId));
     }
 }
