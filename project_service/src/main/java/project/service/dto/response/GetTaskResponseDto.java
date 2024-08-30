@@ -3,9 +3,9 @@ package project.service.dto.response;
 import lombok.*;
 import project.service.entity.Task;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -21,9 +21,9 @@ public class GetTaskResponseDto {
     private int status;
     private int depth;
     private float progress;
-    private List<GetTaskResponseDto> subTasks;
+    private List<File> imageFiles; // 이미지 파일 목록 추가
 
-    public static GetTaskResponseDto fromEntityOnlyChildrenTasks(Task task) {
+    public static GetTaskResponseDto fromEntity(Task task, List<File> imageFiles) {
         float progress = 0.0f;
         if (task.getChildCount() > 0) {
             progress = (float) task.getChildCompleteCount() / task.getChildCount();
@@ -37,17 +37,7 @@ public class GetTaskResponseDto {
                 .status(task.getStatus())
                 .depth(task.getDepth())
                 .progress(progress)
-                .subTasks(task.getSubTasks().stream()
-                        .map(child -> GetTaskResponseDto.builder()
-                                .id(child.getId())
-                                .title(child.getTitle())
-                                .description(child.getDescription())
-                                .startDate(child.getStartDate())
-                                .endDate(child.getEndDate())
-                                .status(child.getStatus())
-                                .depth(child.getDepth())
-                                .build())
-                        .collect(Collectors.toList()))
+                .imageFiles(imageFiles)
                 .build();
     }
 }

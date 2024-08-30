@@ -45,14 +45,14 @@ public class KafkaTaskProducerService {
         memberService.findMemberByUserIdAndProjectId(user.getId(), createTaskRequestDto.getProjectId());
 
         List<TaskCreateEvent.FileData> fileDataList = descriptionFiles.stream()
-                .map(file -> {
-                    try {
-                        return new TaskCreateEvent.FileData(file.getOriginalFilename(), file.getBytes());
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to convert file", e);
-                    }
-                })
-                .collect(Collectors.toList());
+            .map(file -> {
+                try {
+                    return new TaskCreateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to convert file", e);
+                }
+            })
+            .collect(Collectors.toList());
 
         TaskCreateEvent event = new TaskCreateEvent(createTaskRequestDto, fileDataList);
         kafkaTemplate.send(TOPIC, event);

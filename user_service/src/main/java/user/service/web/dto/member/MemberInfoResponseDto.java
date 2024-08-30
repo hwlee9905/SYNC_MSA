@@ -1,4 +1,4 @@
-package user.service.web;
+package user.service.web.dto.member;
 
 import lombok.Getter;
 import lombok.Setter;
