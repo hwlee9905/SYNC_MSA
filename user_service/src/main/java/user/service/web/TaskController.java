@@ -26,7 +26,7 @@ public class TaskController {
             "ValidationDetails : CreateTaskRequestDto <br>" +
             "depth는 parentTask의 depth에 따라 결정 되며, 최상위 업무는 0, 그 하위 업무는 1, 그 하위 업무는 2로 결정됩니다. parentTask의 depth가 2일 경우, 생성되지 않습니다.")
     @PostMapping("user/api/task/v1")
-    public SuccessResponse createTask(@RequestPart("data") CreateTaskRequestDto createTaskRequestDto, @RequestPart(value = "images", required = false) List<MultipartFile> descriptionImages) throws IOException {
+    public SuccessResponse createTask(@RequestPart("data") CreateTaskRequestDto createTaskRequestDto, @RequestPart(value = "images", required = false) List<MultipartFile> descriptionImages, @RequestPart(value = "titleimage", required = false) List<MultipartFile> titleImage) throws IOException {
         return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto,descriptionImages);
     }
 //    public void createTask(HttpServletRequest request) throws ServletException, IOException {

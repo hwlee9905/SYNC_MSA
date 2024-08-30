@@ -19,7 +19,7 @@ import user.service.global.exception.MemberDuplicateInProjectException;
 import user.service.kafka.member.KafkaMemberProducerService;
 import user.service.kafka.member.event.RollbackMemberAddToProjectEvent;
 import user.service.repository.MemberRepository;
-import user.service.web.MemberInfoResponseDto;
+import user.service.web.dto.member.MemberInfoResponseDto;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
 import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
@@ -161,7 +161,11 @@ public class MemberService {
                 .data(dto)
                 .build();
     }
-
+    /**
+     * 멤버 추가 보상 트랜잭션
+     * @param event
+     */
+    @Transactional(rollbackFor = { Exception.class })
     public void rollbackMemberAddToProject(RollbackMemberAddToProjectEvent event) {
         List<String> userIds = event.getUserIds();
         Long projectId = event.getProjectId();
@@ -171,7 +175,7 @@ public class MemberService {
             memberRepository.delete(member);
         });
     }
-    
+    @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getMembersByUserIds(List<Long> userIds) {
         List<Member> members = memberRepository.findMembersByUserIds(userIds);
         List<MemberInfoResponseDto> dtos =
