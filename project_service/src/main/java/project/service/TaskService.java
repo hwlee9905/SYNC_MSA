@@ -2,6 +2,7 @@ package project.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
+import project.service.dto.response.FileResourceDto;
 import project.service.dto.response.GetTaskResponseDto;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
@@ -79,32 +81,37 @@ public class TaskService {
         taskRepository.save(task);
         fileStorageService.saveFiles(task, files);
     }
+    @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getImages(List<String> filenames) {
         try {
-            List<Resource> resources = filenames.stream().map(filename -> {
-                try {
-                    Path filePath = Paths.get(filename).normalize();
-                    return new UrlResource(filePath.toUri());
-                } catch (Exception e) {
-                    return null;
-                }
-            }).collect(Collectors.toList());
+            List<FileResourceDto> resources = filenames.stream()
+                    .map(filename -> {
+                        try {
+                            // 파일 경로에서 특수 문자 제거
+                            String cleanedFilename = filename.replaceAll("[^\\x20-\\x7E]", "");
+                            Path filePath = Paths.get(cleanedFilename).normalize();
+                            log.info("getImages: filePath={}", filePath);
+                            if (!Files.exists(filePath)) {
+                                throw new IOException("File not found: " + cleanedFilename);
+                            }
+                            UrlResource resource = new UrlResource(filePath.toUri());
+                            return new FileResourceDto(resource.getFilename(), resource.getURI().toString());
+                        } catch (Exception e) {
+                            throw new RuntimeException(e.getMessage());
+                        }
+                    }).collect(Collectors.toList());
 
             if (resources.contains(null)) {
                 return SuccessResponse.builder()
-                    .message("Some files were not found.")
-                    .result(false)
-                    .build();
+                        .message("Some files were not found.")
+                        .result(false)
+                        .build();
             }
-
             return SuccessResponse.builder()
-                .data(resources)
-                .build();
+                    .data(resources)
+                    .build();
         } catch (Exception e) {
-            return SuccessResponse.builder()
-                .message("Internal server error.")
-                .result(false)
-                .build();
+            throw new RuntimeException(e.getMessage());
         }
     }
     @Transactional(rollbackFor = { Exception.class })
