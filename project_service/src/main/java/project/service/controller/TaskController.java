@@ -37,8 +37,8 @@ public class TaskController {
     public SuccessResponse getTask(@RequestParam Long taskId) {
         return taskService.getTask(taskId);
     }
-    @GetMapping("/api/task/images")
-    public ResponseEntity<List<Resource>> getImages(@RequestParam List<String> filenames) {
-        return taskService.getImages(filenames);
+    @GetMapping("/api/task/image")
+    public ResponseEntity<Resource> getImage(@RequestParam String filename) {
+        return taskService.getImage(filename);
     }
 }

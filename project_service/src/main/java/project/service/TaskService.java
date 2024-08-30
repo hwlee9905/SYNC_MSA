@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,25 +84,19 @@ public class TaskService {
         fileStorageService.saveFiles(task, files);
     }
     @Transactional(rollbackFor = { Exception.class })
-    public ResponseEntity<List<Resource>> getImages(List<String> filenames) {
+    public ResponseEntity<Resource> getImage(String filename) {
         try {
-            List<Resource> resources = filenames.stream()
-                    .map(filename -> {
-                        try {
-                            // 파일 경로에서 특수 문자 제거
-                            String cleanedFilename = filename.replaceAll("[^\\x20-\\x7E]", "");
-                            Path filePath = Paths.get(cleanedFilename).normalize();
-                            log.info("getImages: filePath={}", filePath);
-                            if (!Files.exists(filePath)) {
-                                throw new IOException("File not found: " + cleanedFilename);
-                            }
-                            return new UrlResource(filePath.toUri());
-                        } catch (Exception e) {
-                            throw new RuntimeException(e.getMessage());
-                        }
-                    }).collect(Collectors.toList());
-
-            return ResponseEntity.ok(resources);
+            // 파일 경로에서 특수 문자 제거
+            String cleanedFilename = filename.replaceAll("[^\\x20-\\x7E]", "");
+            Path filePath = Paths.get(cleanedFilename).normalize();
+            log.info("getImage: filePath={}", filePath);
+            if (!Files.exists(filePath)) {
+                throw new IOException("File not found: " + cleanedFilename);
+            }
+            Resource resource = new UrlResource(filePath.toUri());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
