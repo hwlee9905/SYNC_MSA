@@ -1,4 +1,5 @@
 package user.service;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,6 +32,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final UserService userService;
     private final KafkaMemberProducerService kafkaMemberProducerService;
+    
     /**
      * 프로젝트에 멤버를 추가합니다.
      * @param memberMappingToProjectRequestDto
@@ -59,7 +61,7 @@ public class MemberService {
         });
         //프로젝트 존재하지 않을시 보상 트랜잭션 처리
         kafkaMemberProducerService.isExistProjectByMemberAddToProject(projectId, userIds);
-        return SuccessResponse.builder().message("멤버 추가 성공").data(userIds).build();
+        return SuccessResponse.builder().message("멤버 추가 성공").data(Collections.singletonMap("userIds", userIds)).build();
 //        return new SuccessResponse("멤버 추가 성공", userIds);
     }
     
@@ -73,6 +75,7 @@ public class MemberService {
         return memberRepository.findMemberByUserIdAndProjectId(userId, projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with UserId: " + userId + " and ProjectId: " + projectId));
     }
+    
     /**
      * 멤버가 관리자인지 확인합니다.
      * @param memberId
@@ -91,6 +94,7 @@ public class MemberService {
             throw new InvalidValueException("해당 멤버는 생성자가 아닙니다.");
         }
     }
+    
     /**
      * 모든 멤버가 같은 프로젝트에 소속되어 있는지 확인합니다.
      * @param memberMappingToTaskRequestDto
@@ -112,10 +116,10 @@ public class MemberService {
             List<Long> userIds = memberIds.stream()
                     .map(memberId -> memberRepository.findById(memberId).get().getUser().getId())
                     .collect(Collectors.toList());
-            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있습니다.").data(userIds).build();
+            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있습니다.").data(Collections.singletonMap("userIds", userIds)).build();
         } else {
             // 멤버들이 서로 다른 프로젝트에 속해 있을 경우
-            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.").data(memberIds).build();
+            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.").data(Collections.singletonMap("memberIds", memberIds)).build();
         }
     }
     
@@ -129,15 +133,18 @@ public class MemberService {
         List<Member> members = memberRepository.findByProjectId(projectId);
         memberRepository.deleteAll(members);
     }
+    
     /**
      * 사용자가 속한 프로젝트 ID를 조회합니다.
      * @param userId
      * @return
      */
     @Transactional(rollbackFor = { Exception.class })
-    public List<Long> getProjectIdsByUserId(Long userId) {
-        return memberRepository.findProjectIdsByUserId(userId);
+    public SuccessResponse getProjectIdsByUserId(Long userId) {
+    	List<Long> result = memberRepository.findProjectIdsByUserId(userId);
+    	return SuccessResponse.builder().data(Collections.singletonMap("userId", result)).build();
     }
+    
     /**
      * 프로젝트에 속한 멤버 ID를 조회합니다.
      * @param projectIds
@@ -158,7 +165,7 @@ public class MemberService {
             .collect(Collectors.toList());
         return SuccessResponse.builder()
                 .message("프로젝트 멤버 조회 성공")
-                .data(dto)
+                .data(Collections.singletonMap("memberToUserId", dto))
                 .build();
     }
     /**
@@ -175,6 +182,7 @@ public class MemberService {
             memberRepository.delete(member);
         });
     }
+    
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getMembersByUserIds(List<Long> userIds) {
         List<Member> members = memberRepository.findMembersByUserIds(userIds);
@@ -190,7 +198,7 @@ public class MemberService {
                 .collect(Collectors.toList());
         return SuccessResponse.builder()
                 .message("멤버 조회 성공")
-                .data(dtos)
+                .data(Collections.singletonMap("memberInfo", dtos))
                 .build();
     }
     

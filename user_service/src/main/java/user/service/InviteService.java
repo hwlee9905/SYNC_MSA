@@ -4,10 +4,12 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -98,7 +100,19 @@ public class InviteService {
 		return SuccessResponse.builder().message("전송 완료").build();
 	}
 	
-	public SuccessResponse getProjectInfo(String userId) {
+	public SuccessResponse getProjectInfo(Long projectId) {
+		RestTemplate restTemplate = new RestTemplate();
+		String apiUrl = "/project/api/v1?projectIds=" + projectId;
+		ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+		
+		if (response.getStatusCode().is2xxSuccessful()) {
+	        String responseBody = response.getBody();
+	        System.out.println("API 응답: " + responseBody);
+	    } else {
+	    	// 실패 Exception 
+	        // System.out.println("API 호출 실패: " + response.getStatusCode());
+	    }
+		
 		return null;
 	}
 	

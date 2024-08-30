@@ -16,7 +16,6 @@ import project.service.global.SuccessResponse;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
 import project.service.repository.ProjectRepository;
-import project.service.repository.TaskRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +24,8 @@ public class ProjectService {
 	@Transactional(rollbackFor = { Exception.class })
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
 		Project project = Project.builder()
-				.childCount(0)
-				.childCompleteCount(0)
+//				.childCount(0)
+//				.childCompleteCount(0)
 				.description(projectCreateRequestDto.getDescription())
 				.subTitle(projectCreateRequestDto.getSubTitle())
 				.startDate(projectCreateRequestDto.getStartDate())
