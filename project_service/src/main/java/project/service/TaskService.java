@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -82,9 +83,9 @@ public class TaskService {
         fileStorageService.saveFiles(task, files);
     }
     @Transactional(rollbackFor = { Exception.class })
-    public SuccessResponse getImages(List<String> filenames) {
+    public ResponseEntity<List<Resource>> getImages(List<String> filenames) {
         try {
-            List<FileResourceDto> resources = filenames.stream()
+            List<Resource> resources = filenames.stream()
                     .map(filename -> {
                         try {
                             // 파일 경로에서 특수 문자 제거
@@ -94,22 +95,13 @@ public class TaskService {
                             if (!Files.exists(filePath)) {
                                 throw new IOException("File not found: " + cleanedFilename);
                             }
-                            UrlResource resource = new UrlResource(filePath.toUri());
-                            return new FileResourceDto(resource.getFilename(), resource.getURI().toString());
+                            return new UrlResource(filePath.toUri());
                         } catch (Exception e) {
                             throw new RuntimeException(e.getMessage());
                         }
                     }).collect(Collectors.toList());
 
-            if (resources.contains(null)) {
-                return SuccessResponse.builder()
-                        .message("Some files were not found.")
-                        .result(false)
-                        .build();
-            }
-            return SuccessResponse.builder()
-                    .data(resources)
-                    .build();
+            return ResponseEntity.ok(resources);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

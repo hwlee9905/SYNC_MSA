@@ -1,5 +1,7 @@
 package project.service.controller;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +38,7 @@ public class TaskController {
         return taskService.getTask(taskId);
     }
     @GetMapping("/api/task/images")
-    public SuccessResponse getImages(@RequestParam List<String> filenames) {
+    public ResponseEntity<List<Resource>> getImages(@RequestParam List<String> filenames) {
         return taskService.getImages(filenames);
     }
 }
