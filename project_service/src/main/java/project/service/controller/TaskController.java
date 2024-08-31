@@ -19,10 +19,14 @@ import java.util.List;
 @Slf4j
 public class TaskController {
     private final TaskService taskService;
-    @GetMapping("/api/task/OnlyChildrenTasks")
+    @GetMapping("/api/task/v1")
     public SuccessResponse getOnlyChildrenTasks(@RequestParam Long taskId)  {
         //progress 로직 추가
         return taskService.getOnlyChildrenTasks(taskId);
+    }
+    @GetMapping("/api/task/v2")
+    public SuccessResponse getTasksByProjectId(@RequestParam Long projectId)  {
+        return taskService.getTaskByProjectId(projectId);
     }
     @GetMapping("/project/task/api/v1/users")
     public SuccessResponse getUserFromTask(@RequestParam Long taskId) {
