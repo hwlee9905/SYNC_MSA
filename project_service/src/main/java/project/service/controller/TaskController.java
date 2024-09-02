@@ -37,7 +37,7 @@ public class TaskController {
     public void projectAPITest() {
         log.info("projectAPITest");
     }
-    @GetMapping("/api/task")
+    @GetMapping("/api/task/v3")
     public SuccessResponse getTask(@RequestParam Long taskId) {
         return taskService.getTask(taskId);
     }

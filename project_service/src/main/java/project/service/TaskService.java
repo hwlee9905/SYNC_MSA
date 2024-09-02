@@ -116,9 +116,10 @@ public class TaskService {
                     return null;
                 }
             })
-            .filter(Objects::nonNull) // null이 아닌 것만 필터링(ㅁ)
+            .filter(Objects::nonNull) // null이 아닌 것만 필터링
             .collect(Collectors.toList());
 
+        //path와 filename을 분리하여 response 할 것
         // GetTaskResponseDto 객체 생성
         GetTaskResponseDto result = GetTaskResponseDto.fromEntity(task, imageFiles);
 

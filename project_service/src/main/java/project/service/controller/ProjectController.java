@@ -16,14 +16,6 @@ import project.service.global.SuccessResponse;
 @Slf4j
 public class ProjectController {
     final ProjectService projectService;
-//    @PostMapping("/project/api/v1/find")
-//    public ResponseMessage findProject(Long projectId)  {
-//        return projectService.findProject(projectId);
-//    }
-//    @PostMapping("/project/api/v1/get")
-//    public List<GetProjectsResponseDto> getProjects(@RequestBody GetProjectsRequestDto getProjectsRequestDto)  {
-//        return projectService.getProjects(getProjectsRequestDto);
-//    }
     @GetMapping("/project/api/v1")
     public SuccessResponse getProjects(@RequestParam(name="projectIds") List<Long> projectIds)  {
         return projectService.getProjects(projectIds);
