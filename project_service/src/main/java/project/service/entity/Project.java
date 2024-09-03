@@ -35,6 +35,9 @@ public class Project{
     @Column(name="description", length = 255, nullable = false)
     private String description;
     
+    @Column(name="thumbnail", length = 255, nullable = true)
+    private String thumbnail;
+    
     @Column(name = "start_date", nullable = true)
     private Date startDate;
     

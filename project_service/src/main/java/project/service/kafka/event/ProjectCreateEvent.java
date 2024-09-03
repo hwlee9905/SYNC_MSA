@@ -1,14 +1,10 @@
 package project.service.kafka.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import project.service.dto.request.CreateProjectRequestDto;
 
-@Setter
-@Getter
+@Data
 public class ProjectCreateEvent {
     private CreateProjectRequestDto projectCreateRequestDto;
     private String userId;
-
 }
