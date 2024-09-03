@@ -19,11 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
-import project.service.dto.response.FileResourceDto;
-import project.service.dto.response.GetTaskResponseDto;
+import project.service.dto.response.*;
 import project.service.dto.request.UpdateTaskRequestDto;
-import project.service.dto.response.GetMemberFromTaskResponseDto;
-import project.service.dto.response.GetTasksResponseDto;
 import project.service.entity.*;
 import project.service.global.SuccessResponse;
 import project.service.kafka.event.TaskCreateEvent;
@@ -119,9 +116,10 @@ public class TaskService {
                     return null;
                 }
             })
-            .filter(Objects::nonNull) // null이 아닌 것만 필터링(ㅁ)
+            .filter(Objects::nonNull) // null이 아닌 것만 필터링
             .collect(Collectors.toList());
 
+        //path와 filename을 분리하여 response 할 것
         // GetTaskResponseDto 객체 생성
         GetTaskResponseDto result = GetTaskResponseDto.fromEntity(task, imageFiles);
 
@@ -241,5 +239,26 @@ public class TaskService {
         return SuccessResponse.builder()
             .data(result)
             .build();
+    }
+    @Transactional(rollbackFor = { Exception.class })
+    public SuccessResponse getTaskByProjectId(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
+
+        List<GetTasksByProjectIdResponseDto> tasks = project.getTasks().stream()
+                .filter(task -> task.getDepth() == 0)
+                .map(task -> GetTasksByProjectIdResponseDto.builder()
+                        .id(task.getId())
+                        .title(task.getTitle())
+                        .description(task.getDescription())
+                        .startDate(task.getStartDate())
+                        .endDate(task.getEndDate())
+                        .status(task.getStatus())
+                        .depth(task.getDepth())
+                        .progress((float) project.getChildCompleteCount() / project.getChildCount())
+                        .build())
+                .collect(Collectors.toList());
+
+        return SuccessResponse.builder().data(tasks).build();
     }
 }

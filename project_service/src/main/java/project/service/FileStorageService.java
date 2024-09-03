@@ -17,13 +17,13 @@ import project.service.repository.TaskImageRepository;
 @Service
 public class FileStorageService {
     @Value("${files.upload-dir.task.description}")
-    private String uploadDir;
+    private String uploadDescriptionDir;
     private final TaskImageRepository taskImageRepository;
     public void saveFiles(Task task, List<TaskCreateEvent.FileData> files) throws IOException {
         if (files != null) {
             for (TaskCreateEvent.FileData fileData : files) {
-                String uniqueFileName = UUID.randomUUID().toString() + "_" + fileData.getFileName();
-                Path copyLocation = Paths.get(uploadDir + File.separator + uniqueFileName);
+                String fileName = fileData.getFileName();
+                Path copyLocation = Paths.get(uploadDescriptionDir + File.separator + fileName);
                 Files.createDirectories(copyLocation.getParent());
                 Files.write(copyLocation, fileData.getContent(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 TaskImage taskImage = TaskImage.builder()

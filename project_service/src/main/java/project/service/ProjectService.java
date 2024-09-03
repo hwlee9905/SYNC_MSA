@@ -1,8 +1,10 @@
 package project.service;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +21,12 @@ import project.service.repository.ProjectRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectService {
 	private final ProjectRepository projectRepository;
 	@Transactional(rollbackFor = { Exception.class })
 	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
 		Project project = Project.builder()
-//				.childCount(0)
-//				.childCompleteCount(0)
 				.description(projectCreateRequestDto.getDescription())
 				.subTitle(projectCreateRequestDto.getSubTitle())
 				.startDate(projectCreateRequestDto.getStartDate())
@@ -47,6 +48,7 @@ public class ProjectService {
 	@Transactional(rollbackFor = { Exception.class })
     public void deleteProject(ProjectDeleteEvent event) {
 		Optional<Project> project = projectRepository.findById(event.getProjectId());
+		//관련 task 파일 삭제
 		//프로젝트가 존재하지 않을 경우 에러 처리 로직 추가
 		projectRepository.delete(project.get());
     }
@@ -64,13 +66,13 @@ public class ProjectService {
 						progress = (float) project.getChildCompleteCount() / project.getChildCount();
 					}
 					return new GetProjectsResponseDto(
-							project.getId(),
-							project.getTitle(),
-							project.getSubTitle(),
-							project.getDescription(),
-							project.getStartDate(),
-							project.getEndDate(),
-							progress
+						project.getId(),
+						project.getTitle(),
+						project.getSubTitle(),
+						project.getDescription(),
+						project.getStartDate(),
+						project.getEndDate(),
+						progress
 					);
 				})
 				.collect(Collectors.toList());
