@@ -1,15 +1,21 @@
 package user.service.kafka.project;
 
+import java.io.IOException;
+
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
+import user.service.kafka.project.event.ProjectAddIconEvent;
+import user.service.kafka.project.event.ProjectAddImgEvent;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
+import user.service.web.dto.project.request.AddProjectIconDto;
 import user.service.web.dto.project.request.CreateProjectRequestDto;
 import user.service.web.dto.project.request.DeleteProjectRequestDto;
 import user.service.web.dto.project.request.UpdateProjectRequestDto;
@@ -24,6 +30,8 @@ public class KafkaProjectProducerService {
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "project-delete-topic";
     private static final String TOPIC2 = "project-update-topic";
+    private static final String TOPIC3 = "project-add-img-topic";
+    private static final String TOPIC4 = "project-add-icon-topic";
     
     public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, String userId) {
         ProjectCreateEvent event = new ProjectCreateEvent(projectCreateRequestDto, userId);
@@ -48,6 +56,7 @@ public class KafkaProjectProducerService {
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
     }
+    
     public void updateProject(UpdateProjectRequestDto updateProjectRequestDto) {
         ProjectUpdateEvent event = new ProjectUpdateEvent(updateProjectRequestDto);
         //프로젝트 관리자인지 확인
@@ -59,6 +68,26 @@ public class KafkaProjectProducerService {
             .getId()
         );
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC2, event);
+        record.headers().remove("spring.json.header.types");
+        kafkaTemplate.send(record);
+    }
+    
+    public void sendAddProjectImgEvent(MultipartFile thumbnail, String userId) {
+    	ProjectAddImgEvent event = null;
+		try {
+			event = new ProjectAddImgEvent(thumbnail.getBytes(), userId);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC3, event);
+        record.headers().remove("spring.json.header.types");
+        kafkaTemplate.send(record);
+    }
+    
+    public void sendAddProjectIconEvent(AddProjectIconDto body, String userId) {
+    	ProjectAddIconEvent event = new ProjectAddIconEvent(body, userId);
+    	ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC4, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
     }
