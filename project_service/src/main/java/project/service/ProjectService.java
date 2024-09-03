@@ -48,7 +48,7 @@ public class ProjectService {
 	@Transactional(rollbackFor = { Exception.class })
     public void deleteProject(ProjectDeleteEvent event) {
 		Optional<Project> project = projectRepository.findById(event.getProjectId());
-
+		//관련 task 파일 삭제
 		//프로젝트가 존재하지 않을 경우 에러 처리 로직 추가
 		projectRepository.delete(project.get());
     }

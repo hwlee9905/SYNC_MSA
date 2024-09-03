@@ -28,6 +28,5 @@ public class CreateTaskRequestDto {
     @Schema(description = "생성할 업무의 프로젝트 아이디")
     @NotNull(message = "프로젝트 아이디는 필수 입력 값 입니다.")
     private Long projectId;
-    @Schema(description = "업무에 첨부할 이미지 파일들")
-    private List<MultipartFile> images;
+
 }
