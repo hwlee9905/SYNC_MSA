@@ -1,20 +1,24 @@
 package project.service;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.response.GetProjectsResponseDto;
 import project.service.entity.Project;
 import project.service.global.SuccessResponse;
+import project.service.global.config.ApplicationConfig;
+import project.service.global.exception.SavingImageFailedException;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
 import project.service.repository.ProjectRepository;
@@ -24,15 +28,41 @@ import project.service.repository.ProjectRepository;
 @Slf4j
 public class ProjectService {
 	private final ProjectRepository projectRepository;
+	private final ApplicationConfig applicationConfig;
+	
 	@Transactional(rollbackFor = { Exception.class })
-	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
+	public Project createProject(CreateProjectRequestDto projectCreateRequestDto, byte[] img) {
+		String thumbnailId = createThumbnailId();
+		uploadThumbnail(img, thumbnailId);
 		Project project = Project.builder()
 				.description(projectCreateRequestDto.getDescription())
 				.subTitle(projectCreateRequestDto.getSubTitle())
+				.thumbnail(thumbnailId)
 				.startDate(projectCreateRequestDto.getStartDate())
 				.endDate(projectCreateRequestDto.getEndDate())
 				.title(projectCreateRequestDto.getTitle()).build();
 		return projectRepository.save(project);
+	}
+	
+	private String createThumbnailId() {
+		UUID uuid = UUID.randomUUID();
+		if (projectRepository.existsByThumbnail(uuid.toString())) {
+			createThumbnailId();
+		} 
+		return uuid.toString();
+	}
+	
+	private void uploadThumbnail(byte[] img, String thumbnailId) {
+		if (img != null) {
+			// img
+			File outputFile = new File(applicationConfig.getImgStoragePath(), thumbnailId + ".png");
+			try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+	            fos.write(img);
+	            fos.flush();
+	        } catch (Exception e) {
+	        	throw new SavingImageFailedException(e.getMessage());
+			}
+		} 
 	}
 	
 	@Transactional(rollbackFor = { Exception.class })
