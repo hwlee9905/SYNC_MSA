@@ -26,9 +26,9 @@ public class ProjectController {
     @Operation(summary = "프로젝트를 생성하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : CreateProjectRequestDto")
     @PostMapping("/user/api/project")
-    public ResponseEntity<SuccessResponse> createProject(@RequestBody @Valid CreateProjectRequestDto projectCreateRequestDto) {
+    public ResponseEntity<SuccessResponse> createProject(@RequestPart("data") @Valid CreateProjectRequestDto projectCreateRequestDto, @RequestPart(value = "img", required = false) MultipartFile img) {
         String userId = userService.getCurrentUserId();
-        kafkaProducerService.sendCreateProjectEvent(projectCreateRequestDto, userId);
+        kafkaProducerService.sendCreateProjectEvent(projectCreateRequestDto, img, userId);
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 생성 이벤트 생성").build());
     }
     
@@ -41,7 +41,7 @@ public class ProjectController {
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 삭제 이벤트 생성").build());
     }
     
-        //optional로 수정
+    //optional로 수정
     @Operation(summary = "프로젝트를 수정하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : UpdateProjectRequestDto")
     @PutMapping("/user/api/project")
@@ -61,33 +61,4 @@ public class ProjectController {
         Long userEntityId = userService.getUserEntityId(userId);
         return ResponseEntity.ok(memberService.getProjectIdsByUserId(userEntityId));
     }
-    
-    /**
-     * 프로젝트 대표 이미지 저장
-     * @param body
-     * @return
-     */
-    @Operation(summary = "프로젝트 생성 시, 대표 이미지 저장 API", description = "HOST = 150.136.153.235:30080 <br>" +
-            "ValidationDetails : AddProjectImgDto")
-    @PostMapping("/user/api/project/add/img")
-    public ResponseEntity<SuccessResponse> addThumbnail(@RequestParam("thumbnail") MultipartFile thumbnail) {
-    	String userId = userService.getCurrentUserId();
-    	kafkaProducerService.sendAddProjectImgEvent(thumbnail, userId);
-    	return ResponseEntity.ok(SuccessResponse.builder().message("프로젝트 이미지 저장 이벤트 생성").build());
-    }
-    
-    /**
-     * 프로젝트 대표 아이콘 저장
-     * @param body
-     * @return
-     */
-    @Operation(summary = "프로젝트 생성 시, 대표 아이콘 저장 API", description = "HOST = 150.136.153.235:30080 <br>" +
-            "ValidationDetails : AddProjectIconDto")
-    @PostMapping("/user/api/project/add/icon")
-    public ResponseEntity<SuccessResponse> addThumbnail(@RequestBody @Valid AddProjectIconDto body) {
-    	String userId = userService.getCurrentUserId();
-    	kafkaProducerService.sendAddProjectIconEvent(body, userId);
-    	return ResponseEntity.ok(SuccessResponse.builder().message("프로젝트 아이콘 저장 이벤트 생성").build());
-    }
-    
 }

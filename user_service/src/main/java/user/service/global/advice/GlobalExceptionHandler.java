@@ -1,7 +1,6 @@
 package user.service.global.advice;
 
 import java.nio.file.AccessDeniedException;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,10 +13,22 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartException;
-import user.service.global.exception.*;
+import user.service.global.exception.AuthenticationFailureException;
+import user.service.global.exception.AuthorizationFailureException;
+import user.service.global.exception.BusinessException;
+import user.service.global.exception.EntityNotFoundException;
+import user.service.global.exception.IdenticalValuesCannotChangedException;
+import user.service.global.exception.ImageConversionFailedException;
+import user.service.global.exception.InvalidValueException;
+import user.service.global.exception.LinkCannotBeSavedException;
+import user.service.global.exception.MemberDuplicateInProjectException;
+import user.service.global.exception.ProjectNotFoundException;
+import user.service.global.exception.UnknownException;
+import user.service.global.exception.UserIdDuplicatedException;
+import user.service.global.exception.UserNotFoundException;
 
 @ControllerAdvice
 @Slf4j
@@ -166,23 +177,32 @@ public class GlobalExceptionHandler {
      * Invite
      */
     @ExceptionHandler(LinkCannotBeSavedException.class)
-    protected ResponseEntity<ErrorResponse> handleLinkCannotBeSavedException(Locale locale, LinkCannotBeSavedException e){
+    protected ResponseEntity<ErrorResponse> handleLinkCannotBeSavedException(LinkCannotBeSavedException e){
     	log.error(e.getMessage());
     	final ErrorResponse response = ErrorResponse.of(ErrorCode.LINK_SAVE_ERROR);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.LINK_SAVE_ERROR.getStatus()));
     }
     
     @ExceptionHandler(ProjectNotFoundException.class)
-    protected ResponseEntity<ErrorResponse> handleProjectNotFoundException(Locale locale, ProjectNotFoundException e){
+    protected ResponseEntity<ErrorResponse> handleProjectNotFoundException(ProjectNotFoundException e){
     	log.error(e.getMessage());
     	final ErrorResponse response = ErrorResponse.of(ErrorCode.PROJECT_NOT_FOUND);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.PROJECT_NOT_FOUND.getStatus()));
     }
+    
     @ExceptionHandler(value = MultipartException.class)
     public ResponseEntity<ErrorResponse> handleFileUploadingError(Exception exception) {
         log.warn("Failed to upload attachment", exception);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()));
     }
-
+    
+    // 이미지 변환 실패 Exception
+    @ExceptionHandler(ImageConversionFailedException.class)
+    protected ResponseEntity<ErrorResponse> handleImageConversionFailedException (ImageConversionFailedException e){
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.IMAGE_CONVERSION_FAILED);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.IMAGE_CONVERSION_FAILED.getStatus()));
+    }
+    
 }
