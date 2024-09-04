@@ -11,6 +11,8 @@ import project.service.dto.request.CreateTaskRequestDto;
 import project.service.entity.Project;
 import project.service.global.SuccessResponse;
 import project.service.kafka.event.IsExistProjectByMemberAddToProjectEvent;
+import project.service.kafka.event.ProjectAddIconEvent;
+import project.service.kafka.event.ProjectAddImgEvent;
 import project.service.kafka.event.ProjectCreateEvent;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
@@ -35,6 +37,8 @@ public class KafkaConsumerService {
     private static final String TOPIC5 = "project-update-topic";
     private static final String TOPIC6 = "task-update-topic";
     private static final String TOPIC7 = "is-exist-project-by-member-add-to-project-topic";
+    private static final String TOPIC8 = "project-add-img-topic";
+    private static final String TOPIC9 = "project-add-icon-topic";
     
     @KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaProjectCreateEventListenerContainerFactory")
     public void listenProjectCreateEvent(ProjectCreateEvent event) {
@@ -134,5 +138,15 @@ public class KafkaConsumerService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
+    
+    @KafkaListener(topics = TOPIC8, groupId = "project_create_group", containerFactory = "kafkaProjectAddImgEventListenerContainerFactory")
+    public void listenProjectAddImgEvent(ProjectAddImgEvent event) {
+    	System.out.println("img: " + event);
+    }
+    
+    @KafkaListener(topics = TOPIC9, groupId = "project_create_group", containerFactory = "kafkaProjectAddIconEventListenerContainerFactory")
+    public void listenProjectAddIconEvent(ProjectAddIconEvent event) {
+    	System.out.println("icon: " + event);
     }
 }

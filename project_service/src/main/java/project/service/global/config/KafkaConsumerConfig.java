@@ -43,38 +43,57 @@ public class KafkaConsumerConfig {
 		factory.setConcurrency(3);
 		return factory;
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaProjectCreateEventListenerContainerFactory() {
 		return createFactory(ProjectCreateEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaTaskCreateEventListenerContainerFactory() {
 		return createFactory(TaskCreateEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaAddUserToTaskEventListenerContainerFactory() {
 		return createFactory(UserAddToTaskEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaDeleteTaskEventListenerContainerFactory() {
 		return createFactory(TaskDeleteEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaProjectDeleteEventListenerContainerFactory() {
 		return createFactory(ProjectDeleteEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaProjectUpdateEventListenerContainerFactory() {
 		return createFactory(ProjectUpdateEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaTaskUpdateEventListenerContainerFactory() {
 		return createFactory(TaskUpdateEvent.class.getName());
 	}
+	
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaIsExistProjectByMemberAddToProjectEventListenerContainerFactory() {
 		return createFactory(IsExistProjectByMemberAddToProjectEvent.class.getName());
 	}
+	
+	@Bean
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaProjectAddImgEventListenerContainerFactory() {
+		return createFactory(ProjectAddImgEvent.class.getName());
+	}
+	
+	@Bean
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaProjectAddIconEventListenerContainerFactory() {
+		return createFactory(ProjectAddIconEvent.class.getName());
+	}
+	
 	@Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
