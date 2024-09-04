@@ -24,6 +24,9 @@ public class CreateProjectRequestDto {
     @NotBlank(message = "부제목은 필수 입력 값 입니다.")
     private String subTitle;
     
+    @Schema(description = "아이콘")
+    private String icon;
+    
     @Schema(description = "프로젝트 시작일")
     @NotNull(message = "시작일은 필수 입력 값 입니다.")
     private Date startDate;

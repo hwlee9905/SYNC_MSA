@@ -11,6 +11,7 @@ public class CreateProjectRequestDto {
     private String description;
     private String title;
     private String subTitle;
+    private String icon;
     private Date startDate;
     private Date endDate;
 }
