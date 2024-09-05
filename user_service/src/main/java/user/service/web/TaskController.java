@@ -73,7 +73,10 @@ public class TaskController {
             "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 수정 불가 <br>" +
             "DTOValidation : UpdateTaskRequestDto")
     @PutMapping("/user/api/task")
-    public SuccessResponse updateTask(@RequestBody @Valid UpdateTaskRequestDto updateTaskRequestDto) {
+    public SuccessResponse updateTask(
+            @RequestPart("data") UpdateTaskRequestDto updateTaskRequestDto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> descriptionImages,
+            @RequestPart(value = "titleimage", required = false) MultipartFile titleImage) throws IOException {
         //업무 업데이트 이벤트 생성 로직 추가
         return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto);
     }
