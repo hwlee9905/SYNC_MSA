@@ -78,7 +78,9 @@ public class TaskService {
                 .project(project).build();
         }
         taskRepository.save(task);
-        fileStorageService.saveFiles(task, files);
+        if (files != null) {
+            fileStorageService.saveFiles(task, files);
+        }
     }
     @Transactional(rollbackFor = { Exception.class })
     public ResponseEntity<Resource> getImage(String filename) {

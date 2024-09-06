@@ -180,7 +180,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(value = MultipartException.class)
     public ResponseEntity<ErrorResponse> handleFileUploadingError(Exception exception) {
-        log.warn("Failed to upload attachment", exception);
+        log.warn(exception.getMessage(), exception);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()));
     }

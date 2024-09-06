@@ -1,6 +1,7 @@
 package user.service.kafka.task;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,15 +44,17 @@ public class KafkaTaskProducerService {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         memberService.findMemberByUserIdAndProjectId(user.getId(), createTaskRequestDto.getProjectId());
 
-        List<TaskCreateEvent.FileData> fileDataList = descriptionFiles.stream()
-            .map(file -> {
-                try {
-                    return new TaskCreateEvent.FileData(file.getOriginalFilename(), file.getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to convert file", e);
-                }
-            })
-            .collect(Collectors.toList());
+        List<TaskCreateEvent.FileData> fileDataList = descriptionFiles != null ?
+            descriptionFiles.stream()
+                .map(file -> {
+                    try {
+                        return new TaskCreateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to convert file", e);
+                    }
+                })
+                .collect(Collectors.toList()) :
+            Collections.emptyList();
 
         TaskCreateEvent event = new TaskCreateEvent(createTaskRequestDto, fileDataList);
         kafkaTemplate.send(TOPIC, event);
