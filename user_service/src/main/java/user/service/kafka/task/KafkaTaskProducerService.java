@@ -91,14 +91,25 @@ public class KafkaTaskProducerService {
         kafkaTemplate.send(record);
         return SuccessResponse.builder().message("업무 삭제 이벤트 생성").data(deleteTaskRequestDto).build();
     }
-    
-    public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto) {
+
+    public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto, List<MultipartFile> descriptionFiles) throws IOException {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         memberService.findMemberByUserIdAndProjectId(user.getId(), updateTaskRequestDto.getProjectId());
-        TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto);
-        ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC3, event);
-        record.headers().remove("spring.json.header.types");
-        kafkaTemplate.send(record);
+
+        List<TaskUpdateEvent.FileData> fileDataList = descriptionFiles != null ?
+                descriptionFiles.stream()
+                        .map(file -> {
+                            try {
+                                return new TaskUpdateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to convert file", e);
+                            }
+                        })
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
+
+        TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto, fileDataList);
+        kafkaTemplate.send(TOPIC3, event);
         return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
     }
 }

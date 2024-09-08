@@ -15,5 +15,5 @@ public class CreateTaskRequestDto {
     private String title;
     private Optional<Long> parentTaskId;
     private Long projectId;
-
+    private int status;
 }
