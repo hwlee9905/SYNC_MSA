@@ -1,7 +1,6 @@
 package user.service.kafka.project;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
 import user.service.global.exception.ImageConversionFailedException;
-import user.service.kafka.project.event.ProjectAddIconEvent;
-import user.service.kafka.project.event.ProjectAddImgEvent;
+import user.service.global.exception.InvalidFileExtensionException;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
@@ -31,8 +29,6 @@ public class KafkaProjectProducerService {
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "project-delete-topic";
     private static final String TOPIC2 = "project-update-topic";
-    private static final String TOPIC3 = "project-add-img-topic";
-    private static final String TOPIC4 = "project-add-icon-topic";
     
     public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, MultipartFile img, String userId) {
     	ProjectCreateEvent event = null;
@@ -43,13 +39,26 @@ public class KafkaProjectProducerService {
 			} catch (IOException e) {
 				throw new ImageConversionFailedException(e.getMessage());
 			}
-    		event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, userId);
+    		event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, getExtension(img),userId);
     	} else {
-    		event = new ProjectCreateEvent(projectCreateRequestDto, null, userId);
+    		event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
     	}
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
+    }
+    
+    private String getExtension(MultipartFile img) {
+    	String filename = img.getOriginalFilename();
+    	
+		int dotIndex = filename.lastIndexOf('.');
+		        
+		if (dotIndex > 0 && dotIndex < filename.length() - 1) {
+			return filename.substring(dotIndex + 1).toLowerCase();
+		} else {
+			throw new InvalidFileExtensionException();
+		}
+		    	
     }
     
     public void sendDeleteProjectEvent(DeleteProjectRequestDto projectDeleteRequestDto, String userId) {

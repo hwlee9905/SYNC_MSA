@@ -31,31 +31,23 @@ public class ProjectService {
 	private final ApplicationConfig applicationConfig;
 	
 	@Transactional(rollbackFor = { Exception.class })
-	public Project createProject(CreateProjectRequestDto projectCreateRequestDto, byte[] img) {
-		String thumbnailId = createThumbnailId();
-		uploadThumbnail(img, thumbnailId);
+	public Project createProject(CreateProjectRequestDto projectCreateRequestDto, byte[] img, String extension) {
+		String thumbnail = UUID.randomUUID().toString();
+		uploadThumbnail(img, thumbnail, extension);
 		Project project = Project.builder()
 				.description(projectCreateRequestDto.getDescription())
 				.subTitle(projectCreateRequestDto.getSubTitle())
-				.thumbnail(thumbnailId)
+				.thumbnail(thumbnail)
 				.startDate(projectCreateRequestDto.getStartDate())
 				.endDate(projectCreateRequestDto.getEndDate())
 				.title(projectCreateRequestDto.getTitle()).build();
 		return projectRepository.save(project);
 	}
 	
-	private String createThumbnailId() {
-		UUID uuid = UUID.randomUUID();
-		if (projectRepository.existsByThumbnail(uuid.toString())) {
-			createThumbnailId();
-		} 
-		return uuid.toString();
-	}
-	
-	private void uploadThumbnail(byte[] img, String thumbnailId) {
+	private void uploadThumbnail(byte[] img, String thumbnailId, String extension) {
 		if (img != null) {
 			// img
-			File outputFile = new File(applicationConfig.getImgStoragePath(), thumbnailId + ".png");
+			File outputFile = new File(applicationConfig.getImgStoragePath(), thumbnailId + "." + extension);
 			try (FileOutputStream fos = new FileOutputStream(outputFile)) {
 	            fos.write(img);
 	            fos.flush();
@@ -75,6 +67,7 @@ public class ProjectService {
 			return SuccessResponse.builder().message("해당 프로젝트는 존재하지 않습니다.").result(false).data(projectId).build();
 		}
 	}
+	
 	@Transactional(rollbackFor = { Exception.class })
     public void deleteProject(ProjectDeleteEvent event) {
 		Optional<Project> project = projectRepository.findById(event.getProjectId());
