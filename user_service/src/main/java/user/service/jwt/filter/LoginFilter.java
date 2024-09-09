@@ -63,11 +63,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
         String token = jwtUtil.createJwt(username, role, 60*30*1000L, infoSet, name);
-        response.setHeader("Authorization", "Bearer " + token);
+        // Create a cookie with the JWT token
+        ResponseCookie cookie = createCookie("JWT_TOKEN", token);
+        response.addHeader("Set-Cookie", cookie.toString());
 
         // JSON 객체 생성
         UserResponse userResponse = new UserResponse(username, name);
-
         // ObjectMapper를 사용하여 JSON으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(SuccessResponse.builder().message("success").build());
@@ -85,12 +86,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
     private ResponseCookie createCookie(String key, String value) {
         ResponseCookie cookie = ResponseCookie.from(key, value)
-                .path("/")
-                .sameSite("None")
-                .httpOnly(false)
-                .secure(false)
-                .maxAge(30*60)
-                .build();
+            .path("/")
+            .sameSite("Lax")
+            .httpOnly(false)
+            .secure(false)
+            .maxAge(30*60)
+            .build();
         return cookie;
     }
     @Override
@@ -106,7 +107,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             this.name = name;
         }
 
-        // Getters (필요한 경우 Setters도 추가할 수 있습니다)
         public String getUsername() {
             return userId;
         }
