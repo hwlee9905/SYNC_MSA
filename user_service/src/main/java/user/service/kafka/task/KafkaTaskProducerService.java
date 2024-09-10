@@ -92,7 +92,7 @@ public class KafkaTaskProducerService {
         return SuccessResponse.builder().message("업무 삭제 이벤트 생성").data(deleteTaskRequestDto).build();
     }
 
-    public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto, List<MultipartFile> descriptionFiles) throws IOException {
+    public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto, List<MultipartFile> descriptionFiles, List<MultipartFile> deletedImages) throws IOException {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         memberService.findMemberByUserIdAndProjectId(user.getId(), updateTaskRequestDto.getProjectId());
 
@@ -108,7 +108,19 @@ public class KafkaTaskProducerService {
                         .collect(Collectors.toList()) :
                 Collections.emptyList();
 
-        TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto, fileDataList);
+        List<TaskUpdateEvent.FileData> deletedFileDataList = deletedImages != null ?
+                deletedImages.stream()
+                        .map(file -> {
+                            try {
+                                return new TaskUpdateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to convert file", e);
+                            }
+                        })
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
+
+        TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto, fileDataList, deletedFileDataList);
         kafkaTemplate.send(TOPIC3, event);
         return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
     }

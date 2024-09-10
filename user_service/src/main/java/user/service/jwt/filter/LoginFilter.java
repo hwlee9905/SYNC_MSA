@@ -81,7 +81,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-
         throw new AuthenticationFailureException("패스워드가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
     }
     private ResponseCookie createCookie(String key, String value) {

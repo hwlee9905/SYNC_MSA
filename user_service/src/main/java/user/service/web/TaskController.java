@@ -72,9 +72,10 @@ public class TaskController {
     public SuccessResponse updateTask(
             @RequestPart("data") UpdateTaskRequestDto updateTaskRequestDto,
             @RequestPart(value = "images", required = false) List<MultipartFile> descriptionImages,
+            @RequestPart(value = "deletedImages", required = false) List<MultipartFile> deletedImages,
             @RequestPart(value = "titleimage", required = false) MultipartFile titleImage) throws IOException {
         //업무 업데이트 이벤트 생성 로직 추가
-        return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto, descriptionImages);
+        return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto, descriptionImages, deletedImages);
     }
     @Operation(summary = "파일을 가져오기 위한 API", description = "HOST = 150.136.153.235:31585 <br>"
         + "Validation : 로그인 필요하지 않음, 잘못된 filename 입력시 오류 발생")
