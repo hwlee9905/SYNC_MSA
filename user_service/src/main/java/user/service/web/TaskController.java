@@ -19,7 +19,7 @@ import java.util.List;
 public class TaskController {
     private final FileValidationService fileValidationService;
     private final KafkaTaskProducerService kafkaTaskProducerService;
-    @Operation(summary = "업무를 생성하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
+    @Operation(summary = "업무를 생성하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
             "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 생성 불가, filename의 uuid 검사 <br>" +
             "DTOValidationDetails : CreateTaskRequestDto <br>" +
             "depth는 parentTask의 depth에 따라 결정 되며, 최상위 업무는 0, 그 하위 업무는 1, 그 하위 업무는 2로 결정됩니다. parentTask의 depth가 2일 경우, 생성되지 않습니다. <br>"
@@ -48,26 +48,26 @@ public class TaskController {
 ////        return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto,descriptionImages);
 //    }
     //해당 업무의 자식 업무만 조회합니다.
-    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:31585 <br>" +
+    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksResponseDto <br>")
     @GetMapping("node2api/task/v1")
     public void getOnlyChildrenTasks(@RequestParam Long taskId) {
     }
-    @Operation(summary = "해당 프로젝트의 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:31585 <br>" +
+    @Operation(summary = "해당 프로젝트의 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksByProjectIdResponseDto")
     @GetMapping("node2/api/task/v2")
     public void getTasksByProjectId(@RequestParam Long projectId)  {
     }
     //해당 업무를 삭제합니다.
-//    @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
+//    @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
 //            "ValidationDetails : DeleteTaskRequestDto")
 //    @DeleteMapping("/user/api/task")
 //    public SuccessResponse deleteTask(@RequestBody @Valid DeleteTaskRequestDto deleteTaskRequestDto) {
 //        return kafkaTaskProducerService.sendDeleteTaskEvent(deleteTaskRequestDto);
 //    }
-    @Operation(summary = "업무를 수정하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
+    @Operation(summary = "업무를 수정하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 수정 불가 <br>" +
         "DTOValidation : UpdateTaskRequestDto")
     @PutMapping("/user/api/task")
@@ -79,13 +79,13 @@ public class TaskController {
         //업무 업데이트 이벤트 생성 로직 추가
         return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto, descriptionImages, deletedImages);
     }
-    @Operation(summary = "파일을 가져오기 위한 API", description = "HOST = 150.136.153.235:31585 <br>"
+    @Operation(summary = "파일을 가져오기 위한 API", description = "HOST = 150.136.153.235:30443 <br>"
         + "Validation : 로그인 필요하지 않음, 잘못된 filename 입력시 오류 발생")
     @GetMapping("node2/api/task/image")
     public void getImage(@RequestParam String filename) {
 
     }
-    @Operation(summary = "이미지를 포함한 단일 task를 가져오는 API", description = "HOST = 150.136.153.235:30080"
+    @Operation(summary = "이미지를 포함한 단일 task를 가져오는 API", description = "HOST = 150.136.153.235:30443"
         + "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생")
     @GetMapping("node2/api/task/v3")
     public void getTask(@RequestParam Long taskId) {
