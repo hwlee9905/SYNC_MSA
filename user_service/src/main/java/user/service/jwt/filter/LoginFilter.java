@@ -1,8 +1,6 @@
 package user.service.jwt.filter;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +18,9 @@ import user.service.global.advice.SuccessResponse;
 import user.service.global.exception.AuthenticationFailureException;
 import user.service.jwt.dto.CustomUserDetails;
 import user.service.jwt.util.JWTUtil;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-
 @RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -50,7 +46,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
     //로그인 성공시 실행하는 메소드 (이곳에서 JWT를 발급합니다.)
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         //UserDetailsS
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -80,7 +76,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
     //로그인 실패시 실행하는 메소드
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         throw new AuthenticationFailureException("패스워드가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
     }
     private ResponseCookie createCookie(String key, String value) {
@@ -88,7 +84,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             .path("/")
             .sameSite("Lax")
             .httpOnly(false)
-            .secure(false)
+            .secure(true)
             .maxAge(30*60)
             .build();
         return cookie;

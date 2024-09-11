@@ -1,6 +1,6 @@
 package user.service.web;
+
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import user.service.FileValidationService;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.task.KafkaTaskProducerService;
-import user.service.web.dto.task.request.*;
+import user.service.web.dto.task.request.CreateTaskRequestDto;
+import user.service.web.dto.task.request.UpdateTaskRequestDto;
+
 import java.io.IOException;
 import java.util.List;
 @RestController
@@ -49,13 +51,13 @@ public class TaskController {
     @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:31585 <br>" +
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksResponseDto <br>")
-    @GetMapping("api/task/v1")
+    @GetMapping("node2api/task/v1")
     public void getOnlyChildrenTasks(@RequestParam Long taskId) {
     }
     @Operation(summary = "해당 프로젝트의 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:31585 <br>" +
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksByProjectIdResponseDto")
-    @GetMapping("/api/task/v2")
+    @GetMapping("node2/api/task/v2")
     public void getTasksByProjectId(@RequestParam Long projectId)  {
     }
     //해당 업무를 삭제합니다.
@@ -79,13 +81,13 @@ public class TaskController {
     }
     @Operation(summary = "파일을 가져오기 위한 API", description = "HOST = 150.136.153.235:31585 <br>"
         + "Validation : 로그인 필요하지 않음, 잘못된 filename 입력시 오류 발생")
-    @GetMapping("/api/task/image")
+    @GetMapping("node2/api/task/image")
     public void getImage(@RequestParam String filename) {
 
     }
     @Operation(summary = "이미지를 포함한 단일 task를 가져오는 API", description = "HOST = 150.136.153.235:30080"
         + "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생")
-    @GetMapping("/api/task/v3")
+    @GetMapping("node2/api/task/v3")
     public void getTask(@RequestParam Long taskId) {
 
     }

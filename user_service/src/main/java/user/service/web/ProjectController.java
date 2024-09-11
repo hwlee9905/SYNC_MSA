@@ -34,7 +34,7 @@ public class ProjectController {
     
     @Operation(summary = "프로젝트를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
         "ValidationDetails : DeleteProjectRequestDto")
-    @DeleteMapping("user/api/project")
+    @DeleteMapping("/user/api/project")
     public ResponseEntity<SuccessResponse> deleteProject(@RequestBody @Valid DeleteProjectRequestDto projectDeleteRequestDto) {
         String userId = userService.getCurrentUserId();
         kafkaProducerService.sendDeleteProjectEvent(projectDeleteRequestDto, userId);
@@ -51,7 +51,7 @@ public class ProjectController {
     }
     
     @Operation(summary = "프로젝트들의 정보를 가져오기 위한 API", description = "HOST = 150.136.153.235:31585")
-    @GetMapping("/project/api/v1")
+    @GetMapping("/node2/project/api/v1")
     public void getProjects(@Parameter(description = "존재하지 않는 프로젝트 아이디 입력시 오류 발생") @RequestParam List<Long> projectIds) {
     }
     

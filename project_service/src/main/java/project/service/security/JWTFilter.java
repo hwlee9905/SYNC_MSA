@@ -2,6 +2,7 @@ package project.service.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,30 +28,36 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
         try {
-            // Authorization 헤더에서 토큰을 읽음
-            String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            // cookie에서 jwt 토큰 추출
+            Cookie[] cookies = request.getCookies();
+            String jwtToken = null;
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("JWT_TOKEN".equals(cookie.getName())) {
+                        jwtToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+
+            if (jwtToken == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // Bearer 부분을 제거하고 순수한 토큰만 획득
-            String token = authorizationHeader.substring(7);
-            //토큰 소멸 시간 검증
-            if (jwtUtil.isExpired(token)) {
-
+            // 토큰 검증
+            if (jwtUtil.isExpired(jwtToken)) {
                 log.info("token expired");
                 filterChain.doFilter(request, response);
-
-                //조건이 해당되면 메소드 종료 (필수)
                 return;
             }
 
-            //토큰에서 username과 role 획득
-            String userId = jwtUtil.getUsername(token);
-            String role = jwtUtil.getRole(token);
-            String infoSet = jwtUtil.getInfoSet(token);
-            String name = jwtUtil.getName(token);
+            // jwt에서 유저정보 추출
+            String userId = jwtUtil.getUsername(jwtToken);
+            String role = jwtUtil.getRole(jwtToken);
+            String infoSet = jwtUtil.getInfoSet(jwtToken);
+            String name = jwtUtil.getName(jwtToken);
+
             //userEntity를 생성하여 값 set
             AuthTokenDto user = AuthTokenDto.builder()
                     .infoSet(infoSet)
@@ -65,7 +72,6 @@ public class JWTFilter extends OncePerRequestFilter {
                     .username(userId)
                     .role(role)
                     .build();
-
 
 
             if(Objects.equals(user.getInfoSet(), InfoSet.DEFAULT.toString())){
