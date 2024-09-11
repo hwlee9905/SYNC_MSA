@@ -45,8 +45,8 @@ public class ProjectController {
     @Operation(summary = "프로젝트를 수정하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
             "ValidationDetails : UpdateProjectRequestDto")
     @PutMapping("/user/api/project")
-    public ResponseEntity<SuccessResponse> updateProject(@RequestBody @Valid UpdateProjectRequestDto updateProjectRequestDto) {
-        kafkaProducerService.updateProject(updateProjectRequestDto);
+    public ResponseEntity<SuccessResponse> updateProject(@RequestBody @Valid UpdateProjectRequestDto updateProjectRequestDto, @RequestPart(value = "img", required = false) MultipartFile img) {
+        kafkaProducerService.updateProject(updateProjectRequestDto, img);
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 업데이트 이벤트 생성").build());
     }
     

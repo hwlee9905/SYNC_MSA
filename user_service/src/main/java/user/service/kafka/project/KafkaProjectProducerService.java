@@ -39,7 +39,7 @@ public class KafkaProjectProducerService {
 			} catch (IOException e) {
 				throw new ImageConversionFailedException(e.getMessage());
 			}
-    		event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, getExtension(img),userId);
+    		event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, getExtension(img), userId);
     	} else {
     		event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
     	}
@@ -78,8 +78,20 @@ public class KafkaProjectProducerService {
         kafkaTemplate.send(record);
     }
     
-    public void updateProject(UpdateProjectRequestDto updateProjectRequestDto) {
-        ProjectUpdateEvent event = new ProjectUpdateEvent(updateProjectRequestDto);
+    public void updateProject(UpdateProjectRequestDto updateProjectRequestDto, MultipartFile img) {
+    	ProjectUpdateEvent event = null;
+    	if (updateProjectRequestDto.getIcon() == null) {
+    		byte[] imgByte = null;
+    		try {
+    			imgByte = img.getBytes();
+			} catch (IOException e) {
+				throw new ImageConversionFailedException(e.getMessage());
+			}
+    		event = new ProjectUpdateEvent(updateProjectRequestDto, imgByte, getExtension(img));
+    	} else {
+    		event = new ProjectUpdateEvent(updateProjectRequestDto, null, null );
+    	}
+//        ProjectUpdateEvent event = new ProjectUpdateEvent(updateProjectRequestDto);
         //프로젝트 관리자인지 확인
         memberService.isManager(
             //프로젝트 멤버인지 확인
