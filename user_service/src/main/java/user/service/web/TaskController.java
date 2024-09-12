@@ -13,6 +13,7 @@ import user.service.web.dto.task.request.UpdateTaskRequestDto;
 
 import java.io.IOException;
 import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -41,12 +42,14 @@ public class TaskController {
         //titleimage 추가 할 것
         return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto, descriptionImages);
     }
+    
 //    public void createTask(HttpServletRequest request) throws ServletException, IOException {
 //        log.info("request : {}", request);
 //        Collection<Part> parts = request.getParts();
 //        log.info("parts={}", parts);
 ////        return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto,descriptionImages);
 //    }
+    
     //해당 업무의 자식 업무만 조회합니다.
     @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
@@ -60,6 +63,7 @@ public class TaskController {
     @GetMapping("node2/api/task/v2")
     public void getTasksByProjectId(@RequestParam Long projectId)  {
     }
+    
     //해당 업무를 삭제합니다.
 //    @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
 //            "ValidationDetails : DeleteTaskRequestDto")

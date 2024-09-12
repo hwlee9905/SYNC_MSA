@@ -16,15 +16,20 @@ import java.util.Optional;
 public class CreateTaskRequestDto {
     @Schema(description = "업무 내용")
     private String description;
+    
     @Schema(description = "업무 종료일")
     private Date endDate;
+    
     @Schema(description = "업무 시작일")
     private Date startDate;
+    
     @NotBlank(message = "이름은 필수 입력 값 입니다.")
     @Schema(description = "업무 이름")
     private String title;
+    
     @Schema(description = "상위 업무 아이디, null == 프로젝트 최상위 업무")
     private Optional<Long> parentTaskId;
+    
     @Schema(description = "생성할 업무의 프로젝트 아이디")
     @NotNull(message = "프로젝트 아이디는 필수 입력 값 입니다.")
     private Long projectId;

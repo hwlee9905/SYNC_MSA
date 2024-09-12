@@ -46,7 +46,7 @@ public class KafkaConsumerService {
             CreateProjectRequestDto projectCreateRequestDto = event.getProjectCreateRequestDto();
             String userId = event.getUserId();
             // 이벤트 처리
-            Project project = projectService.createProject(projectCreateRequestDto);
+            Project project = projectService.createProject(projectCreateRequestDto, event.getImg(), event.getExtension());
             log.warn("project.getId() : " + project.getId());
             kafkaProducerService.sendAddMemberToProjectEvent(userId ,project.getId());
             // 초대 링크 생성

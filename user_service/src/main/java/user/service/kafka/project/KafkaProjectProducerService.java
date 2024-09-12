@@ -10,12 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
-import user.service.kafka.project.event.ProjectAddIconEvent;
-import user.service.kafka.project.event.ProjectAddImgEvent;
+import user.service.global.exception.ImageConversionFailedException;
+import user.service.global.exception.InvalidFileExtensionException;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
-import user.service.web.dto.project.request.AddProjectIconDto;
 import user.service.web.dto.project.request.CreateProjectRequestDto;
 import user.service.web.dto.project.request.DeleteProjectRequestDto;
 import user.service.web.dto.project.request.UpdateProjectRequestDto;
@@ -30,14 +29,36 @@ public class KafkaProjectProducerService {
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "project-delete-topic";
     private static final String TOPIC2 = "project-update-topic";
-    private static final String TOPIC3 = "project-add-img-topic";
-    private static final String TOPIC4 = "project-add-icon-topic";
     
-    public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, String userId) {
-        ProjectCreateEvent event = new ProjectCreateEvent(projectCreateRequestDto, userId);
+    public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, MultipartFile img, String userId) {
+    	ProjectCreateEvent event = null;
+    	if (projectCreateRequestDto.getIcon() == null) {
+    		byte[] imgByte = null;
+    		try {
+    			imgByte = img.getBytes();
+			} catch (IOException e) {
+				throw new ImageConversionFailedException(e.getMessage());
+			}
+    		event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, getExtension(img), userId);
+    	} else {
+    		event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
+    	}
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
+    }
+    
+    private String getExtension(MultipartFile img) {
+    	String filename = img.getOriginalFilename();
+    	
+		int dotIndex = filename.lastIndexOf('.');
+		        
+		if (dotIndex > 0 && dotIndex < filename.length() - 1) {
+			return filename.substring(dotIndex + 1).toLowerCase();
+		} else {
+			throw new InvalidFileExtensionException();
+		}
+		    	
     }
     
     public void sendDeleteProjectEvent(DeleteProjectRequestDto projectDeleteRequestDto, String userId) {
@@ -57,8 +78,20 @@ public class KafkaProjectProducerService {
         kafkaTemplate.send(record);
     }
     
-    public void updateProject(UpdateProjectRequestDto updateProjectRequestDto) {
-        ProjectUpdateEvent event = new ProjectUpdateEvent(updateProjectRequestDto);
+    public void updateProject(UpdateProjectRequestDto updateProjectRequestDto, MultipartFile img) {
+    	ProjectUpdateEvent event = null;
+    	if (updateProjectRequestDto.getIcon() == null) {
+    		byte[] imgByte = null;
+    		try {
+    			imgByte = img.getBytes();
+			} catch (IOException e) {
+				throw new ImageConversionFailedException(e.getMessage());
+			}
+    		event = new ProjectUpdateEvent(updateProjectRequestDto, imgByte, getExtension(img));
+    	} else {
+    		event = new ProjectUpdateEvent(updateProjectRequestDto, null, null );
+    	}
+//        ProjectUpdateEvent event = new ProjectUpdateEvent(updateProjectRequestDto);
         //프로젝트 관리자인지 확인
         memberService.isManager(
             //프로젝트 멤버인지 확인
@@ -68,26 +101,6 @@ public class KafkaProjectProducerService {
             .getId()
         );
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC2, event);
-        record.headers().remove("spring.json.header.types");
-        kafkaTemplate.send(record);
-    }
-    
-    public void sendAddProjectImgEvent(MultipartFile thumbnail, String userId) {
-    	ProjectAddImgEvent event = null;
-		try {
-			event = new ProjectAddImgEvent(thumbnail.getBytes(), userId);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC3, event);
-        record.headers().remove("spring.json.header.types");
-        kafkaTemplate.send(record);
-    }
-    
-    public void sendAddProjectIconEvent(AddProjectIconDto body, String userId) {
-    	ProjectAddIconEvent event = new ProjectAddIconEvent(body, userId);
-    	ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC4, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
     }

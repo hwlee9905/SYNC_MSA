@@ -7,5 +7,7 @@ import user.service.web.dto.project.request.CreateProjectRequestDto;
 @Getter
 public class ProjectCreateEvent{
     private CreateProjectRequestDto projectCreateRequestDto;
+    private byte[] img;
+    private String extension;
     private String userId;
 }

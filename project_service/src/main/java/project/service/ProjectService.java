@@ -1,20 +1,24 @@
 package project.service;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.response.GetProjectsResponseDto;
 import project.service.entity.Project;
 import project.service.global.SuccessResponse;
+import project.service.global.config.ApplicationConfig;
+import project.service.global.exception.SavingImageFailedException;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
 import project.service.repository.ProjectRepository;
@@ -24,15 +28,33 @@ import project.service.repository.ProjectRepository;
 @Slf4j
 public class ProjectService {
 	private final ProjectRepository projectRepository;
+	private final ApplicationConfig applicationConfig;
+	
 	@Transactional(rollbackFor = { Exception.class })
-	public Project createProject(CreateProjectRequestDto projectCreateRequestDto) {
+	public Project createProject(CreateProjectRequestDto projectCreateRequestDto, byte[] img, String extension) {
+		String thumbnail = UUID.randomUUID().toString();
+		uploadThumbnail(img, thumbnail, extension);
 		Project project = Project.builder()
 				.description(projectCreateRequestDto.getDescription())
 				.subTitle(projectCreateRequestDto.getSubTitle())
+				.thumbnail(thumbnail)
 				.startDate(projectCreateRequestDto.getStartDate())
 				.endDate(projectCreateRequestDto.getEndDate())
 				.title(projectCreateRequestDto.getTitle()).build();
 		return projectRepository.save(project);
+	}
+	
+	private void uploadThumbnail(byte[] img, String thumbnailId, String extension) {
+		if (img != null) {
+			// img
+			File outputFile = new File(applicationConfig.getImgStoragePath(), thumbnailId + "." + extension);
+			try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+	            fos.write(img);
+	            fos.flush();
+	        } catch (Exception e) {
+	        	throw new SavingImageFailedException(e.getMessage());
+			}
+		} 
 	}
 	
 	@Transactional(rollbackFor = { Exception.class })
@@ -45,6 +67,7 @@ public class ProjectService {
 			return SuccessResponse.builder().message("해당 프로젝트는 존재하지 않습니다.").result(false).data(projectId).build();
 		}
 	}
+	
 	@Transactional(rollbackFor = { Exception.class })
     public void deleteProject(ProjectDeleteEvent event) {
 		Optional<Project> project = projectRepository.findById(event.getProjectId());
