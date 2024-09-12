@@ -32,6 +32,7 @@ public enum ErrorCode {
 	UNKNOWN_ERROR(400, "G001", "시스템에 오류가 발생 하였습니다. 관리자에게 문의 해주세요."),
 	IDENTICAL_VALUE(400, "G002", "동일한 값은 변경할 수 없습니다."),
 	IMAGE_CONVERSION_FAILED(400, "G003", "이미지 변환이 실패하였습니다."),
+	INVALID_FILE_EXTENSION(400, "G004", "잘못된 파일 확장자 입니다."),
 	
 	// Invite
 	LINK_SAVE_ERROR(400, "I001", "링크 생성에 실패 하였습니다."),
