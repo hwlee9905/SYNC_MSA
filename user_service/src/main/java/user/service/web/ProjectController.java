@@ -23,7 +23,7 @@ public class ProjectController {
     private final KafkaProjectProducerService kafkaProducerService;
     private final MemberService memberService;
     
-    @Operation(summary = "프로젝트를 생성하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
+    @Operation(summary = "프로젝트를 생성하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
             "ValidationDetails : CreateProjectRequestDto")
     @PostMapping("/user/api/project")
     public ResponseEntity<SuccessResponse> createProject(@RequestPart("data") @Valid CreateProjectRequestDto projectCreateRequestDto, @RequestPart(value = "img", required = false) MultipartFile img) {
@@ -32,9 +32,9 @@ public class ProjectController {
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 생성 이벤트 생성").build());
     }
     
-    @Operation(summary = "프로젝트를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30080 <br>" +
+    @Operation(summary = "프로젝트를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "ValidationDetails : DeleteProjectRequestDto")
-    @DeleteMapping("user/api/project")
+    @DeleteMapping("/user/api/project")
     public ResponseEntity<SuccessResponse> deleteProject(@RequestBody @Valid DeleteProjectRequestDto projectDeleteRequestDto) {
         String userId = userService.getCurrentUserId();
         kafkaProducerService.sendDeleteProjectEvent(projectDeleteRequestDto, userId);
@@ -50,12 +50,12 @@ public class ProjectController {
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 업데이트 이벤트 생성").build());
     }
     
-    @Operation(summary = "프로젝트들의 정보를 가져오기 위한 API", description = "HOST = 150.136.153.235:31585")
-    @GetMapping("/project/api/v1")
+    @Operation(summary = "프로젝트들의 정보를 가져오기 위한 API", description = "HOST = 150.136.153.235:30443")
+    @GetMapping("/node2/project/api/v1")
     public void getProjects(@Parameter(description = "존재하지 않는 프로젝트 아이디 입력시 오류 발생") @RequestParam List<Long> projectIds) {
     }
     
-    @Operation(summary = "유저가 속해있는 프로젝트들의 ID를 가져오기 위한 API", description = "HOST = 150.136.153.235:30080")
+    @Operation(summary = "유저가 속해있는 프로젝트들의 ID를 가져오기 위한 API", description = "HOST = 150.136.153.235:30443")
     @GetMapping("/project/api/v2")
     public ResponseEntity<SuccessResponse> getProjectsByUserLoginId(@Parameter(description = "존재하지 않는 로그인 아이디 입력시 오류 발생") @RequestParam String userId) {
         Long userEntityId = userService.getUserEntityId(userId);

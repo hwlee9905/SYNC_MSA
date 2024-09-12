@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.service.dto.request.CreateTaskRequestDto;
+import project.service.global.FileData;
 
 import java.util.List;
 
@@ -16,10 +17,10 @@ public class TaskCreateEvent {
     private List<FileData> files;
 
     @AllArgsConstructor
-    @NoArgsConstructor // 기본 생성자 추가
+    @NoArgsConstructor
     @Getter
-    public static class FileData {
+    public static class FileData implements project.service.global.FileData {
         private String fileName;
-        private byte[] content;
+        private byte[] fileContent;
     }
 }
