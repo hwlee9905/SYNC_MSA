@@ -15,9 +15,9 @@ public class TaskUpdateEvent {
     private List<FileData> descriptionFiles;
     private List<FileData> deletedImages;
 
-    @Data
+    @Getter
     @AllArgsConstructor
-    public static class FileData {
+    public static class FileData implements project.service.global.FileData{
         private String fileName;
         private byte[] fileContent;
     }

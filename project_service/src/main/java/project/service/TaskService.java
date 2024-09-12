@@ -206,6 +206,22 @@ public class TaskService {
         }
 
         taskRepository.save(taskEntity);
+
+        // 삭제할 파일 처리
+        try {
+            fileStorageService.deleteFiles(event.getDeletedImages());
+        } catch (IOException e) {
+            log.error("Failed to delete files", e);
+            throw new RuntimeException("Failed to delete files", e);
+        }
+
+        // 저장할 파일 처리
+        try {
+            fileStorageService.saveFiles(taskEntity, event.getDescriptionFiles());
+        } catch (IOException e) {
+            log.error("Failed to save files", e);
+            throw new RuntimeException("Failed to save files", e);
+        }
     }
     private void updateChildCompleteCountForProject(Project project, int oldStatus, int newStatus) {
         Optional.of(project)
