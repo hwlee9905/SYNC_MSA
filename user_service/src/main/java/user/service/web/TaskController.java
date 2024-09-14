@@ -1,6 +1,7 @@
 package user.service.web;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import user.service.FileValidationService;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.task.request.CreateTaskRequestDto;
+import user.service.web.dto.task.request.DeleteTaskRequestDto;
 import user.service.web.dto.task.request.UpdateTaskRequestDto;
 
 import java.io.IOException;
@@ -65,12 +67,12 @@ public class TaskController {
     }
     
     //해당 업무를 삭제합니다.
-//    @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
-//            "ValidationDetails : DeleteTaskRequestDto")
-//    @DeleteMapping("/user/api/task")
-//    public SuccessResponse deleteTask(@RequestBody @Valid DeleteTaskRequestDto deleteTaskRequestDto) {
-//        return kafkaTaskProducerService.sendDeleteTaskEvent(deleteTaskRequestDto);
-//    }
+    @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
+            "ValidationDetails : DeleteTaskRequestDto")
+    @DeleteMapping("/user/api/task")
+    public SuccessResponse deleteTask(@RequestBody @Valid DeleteTaskRequestDto deleteTaskRequestDto) {
+        return kafkaTaskProducerService.sendDeleteTaskEvent(deleteTaskRequestDto);
+    }
     @Operation(summary = "업무를 수정하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 수정 불가 <br>" +
         "DTOValidation : UpdateTaskRequestDto")

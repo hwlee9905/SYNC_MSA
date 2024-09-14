@@ -2,11 +2,7 @@ package user.service.web;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -16,6 +12,7 @@ import user.service.global.advice.SuccessResponse;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
+import user.service.web.dto.member.request.MemberRemoveRequestDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,5 +52,10 @@ public class MemberController {
     @GetMapping("user/api/member/v2")
     public SuccessResponse getUsersFromProject(@RequestParam List<Long> projectIds) {
         return memberService.getUsersFromProjects(projectIds);
+    }
+    @Operation(summary = "프로젝트에서 멤버를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443")
+    @DeleteMapping("user/api/member/project")
+    public SuccessResponse deleteMemberFromProject(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
+        return memberService.deleteMemberFromProject(memberRemoveRequestDto);
     }
 }
