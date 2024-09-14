@@ -34,7 +34,6 @@ public class KafkaTaskProducerService {
     private static final String TOPIC1 = "task-add-user-topic";
     private static final String TOPIC2 = "task-delete-topic";
     private static final String TOPIC3 = "task-update-topic";
-    
     /**
      * 업무 생성 이벤트 생성
      * @param createTaskRequestDto
@@ -80,7 +79,6 @@ public class KafkaTaskProducerService {
             return SuccessResponse.builder().message(responseMessage.getMessage()).data(responseMessage.getData()).build();
         }
     }
-    
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         // 프로젝트의 멤버인지 확인
@@ -95,31 +93,28 @@ public class KafkaTaskProducerService {
     public SuccessResponse sendUpdateTaskEvent(UpdateTaskRequestDto updateTaskRequestDto, List<MultipartFile> descriptionFiles, List<MultipartFile> deletedImages) throws IOException {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         memberService.findMemberByUserIdAndProjectId(user.getId(), updateTaskRequestDto.getProjectId());
-
         List<TaskUpdateEvent.FileData> fileDataList = descriptionFiles != null ?
-                descriptionFiles.stream()
-                        .map(file -> {
-                            try {
-                                return new TaskUpdateEvent.FileData(file.getOriginalFilename(), file.getBytes());
-                            } catch (IOException e) {
-                                throw new RuntimeException("Failed to convert file", e);
-                            }
-                        })
-                        .collect(Collectors.toList()) :
-                Collections.emptyList();
-
+            descriptionFiles.stream()
+                .map(file -> {
+                    try {
+                        return new TaskUpdateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to convert file", e);
+                    }
+                })
+                .collect(Collectors.toList()) :
+            Collections.emptyList();
         List<TaskUpdateEvent.FileData> deletedFileDataList = deletedImages != null ?
-                deletedImages.stream()
-                        .map(file -> {
-                            try {
-                                return new TaskUpdateEvent.FileData(file.getOriginalFilename(), file.getBytes());
-                            } catch (IOException e) {
-                                throw new RuntimeException("Failed to convert file", e);
-                            }
-                        })
-                        .collect(Collectors.toList()) :
-                Collections.emptyList();
-
+            deletedImages.stream()
+                .map(file -> {
+                    try {
+                        return new TaskUpdateEvent.FileData(file.getOriginalFilename(), file.getBytes());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to convert file", e);
+                    }
+                })
+                .collect(Collectors.toList()) :
+            Collections.emptyList();
         TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto, fileDataList, deletedFileDataList);
         kafkaTemplate.send(TOPIC3, event);
         return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
