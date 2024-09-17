@@ -154,12 +154,24 @@ public class TaskService {
         taskEntity.setEndDate(updateTaskRequestDto.getEndDate());
         taskEntity.setStatus(newStatus);
 
+        // Update project start date if task start date is earlier
+        Project project = taskEntity.getProject();
+        if (updateTaskRequestDto.getStartDate().before(project.getStartDate())) {
+            project.setStartDate(updateTaskRequestDto.getStartDate());
+        }
+
+        // Update project end date if task end date is later
+        if (updateTaskRequestDto.getEndDate().after(project.getEndDate())) {
+            project.setEndDate(updateTaskRequestDto.getEndDate());
+        }
+
+        projectRepository.save(project);
+
         if (taskEntity.getParentTask() != null) {
             Task parentTask = taskEntity.getParentTask();
             updateChildCompleteCount(parentTask, oldStatus, newStatus);
             taskRepository.save(parentTask);
         } else {
-            Project project = taskEntity.getProject();
             updateChildCompleteCountForProject(project, oldStatus, newStatus);
             projectRepository.save(project);
         }
