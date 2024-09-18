@@ -12,6 +12,6 @@ import org.springframework.stereotype.Service;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberRemoveRequestDto {
-    private Long projectId;
+    private Long taskId;
     private String userId;
 }

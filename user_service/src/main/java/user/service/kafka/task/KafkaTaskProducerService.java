@@ -20,6 +20,7 @@ import user.service.kafka.task.event.TaskDeleteEvent;
 import user.service.kafka.task.event.TaskUpdateEvent;
 import user.service.kafka.task.event.UserAddToTaskEvent;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
+import user.service.web.dto.member.request.MemberRemoveRequestDto;
 import user.service.web.dto.task.request.CreateTaskRequestDto;
 import user.service.web.dto.task.request.DeleteTaskRequestDto;
 import user.service.web.dto.task.request.UpdateTaskRequestDto;
@@ -118,5 +119,8 @@ public class KafkaTaskProducerService {
         TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto, fileDataList, deletedFileDataList);
         kafkaTemplate.send(TOPIC3, event);
         return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
+    }
+
+    public void sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
     }
 }
