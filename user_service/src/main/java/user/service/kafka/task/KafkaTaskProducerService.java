@@ -121,6 +121,4 @@ public class KafkaTaskProducerService {
         return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
     }
 
-    public void sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
-    }
 }

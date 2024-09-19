@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.global.advice.SuccessResponse;
+import user.service.kafka.member.KafkaMemberProducerService;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
@@ -19,6 +20,7 @@ import user.service.web.dto.member.request.MemberRemoveRequestDto;
 public class MemberController {
     private final MemberService memberService;
     private final KafkaTaskProducerService kafkaTaskProducerService;
+    private final KafkaMemberProducerService kafkaMemberProducerService;
     
     @Operation(summary = "프로젝트에 멤버를 추가하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
             "ValidationDetails : MemberMappingToProjectRequestDto")
@@ -38,9 +40,9 @@ public class MemberController {
     //담당자 삭제 api
     @Operation(summary = "업무의 담당자들을 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443")
     @DeleteMapping("node2/project/task/api/v1/users")
-    public void getUsersFromTask(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
+    public void deleteUsersFromTask(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
         //없는 task id인 경우 보상트랜잭션 필요
-        kafkaTaskProducerService.sendRemoveUserFromTaskEvent(memberRemoveRequestDto);
+        kafkaMemberProducerService.sendRemoveUserFromTaskEvent(memberRemoveRequestDto);
     }
     @Operation(summary = "업무의 담당자들을 가져오기 위한 API", description = "HOST = 150.136.153.235:30443")
     @GetMapping("node2/project/task/api/v1/users")
