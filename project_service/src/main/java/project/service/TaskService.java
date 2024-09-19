@@ -62,7 +62,7 @@ public class TaskService {
                 .depth(parentTask.get().getDepth() + 1)
                 .endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate())
-                .status(0)
+                .status(createTaskRequestDto.getStatus())
                 .project(project).build();
         } else {
             project.setChildCount(project.getChildCount() + 1);
@@ -74,11 +74,13 @@ public class TaskService {
                 .description(createTaskRequestDto.getDescription())
                 .endDate(createTaskRequestDto.getEndDate())
                 .startDate(createTaskRequestDto.getStartDate())
-                .status(0)
+                .status(createTaskRequestDto.getStatus())
                 .project(project).build();
         }
         taskRepository.save(task);
-        fileStorageService.saveFiles(task, files);
+        if (files != null) {
+            fileStorageService.saveFiles(task, files);
+        }
     }
     @Transactional(rollbackFor = { Exception.class })
     public ResponseEntity<Resource> getImage(String filename) {
@@ -204,6 +206,22 @@ public class TaskService {
         }
 
         taskRepository.save(taskEntity);
+
+        // 삭제할 파일 처리
+        try {
+            fileStorageService.deleteFiles(event.getDeletedImages());
+        } catch (IOException e) {
+            log.error("Failed to delete files", e);
+            throw new RuntimeException("Failed to delete files", e);
+        }
+
+        // 저장할 파일 처리
+        try {
+            fileStorageService.saveFiles(taskEntity, event.getDescriptionFiles());
+        } catch (IOException e) {
+            log.error("Failed to save files", e);
+            throw new RuntimeException("Failed to save files", e);
+        }
     }
     private void updateChildCompleteCountForProject(Project project, int oldStatus, int newStatus) {
         Optional.of(project)

@@ -17,6 +17,6 @@ public class TaskCreateEvent {
     @Getter
     public static class FileData {
         private String fileName;
-        private byte[] content;
+        private byte[] fileContent;
     }
 }

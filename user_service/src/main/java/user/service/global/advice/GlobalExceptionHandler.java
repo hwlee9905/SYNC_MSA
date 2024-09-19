@@ -22,6 +22,7 @@ import user.service.global.exception.BusinessException;
 import user.service.global.exception.EntityNotFoundException;
 import user.service.global.exception.IdenticalValuesCannotChangedException;
 import user.service.global.exception.ImageConversionFailedException;
+import user.service.global.exception.InvalidFileExtensionException;
 import user.service.global.exception.InvalidValueException;
 import user.service.global.exception.LinkCannotBeSavedException;
 import user.service.global.exception.MemberDuplicateInProjectException;
@@ -192,7 +193,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(value = MultipartException.class)
     public ResponseEntity<ErrorResponse> handleFileUploadingError(Exception exception) {
-        log.warn("Failed to upload attachment", exception);
+        log.warn(exception.getMessage(), exception);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()));
     }
@@ -203,6 +204,14 @@ public class GlobalExceptionHandler {
     	log.error(e.getMessage());
     	final ErrorResponse response = ErrorResponse.of(ErrorCode.IMAGE_CONVERSION_FAILED);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.IMAGE_CONVERSION_FAILED.getStatus()));
+    }
+    
+    // 잘못된 파일 확장자 Exception
+    @ExceptionHandler(InvalidFileExtensionException.class)
+    protected ResponseEntity<ErrorResponse> handleInvalidFileExtensionException (InvalidFileExtensionException e){
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_FILE_EXTENSION);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INVALID_FILE_EXTENSION.getStatus()));
     }
     
 }
