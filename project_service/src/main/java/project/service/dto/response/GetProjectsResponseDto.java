@@ -13,5 +13,7 @@ public class GetProjectsResponseDto {
     private String subTitle;
     private Date startDate;
     private Date endDate;
+    private String thumbnail;
+    private char thumbnailType;
     private Float progress;
 }
