@@ -13,6 +13,7 @@ public class CreateTaskRequestDto {
     private Date endDate;
     private Date startDate;
     private String title;
+    private String thumbnailIcon;
     private Optional<Long> parentTaskId;
     private Long projectId;
     private int status;

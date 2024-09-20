@@ -15,6 +15,8 @@ import user.service.MemberService;
 import user.service.UserService;
 import user.service.entity.User;
 import user.service.global.advice.SuccessResponse;
+import user.service.global.exception.ImageConversionFailedException;
+import user.service.global.util.ExtsnFilter;
 import user.service.kafka.task.event.TaskCreateEvent;
 import user.service.kafka.task.event.TaskDeleteEvent;
 import user.service.kafka.task.event.TaskUpdateEvent;
@@ -30,6 +32,8 @@ public class KafkaTaskProducerService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UserService userService;
     private final MemberService memberService;
+    private final ExtsnFilter extsnFilter;
+    
     private static final String TOPIC = "task-create-topic";
     private static final String TOPIC1 = "task-add-user-topic";
     private static final String TOPIC2 = "task-delete-topic";
@@ -40,10 +44,11 @@ public class KafkaTaskProducerService {
      * @param createTaskRequestDto
      * @return
      */
-    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> descriptionFiles) throws IOException {
+    public SuccessResponse sendCreateTaskEvent(CreateTaskRequestDto createTaskRequestDto, List<MultipartFile> descriptionFiles, MultipartFile thumbnailImage) throws IOException {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         memberService.findMemberByUserIdAndProjectId(user.getId(), createTaskRequestDto.getProjectId());
 
+        TaskCreateEvent event;
         List<TaskCreateEvent.FileData> fileDataList = descriptionFiles != null ?
             descriptionFiles.stream()
                 .map(file -> {
@@ -55,8 +60,19 @@ public class KafkaTaskProducerService {
                 })
                 .collect(Collectors.toList()) :
             Collections.emptyList();
-
-        TaskCreateEvent event = new TaskCreateEvent(createTaskRequestDto, fileDataList);
+        
+        if (createTaskRequestDto.getThumbnailIcon() == null) {
+    		byte[] imgByte = null;
+    		try {
+    			imgByte = thumbnailImage.getBytes();
+			} catch (IOException e) {
+				throw new ImageConversionFailedException(e.getMessage());
+			}
+    		event = new TaskCreateEvent(createTaskRequestDto, fileDataList, imgByte, extsnFilter.getExtension(thumbnailImage));
+    	} else {
+    		event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
+    	}
+        
         kafkaTemplate.send(TOPIC, event);
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(createTaskRequestDto).build();
     }

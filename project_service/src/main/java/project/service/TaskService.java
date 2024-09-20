@@ -8,21 +8,32 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
-import project.service.dto.response.*;
 import project.service.dto.request.UpdateTaskRequestDto;
-import project.service.entity.*;
+import project.service.dto.response.GetMemberFromTaskResponseDto;
+import project.service.dto.response.GetTaskResponseDto;
+import project.service.dto.response.GetTasksByProjectIdResponseDto;
+import project.service.dto.response.GetTasksResponseDto;
+import project.service.entity.Project;
+import project.service.entity.Task;
+import project.service.entity.TaskImage;
+import project.service.entity.UserTask;
+import project.service.entity.UserTaskId;
 import project.service.global.SuccessResponse;
+import project.service.global.util.FileManagement;
 import project.service.kafka.event.TaskCreateEvent;
 import project.service.kafka.event.TaskDeleteEvent;
 import project.service.kafka.event.TaskUpdateEvent;
@@ -41,47 +52,61 @@ public class TaskService {
     private final UserTaskRepository userTaskRepository;
     private final FileStorageService fileStorageService;
     private final TaskImageRepository taskImageRepository;
+    private final FileManagement fileManagement;
+    
     @Transactional(rollbackFor = { Exception.class })
-    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files) throws IOException {
+    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files, byte[] thumbnailByte, String extsn) throws IOException {
         Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
         Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
-        Task task;
+        
+        Task task = new Task();
+        task.setTitle(createTaskRequestDto.getTitle());
+        task.setChildCompleteCount(0);
+        task.setChildCount(0);
+        task.setDescription(createTaskRequestDto.getDescription());
+        task.setStartDate(createTaskRequestDto.getStartDate());
+        task.setEndDate(createTaskRequestDto.getEndDate());
+        task.setStatus(createTaskRequestDto.getStatus());
+        task.setProject(project);
+        
         if (parentTask.isPresent()) {
             if (parentTask.get().getDepth() == 2) {
                 throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
             }
             Task parentTaskEntity = parentTask.get();
             parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
-            task = Task.builder()
-                .title(createTaskRequestDto.getTitle())
-                .childCompleteCount(0)
-                .childCount(0)
-                .description(createTaskRequestDto.getDescription())
-                .parentTask(parentTaskEntity)
-                .depth(parentTask.get().getDepth() + 1)
-                .endDate(createTaskRequestDto.getEndDate())
-                .startDate(createTaskRequestDto.getStartDate())
-                .status(createTaskRequestDto.getStatus())
-                .project(project).build();
+
+            task.setDepth(parentTask.get().getDepth() + 1);
+            task.setParentTask(parentTaskEntity);
         } else {
             project.setChildCount(project.getChildCount() + 1);
-            task = Task.builder()
-                .title(createTaskRequestDto.getTitle())
-                .childCompleteCount(0)
-                .childCount(0)
-                .depth(0)
-                .description(createTaskRequestDto.getDescription())
-                .endDate(createTaskRequestDto.getEndDate())
-                .startDate(createTaskRequestDto.getStartDate())
-                .status(createTaskRequestDto.getStatus())
-                .project(project).build();
+            
+            task.setDepth(0);
         }
+        
+        String thumbnail;
+		if (thumbnailByte != null && createTaskRequestDto.getThumbnailIcon() == null) {
+			thumbnail = UUID.randomUUID().toString() + "." + extsn;
+			// 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
+			// 나중에 개발...ㅋㅋ...
+			fileManagement.uploadThumbnail(thumbnailByte, thumbnail, 'T');
+			task.setThumbnail(thumbnail);
+			task.setThumbnailType('M');
+		} else if(createTaskRequestDto.getThumbnailIcon() != null && thumbnailByte == null) {
+			thumbnail = createTaskRequestDto.getThumbnailIcon();
+			task.setThumbnail(thumbnail);
+			task.setThumbnailType('C');
+		} else {
+			task.setThumbnailType('N');
+		}
+        
         taskRepository.save(task);
         if (files != null) {
             fileStorageService.saveFiles(task, files);
         }
     }
+    
     @Transactional(rollbackFor = { Exception.class })
     public ResponseEntity<Resource> getImage(String filename) {
         try {
