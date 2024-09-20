@@ -8,4 +8,6 @@ import project.service.dto.request.UpdateProjectRequestDto;
 @Getter
 public class ProjectUpdateEvent {
     private UpdateProjectRequestDto projectUpdateRequestDto;
+    private byte[] img;
+    private String extension;
 }

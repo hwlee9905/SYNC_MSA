@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import lombok.extern.slf4j.Slf4j;
+import project.service.global.exception.DeleteImageFailedException;
+import project.service.global.exception.ImageNotFoundException;
 import project.service.global.exception.SavingImageFailedException;
 
 @ControllerAdvice
@@ -87,6 +89,20 @@ public class GlobalExceptionHandler {
     	log.error(e.getMessage());
     	final ErrorResponse response = ErrorResponse.of(ErrorCode.SAVING_IMG_FAILED);
     	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.SAVING_IMG_FAILED.getStatus()));
+    }
+    
+    @ExceptionHandler(DeleteImageFailedException.class)
+    protected ResponseEntity<ErrorResponse> handleDeleteImageFailedException(DeleteImageFailedException e) {
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.DELETE_IMG_FAILED);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.DELETE_IMG_FAILED.getStatus()));
+    }
+    
+    @ExceptionHandler(ImageNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleImageNotFoundException(ImageNotFoundException e) {
+    	log.error(e.getMessage());
+    	final ErrorResponse response = ErrorResponse.of(ErrorCode.IMG_NOT_FOUND);
+    	return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.IMG_NOT_FOUND.getStatus()));
     }
     
 }

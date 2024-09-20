@@ -30,11 +30,13 @@ public enum ErrorCode {
     MEMBER_DUPLICATE_IN_TASK(400,"M002","이미 업무에 존재하는 멤버입니다."),
     
     // Project
-    SAVING_IMG_FAILED(400, "P001", "이미지 저장이 실패 하였습니다."),
 	
 	// Global
 	UNKNOWN_ERROR(500, "G001", "시스템에 오류가 발생 하였습니다. 관리자에게 문의 해주세요."),
-	IDENTICAL_VALUE(400, "G002", "동일한 값은 변경할 수 없습니다.");
+	IDENTICAL_VALUE(400, "G002", "동일한 값은 변경할 수 없습니다."),
+	SAVING_IMG_FAILED(400, "G003", "이미지 저장을 실패 하였습니다."),
+    DELETE_IMG_FAILED(400, "G004", "이미지 삭제를 실패 하였습니다."),
+    IMG_NOT_FOUND(400, "G005", "이미지를 찾을 수 없습니다.");
 
     private final String code;
     private final String message;
