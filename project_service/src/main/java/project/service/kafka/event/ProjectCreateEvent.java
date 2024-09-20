@@ -7,6 +7,6 @@ import project.service.dto.request.CreateProjectRequestDto;
 public class ProjectCreateEvent {
     private CreateProjectRequestDto projectCreateRequestDto;
     private byte[] img;
-    private String extension;
+    private String extsn;
     private String userId;
 }

@@ -1,16 +1,10 @@
 package project.service;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,10 +21,7 @@ import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.response.GetProjectsResponseDto;
 import project.service.entity.Project;
 import project.service.global.SuccessResponse;
-import project.service.global.config.ApplicationConfig;
-import project.service.global.exception.DeleteImageFailedException;
-import project.service.global.exception.ImageNotFoundException;
-import project.service.global.exception.SavingImageFailedException;
+import project.service.global.util.FileManagement;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
 import project.service.repository.ProjectRepository;
@@ -40,10 +31,10 @@ import project.service.repository.ProjectRepository;
 @Slf4j
 public class ProjectService {
 	private final ProjectRepository projectRepository;
-	private final ApplicationConfig applicationConfig;
+	private final FileManagement fileManagement;
 	
 	@Transactional(rollbackFor = { Exception.class })
-	public Project createProject(CreateProjectRequestDto projectCreateRequestDto, byte[] img, String extension) {
+	public Project createProject(CreateProjectRequestDto projectCreateRequestDto, byte[] img, String extsn) {
 		Project project = new Project();
 		project.setTitle(projectCreateRequestDto.getTitle());
 		project.setDescription(projectCreateRequestDto.getDescription());
@@ -53,8 +44,10 @@ public class ProjectService {
 		
 		String thumbnail;
 		if (img != null && projectCreateRequestDto.getIcon() == null) {
-			thumbnail = UUID.randomUUID().toString() + "." + extension;
-			uploadThumbnail(img, thumbnail);
+			thumbnail = UUID.randomUUID().toString() + "." + extsn;
+			// 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
+			// 나중에 개발...ㅋㅋ...
+			fileManagement.uploadThumbnail(img, thumbnail, 'P');
 			project.setThumbnail(thumbnail);
 			project.setThumbnailType('M');
 		} else if(projectCreateRequestDto.getIcon() != null && img == null) {
@@ -66,25 +59,6 @@ public class ProjectService {
 		}
 
 		return projectRepository.save(project);
-	}
-	
-	private void uploadThumbnail(byte[] img, String thumbnail) {
-		File outputFile = new File(applicationConfig.getImgStoragePath(), thumbnail);
-		try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-	        fos.write(img);
-	        fos.flush();
-	    } catch (Exception e) {
-	        throw new SavingImageFailedException(e.getMessage());
-		}
-	}
-	
-	private void deleteThumbnail(String thumbnail) {
-		Path path = Paths.get(applicationConfig.getImgStoragePath(), thumbnail);
-		try {
-            Files.delete(path);
-        } catch (Exception e) {
-        	throw new DeleteImageFailedException(e.getMessage());
-        }
 	}
 	
 	@Transactional(rollbackFor = { Exception.class })
@@ -134,10 +108,7 @@ public class ProjectService {
 	}
 	
 	public ResponseEntity<Resource> getProjectThumbnail(String thumbnail) {
-		Resource image = new FileSystemResource(applicationConfig.getImgStoragePath() + thumbnail);
-		if (!image.exists()) {
-			throw new ImageNotFoundException(applicationConfig.getImgStoragePath() + thumbnail);
-		}
+		Resource image = fileManagement.getThumbnail(thumbnail, 'P');
 		HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "image/" + thumbnail.substring(thumbnail.lastIndexOf(".") + 1).toLowerCase());
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + thumbnail + "\"");
@@ -157,13 +128,13 @@ public class ProjectService {
 		getProject.setTitle(updateProjectRequestDto.getTitle());
 		
 		if (getProject.getThumbnailType() == 'M') {
-			deleteThumbnail(getProject.getThumbnail());
+			fileManagement.deleteThumbnail(getProject.getThumbnail(), 'P');
 		}
 		
 		String thumbnail;
 		if (event.getImg() != null && event.getProjectUpdateRequestDto().getIcon() == null) {
-			thumbnail = UUID.randomUUID().toString();
-			uploadThumbnail(event.getImg(), thumbnail);
+			thumbnail = UUID.randomUUID().toString() + "." + event.getExtsn();
+			fileManagement.uploadThumbnail(event.getImg(), thumbnail, 'P');
 			getProject.setThumbnail(thumbnail);
 			getProject.setThumbnailType('M');
 		} else if(event.getProjectUpdateRequestDto().getIcon() != null && event.getImg() == null) {

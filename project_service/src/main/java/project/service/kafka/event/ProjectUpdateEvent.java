@@ -9,5 +9,5 @@ import project.service.dto.request.UpdateProjectRequestDto;
 public class ProjectUpdateEvent {
     private UpdateProjectRequestDto projectUpdateRequestDto;
     private byte[] img;
-    private String extension;
+    private String extsn;
 }
