@@ -33,17 +33,21 @@ public class KafkaProjectProducerService {
     
     public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, MultipartFile img, String userId) {
     	ProjectCreateEvent event = null;
-    	if (projectCreateRequestDto.getIcon() == null) {
-    		byte[] imgByte = null;
-    		try {
-    			imgByte = img.getBytes();
-			} catch (IOException e) {
-				throw new ImageConversionFailedException(e.getMessage());
-			}
-    		event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, extsnFilter.getExtension(img), userId);
-    	} else {
-    		event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
-    	}
+        //이모지, 아이콘 둘다 존재할경우 예외 처리해야함
+        if (projectCreateRequestDto.getIcon() != null) {
+            event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
+        } else if (img != null) {
+            byte[] imgByte = null;
+            try {
+                imgByte = img.getBytes();
+            } catch (IOException e) {
+                throw new ImageConversionFailedException(e.getMessage());
+            }
+            event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, getExtension(img), userId);
+        } else {
+            event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
+        }
+
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);

@@ -22,6 +22,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
+import project.service.dto.request.MemberRemoveRequestDto;
+import project.service.dto.response.*;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
 import project.service.dto.response.GetTaskResponseDto;
@@ -53,59 +55,6 @@ public class TaskService {
     private final FileStorageService fileStorageService;
     private final TaskImageRepository taskImageRepository;
     private final FileManagement fileManagement;
-    
-    @Transactional(rollbackFor = { Exception.class })
-    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files, byte[] thumbnailByte, String extsn) throws IOException {
-        Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
-                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
-        Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
-        
-        Task task = new Task();
-        task.setTitle(createTaskRequestDto.getTitle());
-        task.setChildCompleteCount(0);
-        task.setChildCount(0);
-        task.setDescription(createTaskRequestDto.getDescription());
-        task.setStartDate(createTaskRequestDto.getStartDate());
-        task.setEndDate(createTaskRequestDto.getEndDate());
-        task.setStatus(createTaskRequestDto.getStatus());
-        task.setProject(project);
-        
-        if (parentTask.isPresent()) {
-            if (parentTask.get().getDepth() == 2) {
-                throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
-            }
-            Task parentTaskEntity = parentTask.get();
-            parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
-
-            task.setDepth(parentTask.get().getDepth() + 1);
-            task.setParentTask(parentTaskEntity);
-        } else {
-            project.setChildCount(project.getChildCount() + 1);
-            
-            task.setDepth(0);
-        }
-        
-        String thumbnail;
-		if (thumbnailByte != null && createTaskRequestDto.getThumbnailIcon() == null) {
-			thumbnail = UUID.randomUUID().toString() + "." + extsn;
-			// 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
-			// 나중에 개발...ㅋㅋ...
-			fileManagement.uploadThumbnail(thumbnailByte, thumbnail, 'T');
-			task.setThumbnail(thumbnail);
-			task.setThumbnailType('M');
-		} else if(createTaskRequestDto.getThumbnailIcon() != null && thumbnailByte == null) {
-			thumbnail = createTaskRequestDto.getThumbnailIcon();
-			task.setThumbnail(thumbnail);
-			task.setThumbnailType('C');
-		} else {
-			task.setThumbnailType('N');
-		}
-        
-        taskRepository.save(task);
-        if (files != null) {
-            fileStorageService.saveFiles(task, files);
-        }
-    }
     
     @Transactional(rollbackFor = { Exception.class })
     public ResponseEntity<Resource> getImage(String filename) {
@@ -152,12 +101,12 @@ public class TaskService {
 
         return SuccessResponse.builder().data(result).build();
     }
-
     private String removeUUIDFromFileName(String filePath) {
         String fileName = Paths.get(filePath).getFileName().toString();
         int underscoreIndex = fileName.indexOf("_");
         return fileName.substring(underscoreIndex + 1);
     }
+
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getOnlyChildrenTasks(Long taskId) {
         Task task = taskRepository.findById(taskId)
@@ -165,7 +114,6 @@ public class TaskService {
         GetTasksResponseDto result = GetTasksResponseDto.fromEntityOnlyChildrenTasks(task);
         return SuccessResponse.builder().data(result).build();
     }
-
     @Transactional(rollbackFor = { Exception.class })
     public void addUserToTask(UserAddToTaskEvent userAddToTaskEvent) {
         Optional<Task> task = taskRepository.findById(userAddToTaskEvent.getTaskId());
@@ -182,6 +130,7 @@ public class TaskService {
             userTaskRepository.save(userTask);
         });
     }
+
     @Transactional(rollbackFor = { Exception.class })
     public void deleteTask(TaskDeleteEvent event) {
         Optional<Task> task = taskRepository.findById(event.getTaskId());
@@ -220,12 +169,24 @@ public class TaskService {
         taskEntity.setEndDate(updateTaskRequestDto.getEndDate());
         taskEntity.setStatus(newStatus);
 
+        // Update project start date if task start date is earlier
+        Project project = taskEntity.getProject();
+        if (updateTaskRequestDto.getStartDate().before(project.getStartDate())) {
+            project.setStartDate(updateTaskRequestDto.getStartDate());
+        }
+
+        // Update project end date if task end date is later
+        if (updateTaskRequestDto.getEndDate().after(project.getEndDate())) {
+            project.setEndDate(updateTaskRequestDto.getEndDate());
+        }
+
+        projectRepository.save(project);
+
         if (taskEntity.getParentTask() != null) {
             Task parentTask = taskEntity.getParentTask();
             updateChildCompleteCount(parentTask, oldStatus, newStatus);
             taskRepository.save(parentTask);
         } else {
-            Project project = taskEntity.getProject();
             updateChildCompleteCountForProject(project, oldStatus, newStatus);
             projectRepository.save(project);
         }
@@ -256,6 +217,59 @@ public class TaskService {
         Optional.of(project)
                 .filter(proj -> oldStatus == 2 && newStatus != 2)
                 .ifPresent(proj -> proj.setChildCompleteCount(proj.getChildCompleteCount() - 1));
+    }
+    @Transactional(rollbackFor = { Exception.class })
+    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files) throws IOException {
+        Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
+        Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
+        Task task;
+        if (parentTask.isPresent()) {
+            if (parentTask.get().getDepth() == 2) {
+                throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
+            }
+            Task parentTaskEntity = parentTask.get();
+            parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
+            task = Task.builder()
+                    .title(createTaskRequestDto.getTitle())
+                    .childCompleteCount(0)
+                    .childCount(0)
+                    .description(createTaskRequestDto.getDescription())
+                    .parentTask(parentTaskEntity)
+                    .depth(parentTask.get().getDepth() + 1)
+                    .endDate(createTaskRequestDto.getEndDate())
+                    .startDate(createTaskRequestDto.getStartDate())
+                    .status(createTaskRequestDto.getStatus())
+                    .project(project).build();
+        } else {
+            project.setChildCount(project.getChildCount() + 1);
+            task = Task.builder()
+                    .title(createTaskRequestDto.getTitle())
+                    .childCompleteCount(0)
+                    .childCount(0)
+                    .depth(0)
+                    .description(createTaskRequestDto.getDescription())
+                    .endDate(createTaskRequestDto.getEndDate())
+                    .startDate(createTaskRequestDto.getStartDate())
+                    .status(createTaskRequestDto.getStatus())
+                    .project(project).build();
+        }
+
+        // Update project start date if task start date is earlier
+        if (createTaskRequestDto.getStartDate().before(project.getStartDate())) {
+            project.setStartDate(createTaskRequestDto.getStartDate());
+        }
+
+        // Update project end date if task end date is later
+        if (createTaskRequestDto.getEndDate().after(project.getEndDate())) {
+            project.setEndDate(createTaskRequestDto.getEndDate());
+        }
+
+        projectRepository.save(project);
+        taskRepository.save(task);
+        if (files != null) {
+            fileStorageService.saveFiles(task, files);
+        }
     }
     private void updateChildCompleteCount(Task parentTask, int oldStatus, int newStatus) {
         Optional.of(parentTask)
@@ -303,5 +317,13 @@ public class TaskService {
                 .collect(Collectors.toList());
 
         return SuccessResponse.builder().data(tasks).build();
+    }
+    @Transactional(rollbackFor = { Exception.class })
+    public void removeUserFromTask(MemberRemoveRequestDto memberRemoveRequestDto) {
+        UserTaskId userTaskId = UserTaskId.builder()
+                .userId(Long.parseLong(memberRemoveRequestDto.getUserId()))
+                .taskId(memberRemoveRequestDto.getTaskId())
+                .build();
+        userTaskRepository.deleteById(userTaskId);
     }
 }

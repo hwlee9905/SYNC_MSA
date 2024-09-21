@@ -23,6 +23,7 @@ import user.service.repository.MemberRepository;
 import user.service.web.dto.member.MemberInfoResponseDto;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
+import user.service.web.dto.member.request.MemberRemoveRequestDto;
 import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
 
 @Service
@@ -210,5 +211,10 @@ public class MemberService {
     public Long countMember(Long projectId) {
     	Long count = memberRepository.countByProjectId(projectId);
     	return count;
+    }
+
+    public SuccessResponse deleteMemberFromProject(MemberRemoveRequestDto memberRemoveRequestDto) {
+        // 멤버 삭제 추가
+        return SuccessResponse.builder().message("멤버 삭제 완료").build();
     }
 }
