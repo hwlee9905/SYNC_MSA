@@ -41,7 +41,7 @@ public class KafkaMemberProducerService {
     }
     public void sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
         DeleteFromMemberFromTaskEvent event = new DeleteFromMemberFromTaskEvent(memberRemoveRequestDto);
-        ProducerRecord<String, Object> record = new ProducerRecord<>("task-remove-user-topic", event);
+        ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
     }
