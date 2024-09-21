@@ -65,7 +65,6 @@ public class InviteController {
 		MemberMappingToProjectRequestDto dto = setMemberMappingToProjectRequestDto(userId, projectId);
 		return ResponseEntity.ok(memberService.memberAddToProject(dto));
 	}
-	
 	private MemberMappingToProjectRequestDto setMemberMappingToProjectRequestDto(String userId, Long projectId) {
 		List<String> userIds = new ArrayList<>();
 		userIds.add(userId);
