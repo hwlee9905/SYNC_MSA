@@ -57,7 +57,7 @@ public class ProjectController {
     
     @Operation(summary = "유저가 속해있는 프로젝트들의 ID를 가져오기 위한 API", description = "HOST = 150.136.153.235:30443")
     @GetMapping("/project/api/v2")
-    public ResponseEntity<SuccessResponse> getProjectsByUserLoginId(@Parameter(description = "존재하지 않는 로그인 아이디 입력시 오류 발생") @RequestParam String userId) {
+    public ResponseEntity<SuccessResponse> getProjectsByUserLoginId(@Parameter(description = "존재하지 않는 로그인 아이디 입력시 오류 발생") @RequestParam(name="userId") String userId) {
         Long userEntityId = userService.getUserEntityId(userId);
         return ResponseEntity.ok(memberService.getProjectIdsByUserId(userEntityId));
     }

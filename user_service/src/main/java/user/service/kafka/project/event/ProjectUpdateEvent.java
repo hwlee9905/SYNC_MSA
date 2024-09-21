@@ -8,6 +8,6 @@ import user.service.web.dto.project.request.UpdateProjectRequestDto;
 @Getter
 public class ProjectUpdateEvent {
     private final UpdateProjectRequestDto projectUpdateRequestDto;
-    private byte[] img;
-    private String extension;
+    private byte[] thumbnail;
+    private String extsn;
 }

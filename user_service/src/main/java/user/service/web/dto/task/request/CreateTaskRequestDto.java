@@ -1,14 +1,15 @@
 package user.service.web.dto.task.request;
 
+import java.util.Date;
+import java.util.Optional;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Setter
 @Getter
@@ -26,6 +27,9 @@ public class CreateTaskRequestDto {
     @NotBlank(message = "이름은 필수 입력 값 입니다.")
     @Schema(description = "업무 이름")
     private String title;
+    
+    @Schema(description = "아이콘")
+    private String thumbnailIcon;
     
     @Schema(description = "상위 업무 아이디, null == 프로젝트 최상위 업무")
     private Optional<Long> parentTaskId;

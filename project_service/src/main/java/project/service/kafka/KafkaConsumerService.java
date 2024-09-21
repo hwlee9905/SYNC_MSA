@@ -20,17 +20,21 @@ public class KafkaConsumerService {
     private final ProjectService projectService;
     private final TaskService taskService;
     private final KafkaProducerService kafkaProducerService;
+    
+    // Project
     private static final String TOPIC = "project-create-topic";
-    private static final String TOPIC1 = "task-create-topic";
-    private static final String TOPIC2 = "task-add-user-topic";
-    private static final String TOPIC3 = "task-delete-topic";
     private static final String TOPIC4 = "project-delete-topic";
     private static final String TOPIC5 = "project-update-topic";
-    private static final String TOPIC6 = "task-update-topic";
     private static final String TOPIC7 = "is-exist-project-by-member-add-to-project-topic";
     private static final String TOPIC8 = "project-add-img-topic";
     private static final String TOPIC9 = "project-add-icon-topic";
     private static final String TOPIC10 = "task-remove-user-topic";
+    
+    // Task
+    private static final String TOPIC1 = "task-create-topic";
+    private static final String TOPIC2 = "task-add-user-topic";
+    private static final String TOPIC3 = "task-delete-topic";
+    private static final String TOPIC6 = "task-update-topic";
     
     @KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaProjectCreateEventListenerContainerFactory")
     public void listenProjectCreateEvent(ProjectCreateEvent event) {
@@ -38,7 +42,7 @@ public class KafkaConsumerService {
             CreateProjectRequestDto projectCreateRequestDto = event.getProjectCreateRequestDto();
             String userId = event.getUserId();
             // 이벤트 처리
-            Project project = projectService.createProject(projectCreateRequestDto, event.getImg(), event.getExtension());
+            Project project = projectService.createProject(projectCreateRequestDto, event.getImg(), event.getExtsn());
             log.warn("project.getId() : " + project.getId());
             kafkaProducerService.sendAddMemberToProjectEvent(userId ,project.getId());
             // 초대 링크 생성
@@ -55,7 +59,7 @@ public class KafkaConsumerService {
         try {
             CreateTaskRequestDto createTaskRequestDto = event.getCreateTaskRequestDto();
             // 이벤트 처리
-            taskService.createTask(createTaskRequestDto, event.getFiles());
+            taskService.createTask(createTaskRequestDto, event.getFiles(), event.getThumbnailByte(), event.getExtsn());
             // 처리 로그 출력
             log.info("Processed TaskCreateEvent");
         } catch (Exception e) {

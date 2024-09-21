@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
 import user.service.global.exception.ImageConversionFailedException;
-import user.service.global.exception.InvalidFileExtensionException;
+import user.service.global.util.ExtsnFilter;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
@@ -25,6 +25,7 @@ public class KafkaProjectProducerService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final MemberService memberService;
     private final UserService userService;
+    private final ExtsnFilter extsnFilter;
 
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "project-delete-topic";
@@ -50,19 +51,6 @@ public class KafkaProjectProducerService {
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
-    }
-    
-    private String getExtension(MultipartFile img) {
-    	String filename = img.getOriginalFilename();
-    	
-		int dotIndex = filename.lastIndexOf('.');
-		        
-		if (dotIndex > 0 && dotIndex < filename.length() - 1) {
-			return filename.substring(dotIndex + 1).toLowerCase();
-		} else {
-			throw new InvalidFileExtensionException();
-		}
-		    	
     }
     
     public void sendDeleteProjectEvent(DeleteProjectRequestDto projectDeleteRequestDto, String userId) {
@@ -91,7 +79,7 @@ public class KafkaProjectProducerService {
 			} catch (IOException e) {
 				throw new ImageConversionFailedException(e.getMessage());
 			}
-    		event = new ProjectUpdateEvent(updateProjectRequestDto, imgByte, getExtension(img));
+    		event = new ProjectUpdateEvent(updateProjectRequestDto, imgByte, extsnFilter.getExtension(img));
     	} else {
     		event = new ProjectUpdateEvent(updateProjectRequestDto, null, null );
     	}

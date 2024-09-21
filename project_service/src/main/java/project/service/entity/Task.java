@@ -33,6 +33,12 @@ public class Task {
     @Column(name = "end_date")
     private Date endDate;
     
+    @Column(name="thumbnail", length = 255, nullable = true)
+    private String thumbnail;
+    
+    @Column(name="thumbnail_type", length = 1, nullable = false)
+    private char thumbnailType;
+    
     private int status;
     
     private int depth;

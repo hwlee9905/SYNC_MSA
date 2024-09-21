@@ -8,22 +8,34 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
 import project.service.dto.request.MemberRemoveRequestDto;
 import project.service.dto.response.*;
 import project.service.dto.request.UpdateTaskRequestDto;
-import project.service.entity.*;
+import project.service.dto.response.GetMemberFromTaskResponseDto;
+import project.service.dto.response.GetTaskResponseDto;
+import project.service.dto.response.GetTasksByProjectIdResponseDto;
+import project.service.dto.response.GetTasksResponseDto;
+import project.service.entity.Project;
+import project.service.entity.Task;
+import project.service.entity.TaskImage;
+import project.service.entity.UserTask;
+import project.service.entity.UserTaskId;
 import project.service.global.SuccessResponse;
+import project.service.global.util.FileManagement;
 import project.service.kafka.event.TaskCreateEvent;
 import project.service.kafka.event.TaskDeleteEvent;
 import project.service.kafka.event.TaskUpdateEvent;
@@ -42,6 +54,8 @@ public class TaskService {
     private final UserTaskRepository userTaskRepository;
     private final FileStorageService fileStorageService;
     private final TaskImageRepository taskImageRepository;
+    private final FileManagement fileManagement;
+    
     @Transactional(rollbackFor = { Exception.class })
     public ResponseEntity<Resource> getImage(String filename) {
         try {
