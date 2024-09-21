@@ -43,7 +43,7 @@ public class KafkaProjectProducerService {
             } catch (IOException e) {
                 throw new ImageConversionFailedException(e.getMessage());
             }
-            event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, getExtension(img), userId);
+            event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, extsnFilter.getExtension(img), userId);
         } else {
             event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
         }
