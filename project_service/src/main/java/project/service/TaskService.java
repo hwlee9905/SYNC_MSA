@@ -169,13 +169,11 @@ public class TaskService {
         taskEntity.setEndDate(updateTaskRequestDto.getEndDate());
         taskEntity.setStatus(newStatus);
 
-        // Update project start date if task start date is earlier
         Project project = taskEntity.getProject();
         if (updateTaskRequestDto.getStartDate().before(project.getStartDate())) {
             project.setStartDate(updateTaskRequestDto.getStartDate());
         }
 
-        // Update project end date if task end date is later
         if (updateTaskRequestDto.getEndDate().after(project.getEndDate())) {
             project.setEndDate(updateTaskRequestDto.getEndDate());
         }
@@ -219,53 +217,61 @@ public class TaskService {
                 .ifPresent(proj -> proj.setChildCompleteCount(proj.getChildCompleteCount() - 1));
     }
     @Transactional(rollbackFor = { Exception.class })
-    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files) throws IOException {
+    public void createTask(CreateTaskRequestDto createTaskRequestDto, List<TaskCreateEvent.FileData> files, byte[] thumbnailByte, String extsn) throws IOException {
         Project project = projectRepository.findById(createTaskRequestDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
         Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
-        Task task;
+
+        Task task = new Task();
+        task.setTitle(createTaskRequestDto.getTitle());
+        task.setChildCompleteCount(0);
+        task.setChildCount(0);
+        task.setDescription(createTaskRequestDto.getDescription());
+        task.setStartDate(createTaskRequestDto.getStartDate());
+        task.setEndDate(createTaskRequestDto.getEndDate());
+        task.setStatus(createTaskRequestDto.getStatus());
+        task.setProject(project);
+
+        if (createTaskRequestDto.getStartDate().before(project.getStartDate())) {
+            project.setStartDate(createTaskRequestDto.getStartDate());
+        }
+
+        if (createTaskRequestDto.getEndDate().after(project.getEndDate())) {
+            project.setEndDate(createTaskRequestDto.getEndDate());
+        }
+
+        projectRepository.save(project);
         if (parentTask.isPresent()) {
             if (parentTask.get().getDepth() == 2) {
                 throw new IllegalArgumentException("Parent task cannot have a depth of 2.");
             }
             Task parentTaskEntity = parentTask.get();
             parentTaskEntity.setChildCount(parentTaskEntity.getChildCount() + 1);
-            task = Task.builder()
-                    .title(createTaskRequestDto.getTitle())
-                    .childCompleteCount(0)
-                    .childCount(0)
-                    .description(createTaskRequestDto.getDescription())
-                    .parentTask(parentTaskEntity)
-                    .depth(parentTask.get().getDepth() + 1)
-                    .endDate(createTaskRequestDto.getEndDate())
-                    .startDate(createTaskRequestDto.getStartDate())
-                    .status(createTaskRequestDto.getStatus())
-                    .project(project).build();
+
+            task.setDepth(parentTask.get().getDepth() + 1);
+            task.setParentTask(parentTaskEntity);
         } else {
             project.setChildCount(project.getChildCount() + 1);
-            task = Task.builder()
-                    .title(createTaskRequestDto.getTitle())
-                    .childCompleteCount(0)
-                    .childCount(0)
-                    .depth(0)
-                    .description(createTaskRequestDto.getDescription())
-                    .endDate(createTaskRequestDto.getEndDate())
-                    .startDate(createTaskRequestDto.getStartDate())
-                    .status(createTaskRequestDto.getStatus())
-                    .project(project).build();
+
+            task.setDepth(0);
         }
 
-        // Update project start date if task start date is earlier
-        if (createTaskRequestDto.getStartDate().before(project.getStartDate())) {
-            project.setStartDate(createTaskRequestDto.getStartDate());
+        String thumbnail;
+        if (thumbnailByte != null && createTaskRequestDto.getThumbnailIcon() == null) {
+            thumbnail = UUID.randomUUID().toString() + "." + extsn;
+            // 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
+            // 나중에 개발...ㅋㅋ...
+            fileManagement.uploadThumbnail(thumbnailByte, thumbnail, 'T');
+            task.setThumbnail(thumbnail);
+            task.setThumbnailType('M');
+        } else if(createTaskRequestDto.getThumbnailIcon() != null && thumbnailByte == null) {
+            thumbnail = createTaskRequestDto.getThumbnailIcon();
+            task.setThumbnail(thumbnail);
+            task.setThumbnailType('C');
+        } else {
+            task.setThumbnailType('N');
         }
 
-        // Update project end date if task end date is later
-        if (createTaskRequestDto.getEndDate().after(project.getEndDate())) {
-            project.setEndDate(createTaskRequestDto.getEndDate());
-        }
-
-        projectRepository.save(project);
         taskRepository.save(task);
         if (files != null) {
             fileStorageService.saveFiles(task, files);
