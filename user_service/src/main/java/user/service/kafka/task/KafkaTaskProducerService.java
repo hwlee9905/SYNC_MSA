@@ -88,17 +88,17 @@ public class KafkaTaskProducerService {
      * @return
      */
     public SuccessResponse sendAddUserToTaskEvent(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
-        SuccessResponse responseMessage = memberService.allMembersInSameProject(memberMappingToTaskRequestDto);
-        if(responseMessage.isResult()){
-            @SuppressWarnings("unchecked")
-            List<Long> userIds = (List<Long>) responseMessage.getData();
+        Boolean inSameProject = memberService.allMembersInSameProject(memberMappingToTaskRequestDto);
+        if(inSameProject){
+
+            List<Long> userIds = memberMappingToTaskRequestDto.getUserIds();
             UserAddToTaskEvent event = new UserAddToTaskEvent(userIds, memberMappingToTaskRequestDto.getTaskId());
             ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
             record.headers().remove("spring.json.header.types");
             kafkaTemplate.send(record);
             return SuccessResponse.builder().message("업무 담당자 배정 이벤트 생성").data(memberMappingToTaskRequestDto).build();
         } else{
-            return SuccessResponse.builder().message(responseMessage.getMessage()).data(responseMessage.getData()).build();
+            return SuccessResponse.builder().message("모든 유저들이 같은 프로젝트에 속해있지 않습니다.").data("").build();
         }
     }
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {

@@ -101,27 +101,16 @@ public class MemberService {
      * @param memberMappingToTaskRequestDto
      * @return
      */
-    // New
-    // 수정자 : 강민경
     @Transactional(rollbackFor = { Exception.class })
-    public SuccessResponse allMembersInSameProject(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
-        List<Long> memberIds = memberMappingToTaskRequestDto.getMemberIds();
-        Set<Long> uniqueProjectIds = memberIds.stream()
-                .map(memberId -> memberRepository.findById(memberId)
-                        .orElseThrow(() -> new EntityNotFoundException("Member not found for ID: " + memberId)))
+    public Boolean allMembersInSameProject(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
+        List<Long> userIds = memberMappingToTaskRequestDto.getUserIds();
+        Set<Long> uniqueProjectIds = userIds.stream()
+                .map(userId -> memberRepository.findMemberByUserId(userId)
+                        .orElseThrow(() -> new EntityNotFoundException("Member not found for UserId: " + userId)))
                 .map(Member::getProjectId)
                 .collect(Collectors.toSet());
 
-        if (uniqueProjectIds.size() == 1) {
-            // 모든 멤버가 같은 프로젝트에 속해 있을 경우
-            List<Long> userIds = memberIds.stream()
-                    .map(memberId -> memberRepository.findById(memberId).get().getUser().getId())
-                    .collect(Collectors.toList());
-            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있습니다.").data(Collections.singletonMap("userIds", userIds)).build();
-        } else {
-            // 멤버들이 서로 다른 프로젝트에 속해 있을 경우
-            return SuccessResponse.builder().message("모든 멤버가 같은 프로젝트에 속해 있지 않습니다.").data(Collections.singletonMap("memberIds", memberIds)).build();
-        }
+        return uniqueProjectIds.size() == 1;
     }
     
     /**
