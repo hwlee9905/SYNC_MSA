@@ -93,7 +93,10 @@ public class KafkaConsumerConfig {
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaProjectAddIconEventListenerContainerFactory() {
 		return createFactory(ProjectAddIconEvent.class.getName());
 	}
-	
+	@Bean
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaDeleteFromMemberFromTaskEventListenerContainerFactory() {
+		return createFactory(DeleteFromMemberFromTaskEvent.class.getName());
+	}
 	@Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
