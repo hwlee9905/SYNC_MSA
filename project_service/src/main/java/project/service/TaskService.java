@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
+import project.service.dto.request.MemberRemoveRequestDto;
 import project.service.dto.response.*;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.entity.*;
@@ -302,5 +303,13 @@ public class TaskService {
                 .collect(Collectors.toList());
 
         return SuccessResponse.builder().data(tasks).build();
+    }
+    @Transactional(rollbackFor = { Exception.class })
+    public void removeUserFromTask(MemberRemoveRequestDto memberRemoveRequestDto) {
+        UserTaskId userTaskId = UserTaskId.builder()
+                .userId(Long.parseLong(memberRemoveRequestDto.getUserId()))
+                .taskId(memberRemoveRequestDto.getTaskId())
+                .build();
+        userTaskRepository.deleteById(userTaskId);
     }
 }

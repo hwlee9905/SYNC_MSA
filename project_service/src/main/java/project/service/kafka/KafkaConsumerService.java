@@ -10,16 +10,7 @@ import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.CreateTaskRequestDto;
 import project.service.entity.Project;
 import project.service.global.SuccessResponse;
-import project.service.kafka.event.IsExistProjectByMemberAddToProjectEvent;
-import project.service.kafka.event.ProjectAddIconEvent;
-import project.service.kafka.event.ProjectAddImgEvent;
-import project.service.kafka.event.ProjectCreateEvent;
-import project.service.kafka.event.ProjectDeleteEvent;
-import project.service.kafka.event.ProjectUpdateEvent;
-import project.service.kafka.event.TaskCreateEvent;
-import project.service.kafka.event.TaskDeleteEvent;
-import project.service.kafka.event.TaskUpdateEvent;
-import project.service.kafka.event.UserAddToTaskEvent;
+import project.service.kafka.event.*;
 
 
 @Service
@@ -39,6 +30,7 @@ public class KafkaConsumerService {
     private static final String TOPIC7 = "is-exist-project-by-member-add-to-project-topic";
     private static final String TOPIC8 = "project-add-img-topic";
     private static final String TOPIC9 = "project-add-icon-topic";
+    private static final String TOPIC10 = "task-remove-user-topic";
     
     @KafkaListener(topics = TOPIC, groupId = "project_create_group", containerFactory = "kafkaProjectCreateEventListenerContainerFactory")
     public void listenProjectCreateEvent(ProjectCreateEvent event) {
@@ -148,5 +140,14 @@ public class KafkaConsumerService {
     @KafkaListener(topics = TOPIC9, groupId = "project_create_group", containerFactory = "kafkaProjectAddIconEventListenerContainerFactory")
     public void listenProjectAddIconEvent(ProjectAddIconEvent event) {
     	System.out.println("icon: " + event);
+    }
+    @KafkaListener(topics = TOPIC10, groupId = "task-remove-user-group", containerFactory = "kafkaDeleteFromMemberFromTaskEventListenerContainerFactory")
+    public void listenDeleteFromMemberFromTaskEvent(DeleteFromMemberFromTaskEvent event) {
+        try {
+            taskService.removeUserFromTask(event.getMemberRemoveRequestDto());
+            log.info("Processed DeleteFromMemberFromTaskEvent");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }
