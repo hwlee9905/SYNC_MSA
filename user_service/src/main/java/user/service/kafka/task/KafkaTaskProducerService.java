@@ -60,19 +60,24 @@ public class KafkaTaskProducerService {
                 })
                 .collect(Collectors.toList()) :
             Collections.emptyList();
-        
-        if (createTaskRequestDto.getThumbnailIcon() == null) {
-    		byte[] imgByte = null;
-    		try {
-    			imgByte = thumbnailImage.getBytes();
-			} catch (IOException e) {
-				throw new ImageConversionFailedException(e.getMessage());
-			}
-    		event = new TaskCreateEvent(createTaskRequestDto, fileDataList, imgByte, extsnFilter.getExtension(thumbnailImage));
-    	} else {
-    		event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
-    	}
-        
+
+        // 이모지, 아이콘 둘다 존재할 경우 예외 처리
+        if (createTaskRequestDto.getThumbnailIcon() != null && thumbnailImage != null) {
+            throw new IllegalArgumentException("이모지와 아이콘 둘 다 존재할 수 없습니다.");
+        } else if (createTaskRequestDto.getThumbnailIcon() != null) {
+            event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
+        } else if (thumbnailImage != null) {
+            byte[] imgByte = null;
+            try {
+                imgByte = thumbnailImage.getBytes();
+            } catch (IOException e) {
+                throw new ImageConversionFailedException(e.getMessage());
+            }
+            event = new TaskCreateEvent(createTaskRequestDto, fileDataList, imgByte, extsnFilter.getExtension(thumbnailImage));
+        } else {
+            event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
+        }
+
         kafkaTemplate.send(TOPIC, event);
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(createTaskRequestDto).build();
     }
