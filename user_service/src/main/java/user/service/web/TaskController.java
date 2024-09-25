@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import user.service.FileValidationService;
+import user.service.ValidationService;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.task.request.CreateTaskRequestDto;
@@ -21,7 +21,7 @@ import user.service.web.dto.task.request.UpdateTaskRequestDto;
 @RequiredArgsConstructor
 @Slf4j
 public class TaskController {
-    private final FileValidationService fileValidationService;
+    private final ValidationService fileValidationService;
     private final KafkaTaskProducerService kafkaTaskProducerService;
     
     @Operation(summary = "업무를 생성하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
