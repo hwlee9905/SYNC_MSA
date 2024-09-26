@@ -63,13 +63,13 @@ public class UserServiceTest {
         when(bCryptPasswordEncoder.encode(signupRequestDto.getPassword())).thenReturn("encodedPassword");
         when(authenticationRepository.saveAndFlush(any(Authentication.class))).thenReturn(authentication);
 
-        // Mock UserRepository to return a User with a non-null ID
+        // Mock UserRepository에 임의의 유저 설정
         User savedUser = User.builder()
                 .username(signupRequestDto.getUsername())
                 .role(Role.USER)
                 .nickname(signupRequestDto.getNickname())
                 .build();
-        savedUser.setId(1L); // Set a non-null ID
+        savedUser.setId(1L); //임의 ID 설정
         savedUser.setAuthentication(authentication);
         when(userRepository.saveAndFlush(any(User.class))).thenReturn(savedUser);
 
