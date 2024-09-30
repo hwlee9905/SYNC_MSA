@@ -36,10 +36,7 @@ import project.service.entity.UserTask;
 import project.service.entity.UserTaskId;
 import project.service.global.SuccessResponse;
 import project.service.global.util.FileManagement;
-import project.service.kafka.event.TaskCreateEvent;
-import project.service.kafka.event.TaskDeleteEvent;
-import project.service.kafka.event.TaskUpdateEvent;
-import project.service.kafka.event.UserAddToTaskEvent;
+import project.service.kafka.event.*;
 import project.service.repository.ProjectRepository;
 import project.service.repository.TaskImageRepository;
 import project.service.repository.TaskRepository;
@@ -325,10 +322,10 @@ public class TaskService {
         return SuccessResponse.builder().data(tasks).build();
     }
     @Transactional(rollbackFor = { Exception.class })
-    public void removeUserFromTask(MemberRemoveRequestDto memberRemoveRequestDto) {
+    public void removeUserFromTask(DeleteFromMemberFromTaskEvent event) {
         UserTaskId userTaskId = UserTaskId.builder()
-                .userId(Long.parseLong(memberRemoveRequestDto.getUserId()))
-                .taskId(memberRemoveRequestDto.getTaskId())
+                .userId(event.getUserId())
+                .taskId(event.getTaskId())
                 .build();
         userTaskRepository.deleteById(userTaskId);
     }
