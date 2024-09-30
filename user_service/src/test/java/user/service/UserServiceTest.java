@@ -29,7 +29,7 @@ public class UserServiceTest {
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    //실제 객체 주입
     @InjectMocks
     private UserService userService;
 

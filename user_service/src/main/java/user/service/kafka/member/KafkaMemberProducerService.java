@@ -7,6 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import user.service.UserService;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.member.event.DeleteFromMemberFromTaskEvent;
 import user.service.kafka.member.event.IsExistProjectByMemberAddToProjectEvent;
@@ -15,6 +16,7 @@ import user.service.web.dto.member.request.MemberRemoveRequestDto;
 @Service
 @RequiredArgsConstructor
 public class KafkaMemberProducerService {
+    private final UserService userService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private static final String TOPIC = "is-exist-project-by-member-add-to-project-topic";
     private static final String TOPIC1 = "task-remove-user-topic";
@@ -40,7 +42,8 @@ public class KafkaMemberProducerService {
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(event).build();
     }
     public void sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
-        DeleteFromMemberFromTaskEvent event = new DeleteFromMemberFromTaskEvent(memberRemoveRequestDto);
+        Long userId = userService.getUserEntityId(memberRemoveRequestDto.getUserId());
+        DeleteFromMemberFromTaskEvent event = new DeleteFromMemberFromTaskEvent(userId, memberRemoveRequestDto.getTaskId());
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
