@@ -65,12 +65,12 @@ public class MemberServiceTest {
         // When: API 호출하여 이벤트 발행
         memberController.deleteUsersFromTask(memberRemoveRequestDto);
 
-        // Then: 이벤트가 처리될 때까지 대기 (예: 2초)
+        // Then: 이벤트가 처리될 때까지 대기
         Thread.sleep(2000);
 
         // 다른 서비스의 DB에서 해당 데이터가 올바르게 처리되었는지 검증
         String sql = "SELECT COUNT(*) FROM user_task WHERE task_id = ? AND user_id IN (?, ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{taskId, 1L, 2L}, Integer.class);
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{taskId, "TestLoginID"}, Integer.class);
         assertTrue(count == 0, "Task ID에 해당하는 멤버가 삭제되지 않았습니다.");
     }
 }
