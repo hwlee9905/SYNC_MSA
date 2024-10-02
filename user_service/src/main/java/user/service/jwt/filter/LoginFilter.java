@@ -84,7 +84,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             .path("/")
             .sameSite("none")
             .httpOnly(false)
-            .secure(true)
+            .secure(false)
             .maxAge(30*60)
             .build();
         return cookie;
