@@ -25,7 +25,6 @@ public class UserController {
 	@GetMapping("info/v1")
 	@LogAop
 	public SuccessResponse getCurrentUserInfo(){
-		//여러 유저의 정보를 가져오도록 list로 바꿀것
 		return userService.getUserInfo();
 	}
 	@Operation(summary = "유저들의 정보를 가져오는 API", description = "HOST = 150.136.153.235:30443")
