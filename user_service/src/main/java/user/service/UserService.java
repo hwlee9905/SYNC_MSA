@@ -1,8 +1,6 @@
 package user.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -239,8 +237,7 @@ public class UserService implements UserDetailsService {
 		return result;
 	}
 	public String getCurrentUserId() {
-		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
-				.getAuthentication();
+		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.isAuthenticated()) {
 			if (authentication instanceof OAuth2AuthenticationToken) {
 				CustomOAuth2User oauthToken = (CustomOAuth2User) authentication.getPrincipal();
