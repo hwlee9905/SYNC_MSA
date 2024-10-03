@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import user.service.ValidationService;
+import user.service.global.advice.LogAop;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.task.request.CreateTaskRequestDto;
@@ -30,6 +31,7 @@ public class TaskController {
             "depth는 parentTask의 depth에 따라 결정 되며, 최상위 업무는 0, 그 하위 업무는 1, 그 하위 업무는 2로 결정됩니다. parentTask의 depth가 2일 경우, 생성되지 않습니다. <br>"
             )
     @PostMapping("user/api/task/v1")
+    @LogAop
     public SuccessResponse createTask(
             @RequestPart("data") CreateTaskRequestDto createTaskRequestDto,
             @RequestPart(value = "images", required = false) List<MultipartFile> descriptionImages,
@@ -58,7 +60,8 @@ public class TaskController {
     @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksResponseDto <br>")
-    @GetMapping("node2api/task/v1")
+    @GetMapping("node2/api/task/v1")
+    @LogAop
     public void getOnlyChildrenTasks(@RequestParam Long taskId) {
     }
     
@@ -66,6 +69,7 @@ public class TaskController {
         "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksByProjectIdResponseDto")
     @GetMapping("node2/api/task/v2")
+    @LogAop
     public void getTasksByProjectId(@RequestParam Long projectId)  {
     }
     
@@ -73,6 +77,7 @@ public class TaskController {
     @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
             "ValidationDetails : DeleteTaskRequestDto")
     @DeleteMapping("/user/api/task")
+    @LogAop
     public SuccessResponse deleteTask(@RequestBody @Valid DeleteTaskRequestDto deleteTaskRequestDto) {
         return kafkaTaskProducerService.sendDeleteTaskEvent(deleteTaskRequestDto);
     }
@@ -80,6 +85,7 @@ public class TaskController {
         "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 수정 불가 <br>" +
         "DTOValidation : UpdateTaskRequestDto")
     @PutMapping("/user/api/task")
+    @LogAop
     public SuccessResponse updateTask(
             @RequestPart("data") UpdateTaskRequestDto updateTaskRequestDto,
             @RequestPart(value = "images", required = false) List<MultipartFile> descriptionImages,
@@ -92,6 +98,7 @@ public class TaskController {
     @Operation(summary = "파일을 가져오기 위한 API", description = "HOST = 150.136.153.235:30443 <br>"
         + "Validation : 로그인 필요하지 않음, 잘못된 filename 입력시 오류 발생")
     @GetMapping("node2/api/task/image")
+    @LogAop
     public void getImage(@RequestParam String filename) {
 
     }
@@ -99,6 +106,7 @@ public class TaskController {
     @Operation(summary = "이미지를 포함한 단일 task를 가져오는 API", description = "HOST = 150.136.153.235:30443"
         + "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생")
     @GetMapping("node2/api/task/v3")
+    @LogAop
     public void getTask(@RequestParam Long taskId) {
 
     }

@@ -7,7 +7,8 @@ public class ThreadLocalLogTrace implements LogTrace{
     private ThreadLocal<TraceId> traceIdHolder = new ThreadLocal<>();
     @Override
     public TraceStatus begin(String message) {
-        TraceId traceId = traceIdHolder.get();
+        TraceId traceId = new TraceId();
+        traceIdHolder.set(traceId);
         Long startTimeMs = System.currentTimeMillis();
         log.info("[{}] {}", traceId.getId(), message);
         return new TraceStatus(traceId, startTimeMs, message);
