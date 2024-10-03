@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import user.service.global.advice.LogTrace;
+import user.service.global.advice.ThreadLocalLogTrace;
 
 @Configuration
 public class ApplicationConfig {
@@ -34,4 +36,9 @@ public class ApplicationConfig {
 	public String getProjectApi() {
 		return this.projectApi;
 	}
+	@Bean
+	public LogTrace logTrace() {
+		return new ThreadLocalLogTrace();
+	}
+
 }

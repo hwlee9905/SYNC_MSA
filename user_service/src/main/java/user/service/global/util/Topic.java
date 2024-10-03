@@ -1,4 +1,4 @@
-package user.service.global.advice;
+package user.service.global.util;
 
 public enum Topic {
 	PROJECT_CREATE_TOPIC,
