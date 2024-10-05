@@ -28,7 +28,7 @@ public class ProjectController {
             "ValidationDetails : CreateProjectRequestDto")
     @PostMapping("/user/api/project")
     @LogAop
-    public ResponseEntity<SuccessResponse> createProject(@RequestPart("data") @Valid CreateProjectRequestDto projectCreateRequestDto, @RequestPart(value = "img", required = false) MultipartFile img) {
+    public ResponseEntity<SuccessResponse> createProject(@RequestPart("data") @Valid CreateProjectRequestDto projectCreateRequestDto, @RequestPart(value = "thumbnailImage", required = false) MultipartFile img) {
         String userId = userService.getCurrentUserId();
         kafkaProducerService.sendCreateProjectEvent(projectCreateRequestDto, img, userId);
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 생성 이벤트 생성").build());
