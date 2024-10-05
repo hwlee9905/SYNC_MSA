@@ -1,10 +1,11 @@
 package user.service.global.advice;
+
 public class TraceStatus {
-    private TraceId traceId;
     private Long startTimeMs;
     private String message;
-    public TraceStatus(TraceId traceId, Long startTimeMs, String message) {
-        this.traceId = traceId;
+    private String id;
+    public TraceStatus(String id, Long startTimeMs, String message) {
+        this.id = id;
         this.startTimeMs = startTimeMs;
         this.message = message;
     }
@@ -14,7 +15,7 @@ public class TraceStatus {
     public String getMessage() {
         return message;
     }
-    public TraceId getTraceId() {
-        return traceId;
+    public String getId() {
+        return id;
     }
 }

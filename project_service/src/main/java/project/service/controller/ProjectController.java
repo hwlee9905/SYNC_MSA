@@ -25,8 +25,7 @@ public class ProjectController {
     public SuccessResponse getProjects(HttpServletRequest request, @RequestParam(name="projectIds") List<Long> projectIds)  {
     	return projectService.getProjects(request, projectIds);
     }
-    
-    @GetMapping("/project/thumbnail/{thumbnail}")
+    @GetMapping("node2/project/thumbnail/{thumbnail}")
     public ResponseEntity<Resource> getProjectThumbnail(@PathVariable("thumbnail") String thumbnail) {
     	return projectService.getProjectThumbnail(thumbnail);
     }
