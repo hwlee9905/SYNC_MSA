@@ -253,7 +253,7 @@ public class UserService implements UserDetailsService {
 				return customUserDetails.getUsername();
 			}
 		}
-		return null; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
+		return "Guest"; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
 	}
 	public User findById(Long userId) {
 		return userRepository.findById(userId)
