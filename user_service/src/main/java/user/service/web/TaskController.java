@@ -45,7 +45,6 @@ public class TaskController {
         if (thumbnailImage != null) {
             fileValidationService.validateImageFile(thumbnailImage);
         }
-        //titleimage 추가 할 것
         return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto, descriptionImages, thumbnailImage);
     }
     
