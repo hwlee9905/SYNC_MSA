@@ -16,6 +16,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -321,7 +322,7 @@ public class TaskService {
 
         return SuccessResponse.builder().data(tasks).build();
     }
-    @Transactional(rollbackFor = { Exception.class })
+    @Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRES_NEW)
     public void removeUserFromTask(DeleteFromMemberFromTaskEvent event) {
         log.info("userId : {} taskId : {}", event.getUserId(), event.getTaskId());
         UserTaskId userTaskId = UserTaskId.builder()
