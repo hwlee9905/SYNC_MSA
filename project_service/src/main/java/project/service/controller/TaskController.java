@@ -28,8 +28,8 @@ public class TaskController {
     public SuccessResponse getTasksByProjectId(@RequestParam Long projectId)  {
         return taskService.getTaskByProjectId(projectId);
     }
-    @GetMapping("node2/project/task/api/v1/users")
-    public SuccessResponse getUserFromTask(@RequestParam Long taskId) {
+    @GetMapping("node2/api/task/v4")
+    public SuccessResponse getUsersFromTask(@RequestParam Long taskId) {
         return taskService.getUserIdsFromTask(taskId);
     }
     //jwtTEST

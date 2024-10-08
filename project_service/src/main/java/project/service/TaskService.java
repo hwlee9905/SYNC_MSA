@@ -308,7 +308,7 @@ public class TaskService {
         List<GetTasksByProjectIdResponseDto> tasks = project.getTasks().stream()
                 .filter(task -> task.getDepth() == 0)
                 .map(task -> GetTasksByProjectIdResponseDto.builder()
-                        .id(task.getId())
+                        .taskId(task.getId())
                         .title(task.getTitle())
                         .description(task.getDescription())
                         .startDate(task.getStartDate())
