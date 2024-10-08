@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Service
-public class FileValidationService {
+public class ValidationService {
 
     public void validateImageFile(MultipartFile file) throws IOException {
         validateExtension(file);

@@ -14,7 +14,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Schema(description = "멤버를 프로젝트에 생성하기 위한 DTO")
 public class MemberMappingToProjectRequestDto {

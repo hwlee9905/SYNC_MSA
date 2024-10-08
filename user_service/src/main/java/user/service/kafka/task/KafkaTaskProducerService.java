@@ -60,19 +60,24 @@ public class KafkaTaskProducerService {
                 })
                 .collect(Collectors.toList()) :
             Collections.emptyList();
-        
-        if (createTaskRequestDto.getThumbnailIcon() == null) {
-    		byte[] imgByte = null;
-    		try {
-    			imgByte = thumbnailImage.getBytes();
-			} catch (IOException e) {
-				throw new ImageConversionFailedException(e.getMessage());
-			}
-    		event = new TaskCreateEvent(createTaskRequestDto, fileDataList, imgByte, extsnFilter.getExtension(thumbnailImage));
-    	} else {
-    		event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
-    	}
-        
+
+        // 이모지, 아이콘 둘다 존재할 경우 예외 처리
+        if (createTaskRequestDto.getThumbnailIcon() != null && thumbnailImage != null) {
+            throw new IllegalArgumentException("이모지와 아이콘 둘 다 존재할 수 없습니다.");
+        } else if (createTaskRequestDto.getThumbnailIcon() != null) {
+            event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
+        } else if (thumbnailImage != null) {
+            byte[] imgByte = null;
+            try {
+                imgByte = thumbnailImage.getBytes();
+            } catch (IOException e) {
+                throw new ImageConversionFailedException(e.getMessage());
+            }
+            event = new TaskCreateEvent(createTaskRequestDto, fileDataList, imgByte, extsnFilter.getExtension(thumbnailImage));
+        } else {
+            event = new TaskCreateEvent(createTaskRequestDto, fileDataList, null, null);
+        }
+
         kafkaTemplate.send(TOPIC, event);
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(createTaskRequestDto).build();
     }
@@ -83,17 +88,17 @@ public class KafkaTaskProducerService {
      * @return
      */
     public SuccessResponse sendAddUserToTaskEvent(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
-        SuccessResponse responseMessage = memberService.allMembersInSameProject(memberMappingToTaskRequestDto);
-        if(responseMessage.isResult()){
-            @SuppressWarnings("unchecked")
-            List<Long> userIds = (List<Long>) responseMessage.getData();
+        Boolean inSameProject = memberService.allMembersInSameProject(memberMappingToTaskRequestDto);
+        if(inSameProject){
+
+            List<Long> userIds = memberMappingToTaskRequestDto.getUserIds();
             UserAddToTaskEvent event = new UserAddToTaskEvent(userIds, memberMappingToTaskRequestDto.getTaskId());
             ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
             record.headers().remove("spring.json.header.types");
             kafkaTemplate.send(record);
             return SuccessResponse.builder().message("업무 담당자 배정 이벤트 생성").data(memberMappingToTaskRequestDto).build();
         } else{
-            return SuccessResponse.builder().message(responseMessage.getMessage()).data(responseMessage.getData()).build();
+            return SuccessResponse.builder().message("모든 유저들이 같은 프로젝트에 속해있지 않습니다.").data("").build();
         }
     }
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {

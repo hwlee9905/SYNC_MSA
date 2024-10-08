@@ -1,11 +1,10 @@
 package user.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +40,7 @@ import user.service.web.dto.request.SignupRequestDto;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
@@ -142,10 +142,14 @@ public class UserService implements UserDetailsService {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
 			UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+			log.info("info : {}", info.getAuthentication().getUserId());
 			userInfoResponseDto.setUsername(info.getUsername());
 			userInfoResponseDto.setNickname(info.getNickname());
 			userInfoResponseDto.setPosition(info.getPosition());
-			return SuccessResponse.builder().data(userInfoResponseDto).build();
+			userInfoResponseDto.setUserLoginId(info.getAuthentication().getUserId());
+			return SuccessResponse.builder()
+					.message("유저 정보 조회 성공")
+					.data(userInfoResponseDto).build();
 		} catch (Exception e) {
 			throw new UnknownException(e.getMessage());
 		}
@@ -239,8 +243,7 @@ public class UserService implements UserDetailsService {
 		return result;
 	}
 	public String getCurrentUserId() {
-		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
-				.getAuthentication();
+		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.isAuthenticated()) {
 			if (authentication instanceof OAuth2AuthenticationToken) {
 				CustomOAuth2User oauthToken = (CustomOAuth2User) authentication.getPrincipal();
@@ -250,7 +253,7 @@ public class UserService implements UserDetailsService {
 				return customUserDetails.getUsername();
 			}
 		}
-		return null; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
+		return "Guest"; // 사용자가 인증되지 않았거나 인증 정보가 없는 경우
 	}
 	public User findById(Long userId) {
 		return userRepository.findById(userId)

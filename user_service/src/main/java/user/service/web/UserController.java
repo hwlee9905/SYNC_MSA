@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import user.service.UserService;
+import user.service.global.advice.LogAop;
 import user.service.web.dto.request.ModifyPwdRequestDto;
 import user.service.web.dto.request.ModifyUserInfoRequestDto;
 import user.service.global.advice.SuccessResponse;
@@ -22,12 +23,13 @@ public class UserController {
 	//.requestMatchers("/user").hasAnyAuthority("USER") USER 계정 로그인 필요
 	@Operation(summary = "현재 로그인 유저 정보를 가져오는 API", description = "HOST = 150.136.153.235:30443")
 	@GetMapping("info/v1")
+	@LogAop
 	public SuccessResponse getCurrentUserInfo(){
-		//여러 유저의 정보를 가져오도록 list로 바꿀것
 		return userService.getUserInfo();
 	}
 	@Operation(summary = "유저들의 정보를 가져오는 API", description = "HOST = 150.136.153.235:30443")
 	@GetMapping("info/v2")
+	@LogAop
 	public SuccessResponse getUsersInfo(@Parameter(description = "존재하지 않는 유저 아이디 입력시 오류 발생") @RequestParam List<Long> userIds){
 		return userService.getUsersInfo(userIds);
 	}

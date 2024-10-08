@@ -15,7 +15,7 @@ import java.util.List;
 public class MemberMappingToTaskRequestDto {
     @Schema(description = "멤버 아이디, 멤버는 모두 같은 프로젝트 소속이어야 합니다.")
     @NotEmpty(message = "멤버 아이디는 필수값입니다.")
-    private List<Long> memberIds;
+    private List<Long> userIds;
     @Schema(description = "업무 아이디")
     @NotNull(message = "업무 아이디는 필수값입니다.")
     private Long taskId;
