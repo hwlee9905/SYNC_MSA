@@ -1,7 +1,6 @@
 package user.service.global.advice;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,9 +37,9 @@ public class ThreadLocalLogTrace implements LogTrace{
         } else {
             log.info("[{}] {} time={}ms ex={}", status.getId(), status.getMessage(), resultTimeMs, e.toString());
         }
-        releaseTraceId();
+        releaseTraceStatus();
     }
-    private void releaseTraceId() {
+    private void releaseTraceStatus() {
         // Thread Local 리소스 해제
         traceIdHolder.remove();
     }
