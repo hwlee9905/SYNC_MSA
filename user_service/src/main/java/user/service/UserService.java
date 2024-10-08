@@ -33,7 +33,8 @@ import user.service.jwt.dto.CustomUserDetails;
 import user.service.oauth2.CustomOAuth2User;
 import user.service.repository.AuthenticationRepository;
 import user.service.repository.UserRepository;
-import user.service.web.dto.UserInfoResponseDto;
+import user.service.web.dto.UserInfoResponseDtoV1;
+import user.service.web.dto.UserInfoResponseDtoV2;
 import user.service.web.dto.request.ModifyPwdRequestDto;
 import user.service.web.dto.request.ModifyUserInfoRequestDto;
 import user.service.web.dto.request.SignupRequestDto;
@@ -93,7 +94,9 @@ public class UserService implements UserDetailsService {
 			throw new RuntimeException(e);
 		}
 
-		User user = User.builder().username(signupRequestDto.getUsername()).role(Role.USER)
+		User user = User.builder()
+				.username(signupRequestDto.getUsername())
+				.role(Role.USER)
 				.nickname(signupRequestDto.getNickname()).build();
 		user.setAuthentication(authentication);
 		authentication.setUser(user);
@@ -141,12 +144,12 @@ public class UserService implements UserDetailsService {
 		try {
 			String id = getCurrentUserId();
 			User info = userRepository.findByAuthenticationUserId(id);
-			UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+			UserInfoResponseDtoV1 userInfoResponseDto = new UserInfoResponseDtoV1();
 			log.info("info : {}", info.getAuthentication().getUserId());
 			userInfoResponseDto.setUsername(info.getUsername());
 			userInfoResponseDto.setNickname(info.getNickname());
 			userInfoResponseDto.setPosition(info.getPosition());
-			userInfoResponseDto.setUserLoginId(info.getAuthentication().getUserId());
+			userInfoResponseDto.setUserId(info.getId());
 			return SuccessResponse.builder()
 					.message("유저 정보 조회 성공")
 					.data(userInfoResponseDto).build();
@@ -156,14 +159,14 @@ public class UserService implements UserDetailsService {
 	}
 	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse getUsersInfo(List<Long> userIds) {
-		List<UserInfoResponseDto> userInfoList = userIds.stream()
+		List<UserInfoResponseDtoV2> userInfoList = userIds.stream()
 			.map(this::findById)
 			.map(user -> {
-				UserInfoResponseDto dto = new UserInfoResponseDto();
+				UserInfoResponseDtoV2 dto = new UserInfoResponseDtoV2();
 				dto.setUsername(user.getUsername());
 				dto.setNickname(user.getNickname());
 				dto.setPosition(user.getPosition());
-				dto.setUserLoginId(user.getAuthentication().getUserId());
+				dto.setUserId(user.getAuthentication().getUserId());
 				return dto;
 			})
 			.collect(Collectors.toList());

@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserInfoResponseDto {
+public class UserInfoResponseDtoV2 {
     private String username;
     private String nickname;
     private String position;
-    private String userLoginId;
+    private String userId;
 }

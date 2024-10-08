@@ -132,7 +132,7 @@ public class MemberService {
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getProjectIdsByUserId(Long userId) {
     	List<Long> result = memberRepository.findProjectIdsByUserId(userId);
-    	return SuccessResponse.builder().data(Collections.singletonMap("projectIds", result)).build();
+    	return SuccessResponse.builder().message("프로젝트 멤버 조회 결과").data(Collections.singletonMap("projectIds", result)).build();
     }
     
     /**
