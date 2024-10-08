@@ -46,5 +46,8 @@ public class TaskController {
     public ResponseEntity<Resource> getImage(@RequestParam String filename) {
         return taskService.getImage(filename);
     }
-
+    @PostMapping("/task/test")
+    public void testproject(@RequestParam Long taskId, @RequestParam Long userId) {
+        taskService.removeUserFromTaskv2(userId, taskId);
+    }
 }
