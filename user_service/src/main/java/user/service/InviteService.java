@@ -39,7 +39,7 @@ public class InviteService {
 		if (inviteRepository.existsByToken(uuid)) {
 			createLink(event);
 		}
-		String url = "https://www.sync-team.co.kr/project/invite/" + uuid.toString();
+		String url = "https://localhost:3000/project/invite/" + uuid.toString();
 //		Invite entity = new Invite();
 //		entity.createLink(url, even.getProjectId(), uuid);
 		
