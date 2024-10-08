@@ -41,11 +41,12 @@ public class KafkaMemberProducerService {
         kafkaTemplate.send(record);
         return SuccessResponse.builder().message("업무 생성 이벤트 생성").data(event).build();
     }
-    public void sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
+    public SuccessResponse sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
         Long userId = userService.getUserEntityId(memberRemoveRequestDto.getUserId());
         DeleteFromMemberFromTaskEvent event = new DeleteFromMemberFromTaskEvent(userId, memberRemoveRequestDto.getTaskId());
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);
+        return SuccessResponse.builder().message("업무 삭제 이벤트 생성").data(event).build();
     }
 }
