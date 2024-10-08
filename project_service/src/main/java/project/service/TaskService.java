@@ -323,6 +323,7 @@ public class TaskService {
     }
     @Transactional(rollbackFor = { Exception.class })
     public void removeUserFromTask(DeleteFromMemberFromTaskEvent event) {
+        log.info("userId : {} taskId : {}", event.getUserId(), event.getTaskId());
         UserTaskId userTaskId = UserTaskId.builder()
                 .userId(event.getUserId())
                 .taskId(event.getTaskId())
