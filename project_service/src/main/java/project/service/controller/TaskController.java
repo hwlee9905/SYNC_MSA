@@ -3,6 +3,7 @@ package project.service.controller;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,5 +45,9 @@ public class TaskController {
     @GetMapping("node2/api/task/image")
     public ResponseEntity<Resource> getImage(@RequestParam String filename) {
         return taskService.getImage(filename);
+    }
+    @PostMapping("/task/test")
+    public void testproject(@RequestParam Long taskId, @RequestParam Long userId) {
+        taskService.removeUserFromTaskv2(userId, taskId);
     }
 }

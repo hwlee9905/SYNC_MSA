@@ -15,5 +15,6 @@ import java.io.Serializable;
 public class UserTaskId implements Serializable {
     @Column(name = "user_id")
     private long userId;
+    @Column(name = "task_id")
     private long taskId;
 }

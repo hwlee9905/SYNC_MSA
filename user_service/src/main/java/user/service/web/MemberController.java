@@ -44,9 +44,9 @@ public class MemberController {
     @Operation(summary = "업무의 담당자들을 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443")
     @DeleteMapping("user/api/task/v1")
     @LogAop
-    public void deleteUsersFromTask(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
+    public SuccessResponse deleteUsersFromTask(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
         //없는 task id인 경우 보상트랜잭션 필요
-        kafkaMemberProducerService.sendRemoveUserFromTaskEvent(memberRemoveRequestDto);
+        return kafkaMemberProducerService.sendRemoveUserFromTaskEvent(memberRemoveRequestDto);
     }
     @Operation(summary = "업무의 담당자들을 가져오기 위한 API", description = "HOST = 150.136.153.235:30443")
     @GetMapping("node2/api/task/v4")

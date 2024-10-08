@@ -329,4 +329,12 @@ public class TaskService {
                 .build();
         userTaskRepository.deleteById(userTaskId);
     }
+    @Transactional(rollbackFor = { Exception.class })
+    public void removeUserFromTaskv2(Long userId, Long taskId) {
+        UserTaskId userTaskId = UserTaskId.builder()
+                .taskId(taskId)
+                .userId(userId)
+                .build();
+        userTaskRepository.deleteById(userTaskId);
+    }
 }
