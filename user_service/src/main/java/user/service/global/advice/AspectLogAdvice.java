@@ -3,7 +3,6 @@ package user.service.global.advice;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AspectLogAdvice {
     private final LogTrace logTrace;
-    private ThreadLocal<TraceStatus> traceStatusThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<TraceStatus> traceStatusThreadLocal = new ThreadLocal<>();
     @Before("@annotation(user.service.global.advice.LogAop)")
     public void doBefore(JoinPoint joinPoint) {
         String message = joinPoint.getSignature().toShortString();
