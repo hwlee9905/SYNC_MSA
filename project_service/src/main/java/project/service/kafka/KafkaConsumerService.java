@@ -146,7 +146,7 @@ public class KafkaConsumerService {
     	System.out.println("icon: " + event);
     }
     @KafkaListener(topics = TOPIC10, groupId = "task-remove-user-group", containerFactory = "kafkaDeleteFromMemberFromTaskEventListenerContainerFactory")
-    public void listenDeleteFromMemberFromTaskEvent(DeleteFromMemberFromTaskEvent event) {
+    public void listenDeleteFromMemberFromTaskEvent(DeleteMemberFromTaskEvent event) {
         try {
             taskService.removeUserFromTask(event);
             log.info("Processed DeleteFromMemberFromTaskEvent");

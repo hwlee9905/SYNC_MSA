@@ -39,8 +39,6 @@ public class MemberService {
      * @param memberMappingToProjectRequestDto
      * @return
      */
-    // New
-    // 수정자 : 강민경
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
         List<String> userIds = memberMappingToProjectRequestDto.getUserIds();
@@ -63,7 +61,6 @@ public class MemberService {
         //프로젝트 존재하지 않을시 보상 트랜잭션 처리
         kafkaMemberProducerService.isExistProjectByMemberAddToProject(projectId, userIds);
         return SuccessResponse.builder().message("멤버 추가 성공").data(Collections.singletonMap("userIds", userIds)).build();
-//        return new SuccessResponse("멤버 추가 성공", userIds);
     }
     
     /**

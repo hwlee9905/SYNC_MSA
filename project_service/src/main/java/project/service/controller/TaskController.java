@@ -33,7 +33,6 @@ public class TaskController {
     public SuccessResponse getUsersFromTask(@RequestParam Long taskId) {
         return taskService.getUserIdsFromTask(taskId);
     }
-    //jwtTEST
     @GetMapping("node2/user/api/test")
     public void projectAPITest() {
         log.info("projectAPITest");
@@ -46,8 +45,5 @@ public class TaskController {
     public ResponseEntity<Resource> getImage(@RequestParam String filename) {
         return taskService.getImage(filename);
     }
-    @PostMapping("node2/task/test")
-    public void testproject(@RequestParam Long taskId, @RequestParam Long userId) {
-        taskService.removeUserFromTaskv2(userId, taskId);
-    }
+
 }
