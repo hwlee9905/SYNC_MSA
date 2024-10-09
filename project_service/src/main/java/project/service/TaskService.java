@@ -307,38 +307,44 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
 
         List<GetTasksByProjectIdResponseDto> tasks = project.getTasks().stream()
-                .filter(task -> task.getDepth() == 0)
-                .map(task -> GetTasksByProjectIdResponseDto.builder()
-                        .taskId(task.getId())
-                        .title(task.getTitle())
-                        .description(task.getDescription())
-                        .startDate(task.getStartDate())
-                        .endDate(task.getEndDate())
-                        .status(task.getStatus())
-                        .depth(task.getDepth())
-                        .progress((float) project.getChildCompleteCount() / project.getChildCount())
-                        .build())
-                .collect(Collectors.toList());
+            .filter(task -> task.getDepth() == 0)
+            .map(task -> GetTasksByProjectIdResponseDto.builder()
+                .taskId(task.getId())
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .startDate(task.getStartDate())
+                .endDate(task.getEndDate())
+                .status(task.getStatus())
+                .depth(task.getDepth())
+                .progress((float) project.getChildCompleteCount() / project.getChildCount())
+                .build())
+            .collect(Collectors.toList());
 
         return SuccessResponse.builder().data(tasks).build();
     }
     @Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
     public void removeUserFromTask(DeleteFromMemberFromTaskEvent event) {
-        log.info("userId : {} taskId : {}", event.getUserId(), event.getTaskId());
+
         log.info("Starting removeUserFromTask transaction");
         UserTaskId userTaskId = UserTaskId.builder()
-                .userId(event.getUserId())
-                .taskId(event.getTaskId())
-                .build();
+            .userId(event.getUserId())
+            .taskId(event.getTaskId())
+            .build();
+        Optional<UserTask> userTask = userTaskRepository.findById(userTaskId);
+        if (userTask.isEmpty()) {
+            log.info("UserTask not found for userId: {}, taskId: {}", event.getUserId(), event.getTaskId());
+            return;
+        }
         userTaskRepository.deleteById(userTaskId);
+        userTaskRepository.flush();
         log.info("Ending removeUserFromTask transaction");
     }
     @Transactional(rollbackFor = { Exception.class })
     public void removeUserFromTaskv2(Long userId, Long taskId) {
         UserTaskId userTaskId = UserTaskId.builder()
-                .taskId(taskId)
-                .userId(userId)
-                .build();
+            .taskId(taskId)
+            .userId(userId)
+            .build();
         userTaskRepository.deleteById(userTaskId);
     }
 }
