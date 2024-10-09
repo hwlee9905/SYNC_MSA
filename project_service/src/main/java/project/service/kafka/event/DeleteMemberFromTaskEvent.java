@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class DeleteFromMemberFromTaskEvent {
+public class DeleteMemberFromTaskEvent {
     private Long taskId;
     private Long userId;
 }
