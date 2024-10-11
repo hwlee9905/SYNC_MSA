@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import user.service.AlarmService;
 import user.service.UserService;
+import user.service.kafka.alarm.KafkaAlarmProducerService;
 
 @RestController
 @RequestMapping(value = "/api/user/alarm", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -19,6 +20,7 @@ import user.service.UserService;
 public class AlarmController {
 	private final AlarmService alarmService;
 	private final UserService userService;
+	private final KafkaAlarmProducerService kafkaAlarmProducerService;
 
 	private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 

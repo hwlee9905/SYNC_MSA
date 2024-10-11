@@ -1,17 +1,18 @@
 package project.service;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.UUID;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
 import project.service.entity.Task;
 import project.service.entity.TaskImage;
-import project.service.kafka.event.TaskCreateEvent;
 import project.service.kafka.event.TaskUpdateEvent;
 import project.service.repository.TaskImageRepository;
 @RequiredArgsConstructor
