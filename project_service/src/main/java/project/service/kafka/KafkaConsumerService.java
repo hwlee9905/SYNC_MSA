@@ -154,4 +154,13 @@ public class KafkaConsumerService {
             log.error(e.getMessage());
         }
     }
+    @KafkaListener(topics = "task-remove-user-topic", groupId = "task-remove-user-group", containerFactory = "kafkaDeleteFromMemberFromTaskEventListenerContainerFactory")
+    public void listenDeleteFromMemberFromTaskEventTest(DeleteMemberFromTaskEvent event) {
+        try {
+            taskService.removeUserFromTask(event);
+            log.info("Processed DeleteFromMemberFromTaskEvent");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
 }
