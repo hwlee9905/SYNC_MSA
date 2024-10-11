@@ -11,6 +11,7 @@ import user.service.MemberService;
 import user.service.global.advice.LogAop;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.member.KafkaMemberProducerService;
+import user.service.kafka.project.KafkaProjectProducerService;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
@@ -22,6 +23,7 @@ public class MemberController {
     private final MemberService memberService;
     private final KafkaTaskProducerService kafkaTaskProducerService;
     private final KafkaMemberProducerService kafkaMemberProducerService;
+    private final KafkaProjectProducerService kafkaProjectProducerService;
     
     @Operation(summary = "프로젝트에 멤버를 추가하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
             "ValidationDetails : MemberMappingToProjectRequestDto")
@@ -46,7 +48,7 @@ public class MemberController {
     @LogAop
     public SuccessResponse deleteUsersFromTask(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
         //없는 task id인 경우 보상트랜잭션 필요
-        return kafkaTaskProducerService.sendRemoveUserFromTaskEvent(memberRemoveRequestDto);
+        return kafkaMemberProducerService.sendRemoveUserFromTaskEvent(memberRemoveRequestDto);
     }
     @Operation(summary = "업무의 담당자들을 가져오기 위한 API", description = "HOST = 150.136.153.235:30443")
     @GetMapping("node2/api/task/v4")

@@ -40,7 +40,6 @@ public class KafkaTaskProducerService {
     private static final String TOPIC1 = "task-add-user-topic";
     private static final String TOPIC2 = "task-delete-topic";
     private static final String TOPIC3 = "task-update-topic";
-    private static final String TOPIC4 = "task-remove-user-topic";
     /**
      * 업무 생성 이벤트 생성
      * @param createTaskRequestDto
@@ -102,14 +101,7 @@ public class KafkaTaskProducerService {
             return SuccessResponse.builder().message("모든 유저들이 같은 프로젝트에 속해있지 않습니다.").data("").build();
         }
     }
-    public SuccessResponse sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
-        Long userId = userService.getUserEntityId(memberRemoveRequestDto.getUserId());
-        DeleteMemberFromTaskEvent event = new DeleteMemberFromTaskEvent(userId, memberRemoveRequestDto.getTaskId());
-        ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC4, event);
-        record.headers().remove("spring.json.header.types");
-        kafkaTemplate.send(record);
-        return SuccessResponse.builder().message("업무 담당자 삭제 이벤트 생성").data(event).build();
-    }
+
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         // 프로젝트의 멤버인지 확인

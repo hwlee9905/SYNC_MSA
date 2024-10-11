@@ -326,13 +326,30 @@ public class TaskService {
     }
     @Transactional(rollbackFor = { Exception.class })
     public void removeUserFromTask(DeleteMemberFromTaskEvent event) {
-        log.info("Starting removeUserFromTaskv1 transaction");
-                UserTaskId userTaskId = UserTaskId.builder()
-            .taskId(event.getTaskId())
-            .userId(event.getUserId())
-            .build();
-        log.info("UserTask found for userId: {}, taskId: {}", event.getUserId(), event.getTaskId());
+
+        log.info("Starting removeUserFromTask transaction");
+        UserTaskId userTaskId = UserTaskId.builder()
+                .userId(event.getUserId())
+                .taskId(event.getTaskId())
+                .build();
+        Optional<UserTask> userTask = userTaskRepository.findById(userTaskId);
+        if (userTask.isEmpty()) {
+            log.info("UserTask not found for userId: {}, taskId: {}", event.getUserId(), event.getTaskId());
+            return;
+        }
         userTaskRepository.deleteById(userTaskId);
-        log.info("Ending removeUserFromTaskv1 transaction");
+        log.info("Ending removeUserFromTask transaction");
     }
+
+//    @Transactional(rollbackFor = { Exception.class })
+//    public void removeUserFromTask(DeleteMemberFromTaskEvent event) {
+//        log.info("Starting removeUserFromTaskv1 transaction");
+//                UserTaskId userTaskId = UserTaskId.builder()
+//            .taskId(event.getTaskId())
+//            .userId(event.getUserId())
+//            .build();
+//        log.info("UserTask found for userId: {}, taskId: {}", event.getUserId(), event.getTaskId());
+//        userTaskRepository.deleteById(userTaskId);
+//        log.info("Ending removeUserFromTaskv1 transaction");
+//    }
 }

@@ -10,11 +10,14 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
+import user.service.global.advice.SuccessResponse;
 import user.service.global.exception.ImageConversionFailedException;
 import user.service.global.util.ExtsnFilter;
+import user.service.kafka.member.event.DeleteMemberFromTaskEvent;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
+import user.service.web.dto.member.request.MemberRemoveRequestDto;
 import user.service.web.dto.project.request.CreateProjectRequestDto;
 import user.service.web.dto.project.request.DeleteProjectRequestDto;
 import user.service.web.dto.project.request.UpdateProjectRequestDto;
@@ -30,7 +33,7 @@ public class KafkaProjectProducerService {
     private static final String TOPIC = "project-create-topic";
     private static final String TOPIC1 = "project-delete-topic";
     private static final String TOPIC2 = "project-update-topic";
-    
+
     public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, MultipartFile img, String userId) {
     	ProjectCreateEvent event = null;
         //이모지, 아이콘 둘다 존재할경우 예외 처리해야함
