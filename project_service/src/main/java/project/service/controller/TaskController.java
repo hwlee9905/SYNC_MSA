@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.TaskService;
-import project.service.dto.request.GetTaskRequestDto;
 import project.service.global.SuccessResponse;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
