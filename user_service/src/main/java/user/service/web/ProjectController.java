@@ -49,7 +49,7 @@ public class ProjectController {
             "ValidationDetails : UpdateProjectRequestDto")
     @PutMapping("/user/api/project")
     @LogAop
-    public ResponseEntity<SuccessResponse> updateProject(@RequestBody @Valid UpdateProjectRequestDto updateProjectRequestDto, @RequestPart(value = "img", required = false) MultipartFile img) {
+    public ResponseEntity<SuccessResponse> updateProject(@RequestBody @Valid UpdateProjectRequestDto updateProjectRequestDto, @RequestPart(value = "thumbnailImage", required = false) MultipartFile img) {
         kafkaProducerService.updateProject(updateProjectRequestDto, img);
         return ResponseEntity.ok().body(SuccessResponse.builder().message("프로젝트 업데이트 이벤트 생성").build());
     }
