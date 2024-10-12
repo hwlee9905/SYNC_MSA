@@ -94,8 +94,8 @@ public class ProjectService {
 					return new GetProjectsResponseDto(
 						project.getId(),
 						project.getTitle(),
-						project.getSubTitle(),
 						project.getDescription(),
+						project.getSubTitle(),
 						project.getStartDate(),
 						project.getEndDate(),
 						project.getThumbnailType() == 'M' ? request.getScheme() + "://" +request.getServerName() + ":" + request.getServerPort() + "/project/thumbnail/" + project.getThumbnail() : project.getThumbnail(),
