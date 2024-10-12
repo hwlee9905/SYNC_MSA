@@ -17,6 +17,7 @@ import user.service.entity.User;
 import user.service.global.advice.SuccessResponse;
 import user.service.global.exception.ImageConversionFailedException;
 import user.service.global.util.ExtsnFilter;
+import user.service.kafka.member.event.DeleteMemberFromTaskEvent;
 import user.service.kafka.task.event.TaskCreateEvent;
 import user.service.kafka.task.event.TaskDeleteEvent;
 import user.service.kafka.task.event.TaskUpdateEvent;
@@ -90,7 +91,6 @@ public class KafkaTaskProducerService {
     public SuccessResponse sendAddUserToTaskEvent(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
         Boolean inSameProject = memberService.allMembersInSameProject(memberMappingToTaskRequestDto);
         if(inSameProject){
-
             List<Long> userIds = memberMappingToTaskRequestDto.getUserIds();
             UserAddToTaskEvent event = new UserAddToTaskEvent(userIds, memberMappingToTaskRequestDto.getTaskId());
             ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
@@ -101,6 +101,7 @@ public class KafkaTaskProducerService {
             return SuccessResponse.builder().message("모든 유저들이 같은 프로젝트에 속해있지 않습니다.").data("").build();
         }
     }
+
     public SuccessResponse sendDeleteTaskEvent(DeleteTaskRequestDto deleteTaskRequestDto) {
         User user = userService.findUserEntity(userService.getCurrentUserId());
         // 프로젝트의 멤버인지 확인

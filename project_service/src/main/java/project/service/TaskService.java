@@ -11,11 +11,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -54,7 +57,7 @@ public class TaskService {
     private final FileStorageService fileStorageService;
     private final TaskImageRepository taskImageRepository;
     private final FileManagement fileManagement;
-    
+
     @Transactional(rollbackFor = { Exception.class })
     public ResponseEntity<Resource> getImage(String filename) {
         try {
@@ -308,27 +311,47 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
 
         List<GetTasksByProjectIdResponseDto> tasks = project.getTasks().stream()
-                .filter(task -> task.getDepth() == 0)
-                .map(task -> GetTasksByProjectIdResponseDto.builder()
-                        .id(task.getId())
-                        .title(task.getTitle())
-                        .description(task.getDescription())
-                        .startDate(task.getStartDate())
-                        .endDate(task.getEndDate())
-                        .status(task.getStatus())
-                        .depth(task.getDepth())
-                        .progress((float) project.getChildCompleteCount() / project.getChildCount())
-                        .build())
-                .collect(Collectors.toList());
+            .filter(task -> task.getDepth() == 0)
+            .map(task -> GetTasksByProjectIdResponseDto.builder()
+                .taskId(task.getId())
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .startDate(task.getStartDate())
+                .endDate(task.getEndDate())
+                .status(task.getStatus())
+                .depth(task.getDepth())
+                .progress((float) project.getChildCompleteCount() / project.getChildCount())
+                .build())
+            .collect(Collectors.toList());
 
         return SuccessResponse.builder().data(tasks).build();
     }
     @Transactional(rollbackFor = { Exception.class })
-    public void removeUserFromTask(DeleteFromMemberFromTaskEvent event) {
+    public void removeUserFromTask(DeleteMemberFromTaskEvent event) {
+
+        log.info("Starting removeUserFromTask transaction");
         UserTaskId userTaskId = UserTaskId.builder()
                 .userId(event.getUserId())
                 .taskId(event.getTaskId())
                 .build();
+        Optional<UserTask> userTask = userTaskRepository.findById(userTaskId);
+        if (userTask.isEmpty()) {
+            log.info("UserTask not found for userId: {}, taskId: {}", event.getUserId(), event.getTaskId());
+            return;
+        }
         userTaskRepository.deleteById(userTaskId);
+        log.info("Ending removeUserFromTask transaction");
     }
+
+//    @Transactional(rollbackFor = { Exception.class })
+//    public void removeUserFromTask(DeleteMemberFromTaskEvent event) {
+//        log.info("Starting removeUserFromTaskv1 transaction");
+//                UserTaskId userTaskId = UserTaskId.builder()
+//            .taskId(event.getTaskId())
+//            .userId(event.getUserId())
+//            .build();
+//        log.info("UserTask found for userId: {}, taskId: {}", event.getUserId(), event.getTaskId());
+//        userTaskRepository.deleteById(userTaskId);
+//        log.info("Ending removeUserFromTaskv1 transaction");
+//    }
 }

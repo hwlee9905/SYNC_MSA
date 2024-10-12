@@ -1,11 +1,11 @@
 package project.service.kafka.event;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
-@AllArgsConstructor
+@Setter
 @Getter
-public class DeleteFromMemberFromTaskEvent {
+public class DeleteMemberFromTaskEvent {
     private Long taskId;
     private Long userId;
 }

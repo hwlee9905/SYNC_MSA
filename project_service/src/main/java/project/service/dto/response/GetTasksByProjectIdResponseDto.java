@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 public class GetTasksByProjectIdResponseDto {
-    private Long id;
+    private Long taskId;
     private String title;
     private String description;
     private Date startDate;

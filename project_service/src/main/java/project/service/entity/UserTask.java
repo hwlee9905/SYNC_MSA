@@ -21,8 +21,11 @@ public class UserTask {
     @EmbeddedId
     private UserTaskId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("taskId")
     @JoinColumn(name = "task_id")
     private Task task;
+
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private long userId;
 }

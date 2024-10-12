@@ -3,6 +3,7 @@ package project.service.controller;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,11 +26,10 @@ public class TaskController {
     public SuccessResponse getTasksByProjectId(@RequestParam Long projectId)  {
         return taskService.getTaskByProjectId(projectId);
     }
-    @GetMapping("node2/project/task/api/v1/users")
-    public SuccessResponse getUserFromTask(@RequestParam Long taskId) {
+    @GetMapping("node2/api/task/v4")
+    public SuccessResponse getUsersFromTask(@RequestParam Long taskId) {
         return taskService.getUserIdsFromTask(taskId);
     }
-    //jwtTEST
     @GetMapping("node2/user/api/test")
     public void projectAPITest() {
         log.info("projectAPITest");
@@ -42,4 +42,5 @@ public class TaskController {
     public ResponseEntity<Resource> getImage(@RequestParam String filename) {
         return taskService.getImage(filename);
     }
+
 }

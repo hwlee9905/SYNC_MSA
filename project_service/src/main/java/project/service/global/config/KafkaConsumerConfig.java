@@ -95,7 +95,7 @@ public class KafkaConsumerConfig {
 	}
 	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaDeleteFromMemberFromTaskEventListenerContainerFactory() {
-		return createFactory(DeleteFromMemberFromTaskEvent.class.getName());
+		return createFactory(DeleteMemberFromTaskEvent.class.getName());
 	}
 	@Bean
     public KafkaAdmin kafkaAdmin() {
