@@ -75,17 +75,20 @@ public class KafkaProjectProducerService {
     
     public void updateProject(UpdateProjectRequestDto updateProjectRequestDto, MultipartFile img) {
     	ProjectUpdateEvent event = null;
-    	if (updateProjectRequestDto.getIcon() == null) {
-    		byte[] imgByte = null;
-    		try {
-    			imgByte = img.getBytes();
-			} catch (IOException e) {
-				throw new ImageConversionFailedException(e.getMessage());
-			}
-    		event = new ProjectUpdateEvent(updateProjectRequestDto, imgByte, extsnFilter.getExtension(img));
+    	if (updateProjectRequestDto.getIcon() != null) {
+            event = new ProjectUpdateEvent(updateProjectRequestDto, null, null);
+
+    	} else if (img != null) {
+            byte[] imgByte = null;
+            try {
+                imgByte = img.getBytes();
+            } catch (IOException e) {
+                throw new ImageConversionFailedException(e.getMessage());
+            }
+            event = new ProjectUpdateEvent(updateProjectRequestDto, imgByte, extsnFilter.getExtension(img));
     	} else {
-    		event = new ProjectUpdateEvent(updateProjectRequestDto, null, null );
-    	}
+            event = new ProjectUpdateEvent(updateProjectRequestDto, null, null);
+        }
 //        ProjectUpdateEvent event = new ProjectUpdateEvent(updateProjectRequestDto);
         //프로젝트 관리자인지 확인
         memberService.isManager(
