@@ -75,6 +75,7 @@ public class KafkaProjectProducerService {
     
     public void updateProject(UpdateProjectRequestDto updateProjectRequestDto, MultipartFile img) {
     	ProjectUpdateEvent event = null;
+        //이모지, 아이콘 둘다 존재할경우 예외 처리해야함
     	if (updateProjectRequestDto.getIcon() != null) {
             event = new ProjectUpdateEvent(updateProjectRequestDto, null, null);
 

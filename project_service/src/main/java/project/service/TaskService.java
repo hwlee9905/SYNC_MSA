@@ -11,22 +11,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
-import project.service.dto.request.MemberRemoveRequestDto;
-import project.service.dto.response.*;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
 import project.service.dto.response.GetTaskResponseDto;
