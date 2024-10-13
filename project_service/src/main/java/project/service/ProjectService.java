@@ -1,21 +1,15 @@
 package project.service;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.response.GetProjectsResponseDto;
@@ -25,6 +19,11 @@ import project.service.global.util.FileManagement;
 import project.service.kafka.event.ProjectDeleteEvent;
 import project.service.kafka.event.ProjectUpdateEvent;
 import project.service.repository.ProjectRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -104,7 +103,7 @@ public class ProjectService {
 					);
 				})
 				.collect(Collectors.toList());
-		return SuccessResponse.builder().message("프로젝트 조회 완료").data(Collections.singletonMap("projectInfos", result)).build();
+		return SuccessResponse.builder().message("프로젝트 조회 완료").data(result).build();
 	}
 	
 	public ResponseEntity<Resource> getProjectThumbnail(String thumbnail) {
