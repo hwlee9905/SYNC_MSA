@@ -8,7 +8,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class RollbackMemberAddToProjectEvent {
-
     Long projectId;
     List<String> userIds;
 }
