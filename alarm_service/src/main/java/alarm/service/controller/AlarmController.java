@@ -20,5 +20,9 @@ public class AlarmController {
 	public ResponseEntity<SuccessResponse> getAlarmHistory(@RequestParam(name="userId") long userId){
 		return ResponseEntity.ok(alarmService.getAlarmHistory(userId));
 	}
-
+	
+	@GetMapping("/url")
+	public ResponseEntity<SuccessResponse> getAlarmUrl(@RequestParam(name="userId") long userId){
+		return ResponseEntity.ok().body(alarmService.getAlarmUrl(userId));
+	}
 }

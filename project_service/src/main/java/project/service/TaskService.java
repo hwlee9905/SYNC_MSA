@@ -11,14 +11,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -37,7 +34,7 @@ import project.service.entity.UserTask;
 import project.service.entity.UserTaskId;
 import project.service.global.SuccessResponse;
 import project.service.global.util.FileManagement;
-import project.service.kafka.event.DeleteFromMemberFromTaskEvent;
+import project.service.kafka.event.DeleteMemberFromTaskEvent;
 import project.service.kafka.event.TaskCreateEvent;
 import project.service.kafka.event.TaskDeleteEvent;
 import project.service.kafka.event.TaskUpdateEvent;
