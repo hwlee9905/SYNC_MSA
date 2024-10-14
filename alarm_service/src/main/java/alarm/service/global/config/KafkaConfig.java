@@ -17,22 +17,22 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfig {
-	private final ApplicationConfig applicationConfig;
-	
-	@Bean
-	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory(
-			ConsumerFactory<String, String> consumerFactory) {
-		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-		factory.setConsumerFactory(consumerFactory);
-		factory.getContainerProperties().setGroupId("console-consumer-" + System.currentTimeMillis());
-		factory.setConcurrency(3);
-		return factory;
-	}
-	
-	@Bean
-    public KafkaAdmin kafkaAdmin() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, applicationConfig.getKafkaHost());
-        return new KafkaAdmin(configs);
-    }
+//	private final ApplicationConfig applicationConfig;
+//	
+//	@Bean
+//	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory(
+//			ConsumerFactory<String, String> consumerFactory) {
+//		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+//		factory.setConsumerFactory(consumerFactory);
+//		factory.getContainerProperties().setGroupId("console-consumer-" + System.currentTimeMillis());
+//		factory.setConcurrency(3);
+//		return factory;
+//	}
+//	
+//	@Bean
+//    public KafkaAdmin kafkaAdmin() {
+//        Map<String, Object> configs = new HashMap<>();
+//        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, applicationConfig.getKafkaHost());
+//        return new KafkaAdmin(configs);
+//    }
 }

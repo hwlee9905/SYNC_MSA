@@ -1,14 +1,14 @@
 package alarm.service.repository;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import alarm.service.entity.Alarm;
+import alarm.service.entity.AlarmUrl;
 
 @Repository
-public interface AlarmRepository extends JpaRepository<Alarm, UUID>{
-	List<Alarm> findByUserId(long userId);
+public interface AlarmUrlRepository extends JpaRepository<AlarmUrl, UUID>{
+	Optional<AlarmUrl> findByUserId(Long userId);
 }
