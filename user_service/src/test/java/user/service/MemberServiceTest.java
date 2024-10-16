@@ -25,14 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 //실제 DB와 상호작용 하기 위해 Application Context를 로드
 @SpringBootTest
 public class MemberServiceTest {
-    @Value("${spring.datasource.url}")
-    private String DbUrl;
-    @Value("${test.datasource.username.project}")
-    private String ProjectDbUsername;
-    @Value("${spring.datasource.password}")
-    private String DbPassword;
-    @Value("${spring.datasource.driver-class-name}")
-    private String DbDriverClassName;
+
     @InjectMocks
     private MemberController memberController;
 
@@ -40,13 +33,13 @@ public class MemberServiceTest {
     private DataSource dataSource;
 
     private JdbcTemplate jdbcTemplate;
-    //Project Service DB 설정
+
     @DynamicPropertySource
-    static void dataSourceProperties(DynamicPropertyRegistry registry, MemberServiceTest memberServiceTest) {
-        registry.add("spring.datasource.url", () -> memberServiceTest.DbUrl);
-        registry.add("spring.datasource.username", () -> memberServiceTest.ProjectDbUsername);
-        registry.add("spring.datasource.password", () -> memberServiceTest.DbPassword);
-        registry.add("spring.datasource.driver-class-name", () -> memberServiceTest.DbDriverClassName);
+    static void dataSourceProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", () -> System.getProperty("spring.datasource.url"));
+        registry.add("spring.datasource.username", () -> System.getProperty("test.datasource.username.project"));
+        registry.add("spring.datasource.password", () -> System.getProperty("spring.datasource.password"));
+        registry.add("spring.datasource.driver-class-name", () -> System.getProperty("spring.datasource.driver-class-name"));
     }
 
     @BeforeEach
@@ -56,20 +49,22 @@ public class MemberServiceTest {
         String insertSql = "INSERT INTO user_task (task_id, user_id) VALUES (?, ?)";
         jdbcTemplate.update(insertSql, 1L, "TestLoginID");
     }
+
     @AfterEach
     public void tearDown() {
         // 테스트 데이터 정리
         String deleteSql = "DELETE FROM user_task WHERE task_id = ? AND user_id = ?";
         jdbcTemplate.update(deleteSql, 1L, "TestLoginID");
     }
+
     @Test
     public void testDeleteUsersFromTask() throws InterruptedException {
         // Given: 테스트에 필요한 데이터 설정
         Long taskId = 1L;
         MemberRemoveRequestDto memberRemoveRequestDto = MemberRemoveRequestDto.builder()
-            .taskId(taskId)
-            .userId("TestLoginID")
-            .build();
+                .taskId(taskId)
+                .userId("TestLoginID")
+                .build();
 
         // When: API 호출하여 이벤트 발행
         memberController.deleteUsersFromTask(memberRemoveRequestDto);
