@@ -45,12 +45,14 @@ public class MemberServiceTest {
         String insertSql = "INSERT INTO user_task (task_id, user_id) VALUES (?, ?)";
         jdbcTemplate.update(insertSql, 1L, "TestLoginID");
     }
+
     @AfterEach
     public void tearDown() {
         // 테스트 데이터 정리
         String deleteSql = "DELETE FROM user_task WHERE task_id = ? AND user_id = ?";
         jdbcTemplate.update(deleteSql, 1L, "TestLoginID");
     }
+
     @Test
     public void testDeleteUsersFromTask() throws InterruptedException {
         // Given: 테스트에 필요한 데이터 설정
