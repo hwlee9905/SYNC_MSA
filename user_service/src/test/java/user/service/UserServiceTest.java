@@ -12,6 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +23,10 @@ import user.service.entity.Authentication;
 import user.service.entity.InfoSet;
 import user.service.entity.Role;
 import user.service.entity.User;
+import user.service.global.advice.SuccessResponse;
 import user.service.repository.AuthenticationRepository;
 import user.service.repository.UserRepository;
+import user.service.web.dto.UserInfoResponseDtoV1;
 import user.service.web.dto.request.SignupRequestDto;
 
 @Slf4j
@@ -33,6 +39,8 @@ public class UserServiceTest {
 
 	@Mock
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	@Mock
+	private UserDetails userDetails;
 	// 실제 객체 주입
 	@InjectMocks
 	private UserService userService;
@@ -40,6 +48,9 @@ public class UserServiceTest {
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
+		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+		securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null));
+		SecurityContextHolder.setContext(securityContext);
 	}
 
 	@Test
@@ -73,5 +84,31 @@ public class UserServiceTest {
 		assertEquals(signupRequestDto.getNickname(), result.getNickname());
 		verify(authenticationRepository, times(1)).saveAndFlush(any(Authentication.class));
 		verify(userRepository, times(1)).saveAndFlush(any(User.class));
+	}
+	@Test
+	public void testGetCurrentUserInfo() {
+		// given
+		String userId = "testUser";
+		User user = new User();
+		user.setId(1L);
+		user.setUsername("Test User");
+		user.setNickname("Tester");
+		user.setPosition("Developer");
+
+		when(userDetails.getUsername()).thenReturn(userId);
+		when(userRepository.findByAuthenticationUserId(userId)).thenReturn(user);
+
+		// when
+		SuccessResponse response = userService.getUserInfo();
+
+		// then
+		assertNotNull(response);
+		assertEquals("유저 정보 조회 성공", response.getMessage());
+
+		UserInfoResponseDtoV1 userInfo = (UserInfoResponseDtoV1) response.getData();
+		assertNotNull(userInfo);
+		assertEquals("Test User", userInfo.getUsername());
+		assertEquals("Tester", userInfo.getNickname());
+		assertEquals("Developer", userInfo.getPosition());
 	}
 }
