@@ -69,6 +69,9 @@ public class MemberController {
     public SuccessResponse getUsersFromProject(@RequestParam List<Long> projectIds) {
         return memberService.getUsersFromProjects(projectIds);
     }
+    //isManager ++
+
+
 //    @Operation(summary = "프로젝트에서 멤버를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443")
 //    @DeleteMapping("user/api/member/project")
 //    public SuccessResponse deleteMemberFromProject(@RequestBody @Valid MemberRemoveRequestDto memberRemoveRequestDto) {
