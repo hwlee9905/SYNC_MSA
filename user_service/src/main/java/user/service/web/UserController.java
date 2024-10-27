@@ -39,11 +39,11 @@ public class UserController {
 		UserDetails userDetails = userService.loadUserByUsername(userId);
 		return ResponseEntity.ok().body(userService.modifyPwd(body, userDetails));
 	}
-//	@PutMapping("Info")
-//	public ResponseEntity<SuccessResponse> modifyUserInfo(@RequestBody @Valid ModifyUserInfoRequestDto body) {
-//		String userId = userService.getCurrentUserId();
-//		return ResponseEntity.ok().body(userService.modifyUserInfo(body, userId));
-//	}
+	@PutMapping("Info")
+	public ResponseEntity<SuccessResponse> modifyUserInfo(@RequestBody @Valid ModifyUserInfoRequestDto body) {
+		String userId = userService.getCurrentUserId();
+		return ResponseEntity.ok().body(userService.modifyUserInfo(body, userId));
+	}
 //	@ResponseBody
 //	@DeleteMapping("remove")
 //	public ResponseEntity<ResponseMessage> removeUser() {

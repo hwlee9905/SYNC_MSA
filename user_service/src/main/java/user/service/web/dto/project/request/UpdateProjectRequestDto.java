@@ -25,10 +25,10 @@ public class UpdateProjectRequestDto {
     
     @Schema(description = "아이콘")
     private String icon;
-    
-    @NotNull(message = "시작일은 필수 입력 값 입니다.")
+
+    @Schema(description = "프로젝트 시작일")
     private Date startDate;
-    
-    @NotNull(message = "종료일은 필수 입력 값 입니다.")
+
+    @Schema(description = "프로젝트 종료일")
     private Date endDate;
 }
