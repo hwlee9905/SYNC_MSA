@@ -1,37 +1,21 @@
 package project.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import project.service.dto.request.CreateTaskRequestDto;
 import project.service.dto.request.UpdateTaskRequestDto;
 import project.service.dto.response.GetMemberFromTaskResponseDto;
 import project.service.dto.response.GetTaskResponseDto;
 import project.service.dto.response.GetTasksByProjectIdResponseDto;
 import project.service.dto.response.GetTasksResponseDto;
-import project.service.entity.Project;
-import project.service.entity.Task;
-import project.service.entity.TaskImage;
-import project.service.entity.UserTask;
-import project.service.entity.UserTaskId;
+import project.service.entity.*;
 import project.service.global.SuccessResponse;
 import project.service.global.util.FileManagement;
 import project.service.kafka.event.*;
@@ -39,6 +23,14 @@ import project.service.repository.ProjectRepository;
 import project.service.repository.TaskImageRepository;
 import project.service.repository.TaskRepository;
 import project.service.repository.UserTaskRepository;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -217,13 +209,16 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + createTaskRequestDto.getProjectId()));
         Optional<Task> parentTask = taskRepository.findById(createTaskRequestDto.getParentTaskId());
 
+        Date startDate = createTaskRequestDto.getStartDate() != null ? createTaskRequestDto.getStartDate() : null;
+        Date endDate = createTaskRequestDto.getEndDate() != null ? createTaskRequestDto.getEndDate() : null;
+
         Task task = new Task();
         task.setTitle(createTaskRequestDto.getTitle());
         task.setChildCompleteCount(0);
         task.setChildCount(0);
         task.setDescription(createTaskRequestDto.getDescription());
-        task.setStartDate(createTaskRequestDto.getStartDate());
-        task.setEndDate(createTaskRequestDto.getEndDate());
+        task.setStartDate(startDate);
+        task.setEndDate(endDate);
         task.setStatus(createTaskRequestDto.getStatus());
         task.setProject(project);
 

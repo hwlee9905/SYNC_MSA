@@ -47,13 +47,7 @@ public class TaskController {
         }
         return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto, descriptionImages, thumbnailImage);
     }
-    
-//    public void createTask(HttpServletRequest request) throws ServletException, IOException {
-//        log.info("request : {}", request);
-//        Collection<Part> parts = request.getParts();
-//        log.info("parts={}", parts);
-////        return kafkaTaskProducerService.sendCreateTaskEvent(createTaskRequestDto,descriptionImages);
-//    }
+
     
     //해당 업무의 자식 업무만 조회합니다.
     @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
