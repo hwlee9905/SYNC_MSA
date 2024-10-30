@@ -117,6 +117,7 @@ public class MemberService {
      */
     @Transactional(rollbackFor = { Exception.class })
     public void deleteMembersByProjectId(Long projectId) {
+        //Project Service에서 해당 멤버들이 담당하는 task에 대해서도 담당자 삭제 필요
         List<Member> members = memberRepository.findByProjectId(projectId);
         memberRepository.deleteAll(members);
     }
@@ -199,8 +200,4 @@ public class MemberService {
     	return count;
     }
 
-    public SuccessResponse deleteMemberFromProject(MemberRemoveRequestDto memberRemoveRequestDto) {
-        // 멤버 삭제 추가
-        return SuccessResponse.builder().message("멤버 삭제 완료").build();
-    }
 }
