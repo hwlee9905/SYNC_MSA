@@ -33,14 +33,18 @@ public class UserController {
 	public SuccessResponse getUsersInfo(@Parameter(description = "존재하지 않는 유저 아이디 입력시 오류 발생") @RequestParam List<Long> userIds){
 		return userService.getUsersInfo(userIds);
 	}
+	@Operation(summary = "유저의 비밀번호를 변경하는 API", description = "HOST = 150.136.153.235:30443")
 	@PutMapping("pwd")
+	@LogAop
 	public ResponseEntity<SuccessResponse> modifyPwd(@Valid @RequestBody ModifyPwdRequestDto body){
 		String userId = userService.getCurrentUserId();
 		UserDetails userDetails = userService.loadUserByUsername(userId);
 		return ResponseEntity.ok().body(userService.modifyPwd(body, userDetails));
 	}
-	@PutMapping("Info")
-	public ResponseEntity<SuccessResponse> modifyUserInfo(@RequestBody @Valid ModifyUserInfoRequestDto body) {
+	@Operation(summary = "유저의 정보를 변경하는 API", description = "HOST = 150.136.153.235:30443")
+	@PutMapping("info")
+	@LogAop
+	public ResponseEntity<SuccessResponse> modifyUserInfo(@RequestBody ModifyUserInfoRequestDto body) {
 		String userId = userService.getCurrentUserId();
 		return ResponseEntity.ok().body(userService.modifyUserInfo(body, userId));
 	}
