@@ -1,9 +1,15 @@
 package user.service.web.dto.request;
 
-import lombok.Data;
+import jakarta.persistence.Lob;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class ModifyUserInfoRequestDto {
-	private String type;
-	private String value;
+	private String username;
+	private String nickname;
+	private String position;
+	@Lob
+	private String introduction;
 }

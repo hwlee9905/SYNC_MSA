@@ -30,4 +30,5 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
 	Long countByProjectId(@Param("projectId") Long projectId);
 
     Optional<Member> findMemberByUserId(Long userId);
+
 }

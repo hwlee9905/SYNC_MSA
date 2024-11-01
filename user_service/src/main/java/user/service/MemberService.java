@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import user.service.web.dto.member.MemberInfoResponseDto;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
 import user.service.web.dto.member.request.MemberRemoveRequestDto;
+import user.service.web.dto.project.request.UpdateMemberRequestDto;
 import user.service.web.dto.project.response.GetUserIdsByProjectsResponseDto;
 
 @Service
@@ -79,13 +82,13 @@ public class MemberService {
      * @param memberId
      * @return
      */
-    @Transactional(rollbackFor = { Exception.class })
     public void isManager(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
         if (member.get().getIsManager() != 1 && member.get().getIsManager() != 2) {
-            throw new InvalidValueException("해당 멤버는 생성자가 아닙니다.");
+            throw new InvalidValueException("해당 멤버는 관리자가 아닙니다.");
         }
     }
+
     public void isCreator(Long memberId) {
         Optional<Member> member = memberRepository.findById(memberId);
         if (member.get().getIsManager() != 2) {
@@ -200,4 +203,17 @@ public class MemberService {
     	return count;
     }
 
+    @Transactional(rollbackFor = { Exception.class })
+    public SuccessResponse updateMember(UpdateMemberRequestDto updateMemberRequestDto) {
+        Member member = memberRepository.findMemberByUserIdAndProjectId(
+                        userService.getUserEntityId(updateMemberRequestDto.getUserId()), updateMemberRequestDto.getProjectId())
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with UserId: "
+                        + updateMemberRequestDto.getUserId() + " and ProjectId: " + updateMemberRequestDto.getProjectId()));
+
+        member.setIsManager(updateMemberRequestDto.getIsManager());
+
+        memberRepository.save(member);
+
+        return SuccessResponse.builder().message("멤버 정보 수정 완료.").build();
+    }
 }

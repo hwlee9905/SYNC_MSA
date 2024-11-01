@@ -17,14 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import user.service.entity.Authentication;
-import user.service.entity.InfoSet;
-import user.service.entity.Role;
-import user.service.entity.User;
+import user.service.entity.*;
 import user.service.global.advice.ErrorCode;
 import user.service.global.advice.SuccessResponse;
 import user.service.global.exception.AuthenticationFailureException;
-import user.service.global.exception.IdenticalValuesCannotChangedException;
 import user.service.global.exception.UnknownException;
 import user.service.global.exception.UserIdDuplicatedException;
 import user.service.global.exception.UserNotFoundException;
@@ -32,6 +28,7 @@ import user.service.jwt.dto.AuthTokenDto;
 import user.service.jwt.dto.CustomUserDetails;
 import user.service.oauth2.CustomOAuth2User;
 import user.service.repository.AuthenticationRepository;
+import user.service.repository.MemberRepository;
 import user.service.repository.UserRepository;
 import user.service.web.dto.UserInfoResponseDtoV1;
 import user.service.web.dto.UserInfoResponseDtoV2;
@@ -46,6 +43,7 @@ public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final AuthenticationRepository authenticationRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final MemberRepository memberRepository;
 	/**
 	 * 사용자 존재 여부 확인
 	 * @param userId
@@ -184,48 +182,27 @@ public class UserService implements UserDetailsService {
 	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse modifyUserInfo(ModifyUserInfoRequestDto body, String userId) {
 		User user = userRepository.findByAuthenticationUserId(userId);
-		user = typeToSet(body, user);
-		try {
-			userRepository.saveAndFlush(user);
-		} catch (Exception e) {
-			throw new UnknownException(e.getMessage());
+		if (user == null) {
+			throw new UserNotFoundException("User not found with ID: " + userId);
 		}
-		return SuccessResponse.builder().message("수정 되었습니다.").build();
-	}
-	private User typeToSet(ModifyUserInfoRequestDto body, User user) {
-		String type = body.getType();
-		String value = body.getValue();
-		switch (type) {
-		case "N":
-			if (user.getNickname() != null && user.getNickname().equals(value)){
-				throw new IdenticalValuesCannotChangedException(value);
-			} 
-			user.setNickname(value);
-			break;
-		case "P":
-			if (user.getPosition() != null && user.getPosition().equals(value)){
-				throw new IdenticalValuesCannotChangedException(value);
-			}
-			user.setPosition(value);
-			break;
-		case "I":
-			if (user.getIntroduction() != null && user.getIntroduction().equals(value)){
-				throw new IdenticalValuesCannotChangedException(value);
-			}
-			user.setIntroduction(value);
-			break;
-		default:
-			throw new UnknownException(null);
+
+		if (body.getUsername() != null) {
+			user.setUsername(body.getUsername());
 		}
-		return user;
+		if (body.getNickname() != null) {
+			user.setNickname(body.getNickname());
+		}
+		if (body.getPosition() != null) {
+			user.setPosition(body.getPosition());
+		}
+		if (body.getIntroduction() != null) {
+			user.setIntroduction(body.getIntroduction());
+		}
+
+		userRepository.save(user);
+
+		return SuccessResponse.builder().message("수정 완료.").build();
 	}
-	/**
-	 * 비밀번호 변경
-	 * 
-	 * @param body
-	 * @param userDetails
-	 * @return
-	 */
 	@Transactional(rollbackFor = { Exception.class })
 	public SuccessResponse modifyPwd(ModifyPwdRequestDto body, UserDetails userDetails) {
 		SuccessResponse result = null;

@@ -16,6 +16,7 @@ import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
 import user.service.web.dto.member.request.MemberRemoveRequestDto;
+import user.service.web.dto.project.request.UpdateMemberRequestDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,8 +70,11 @@ public class MemberController {
     public SuccessResponse getUsersFromProject(@RequestParam List<Long> projectIds) {
         return memberService.getUsersFromProjects(projectIds);
     }
-    //isManager ++
-
+    @PutMapping("user/api/member")
+    @LogAop
+    public SuccessResponse updateMember(@RequestBody @Valid UpdateMemberRequestDto UpdateMemberRequestDto) {
+        return memberService.updateMember(UpdateMemberRequestDto);
+    }
 
 //    @Operation(summary = "프로젝트에서 멤버를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443")
 //    @DeleteMapping("user/api/member/project")
