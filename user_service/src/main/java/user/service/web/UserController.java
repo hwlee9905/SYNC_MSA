@@ -41,7 +41,8 @@ public class UserController {
 		UserDetails userDetails = userService.loadUserByUsername(userId);
 		return ResponseEntity.ok().body(userService.modifyPwd(body, userDetails));
 	}
-	@Operation(summary = "유저의 정보를 변경하는 API", description = "HOST = 150.136.153.235:30443")
+	@Operation(summary = "유저의 정보를 변경하는 API", description = "HOST = 150.136.153.235:30443 <br>" +
+			"ValidationDetails : ModifyUserInfoRequestDto")
 	@PutMapping("info")
 	@LogAop
 	public ResponseEntity<SuccessResponse> modifyUserInfo(@RequestBody ModifyUserInfoRequestDto body) {
