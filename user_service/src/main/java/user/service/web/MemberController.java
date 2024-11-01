@@ -24,7 +24,6 @@ public class MemberController {
     private final MemberService memberService;
     private final KafkaTaskProducerService kafkaTaskProducerService;
     private final KafkaMemberProducerService kafkaMemberProducerService;
-    private final KafkaProjectProducerService kafkaProjectProducerService;
     
     @Operation(summary = "프로젝트에 멤버를 추가하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
             "ValidationDetails : MemberMappingToProjectRequestDto")
@@ -70,6 +69,8 @@ public class MemberController {
     public SuccessResponse getUsersFromProject(@RequestParam List<Long> projectIds) {
         return memberService.getUsersFromProjects(projectIds);
     }
+    @Operation(summary = "멤버 권한을 수정하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
+            "ValidationDetails : UpdateMemberRequestDto")
     @PutMapping("user/api/member")
     @LogAop
     public SuccessResponse updateMember(@RequestBody @Valid UpdateMemberRequestDto UpdateMemberRequestDto) {
