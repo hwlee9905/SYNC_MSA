@@ -11,7 +11,6 @@ import user.service.MemberService;
 import user.service.global.advice.LogAop;
 import user.service.global.advice.SuccessResponse;
 import user.service.kafka.member.KafkaMemberProducerService;
-import user.service.kafka.project.KafkaProjectProducerService;
 import user.service.kafka.task.KafkaTaskProducerService;
 import user.service.web.dto.member.request.MemberMappingToProjectRequestDto;
 import user.service.web.dto.member.request.MemberMappingToTaskRequestDto;
