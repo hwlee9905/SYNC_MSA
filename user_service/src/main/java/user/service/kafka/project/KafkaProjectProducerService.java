@@ -10,14 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import user.service.MemberService;
 import user.service.UserService;
-import user.service.global.advice.SuccessResponse;
 import user.service.global.exception.ImageConversionFailedException;
 import user.service.global.util.ExtsnFilter;
-import user.service.kafka.member.event.DeleteMemberFromTaskEvent;
 import user.service.kafka.project.event.ProjectCreateEvent;
 import user.service.kafka.project.event.ProjectDeleteEvent;
 import user.service.kafka.project.event.ProjectUpdateEvent;
-import user.service.web.dto.member.request.MemberRemoveRequestDto;
 import user.service.web.dto.project.request.CreateProjectRequestDto;
 import user.service.web.dto.project.request.DeleteProjectRequestDto;
 import user.service.web.dto.project.request.UpdateProjectRequestDto;
@@ -36,10 +33,18 @@ public class KafkaProjectProducerService {
 
     public void sendCreateProjectEvent(CreateProjectRequestDto projectCreateRequestDto, MultipartFile img, String userId) {
     	ProjectCreateEvent event = null;
-        //이모지, 아이콘 둘다 존재할경우 예외 처리해야함
-        if (projectCreateRequestDto.getIcon() != null) {
+        //이미지, 이모지, 아이콘 다 존재할경우 예외 처리해야함
+    	/**
+    	 * 'I' : 이미지
+    	 * 'C' : 아이콘
+    	 * 'E' : 이모지
+    	 * 'N' : 없음
+    	 */
+        if (projectCreateRequestDto.getThumbnailType() == 'C' || 
+        	projectCreateRequestDto.getThumbnailType() == 'E' || 
+        	projectCreateRequestDto.getThumbnailType() == 'N') {							// 썸네일이 아이콘 또는 이모지 또는 없을 경우
             event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
-        } else if (img != null) {
+        } else if (projectCreateRequestDto.getThumbnailType() == 'I') {						// 썸네일이 이미지일 경우
             byte[] imgByte = null;
             try {
                 imgByte = img.getBytes();
@@ -48,7 +53,7 @@ public class KafkaProjectProducerService {
             }
             event = new ProjectCreateEvent(projectCreateRequestDto, imgByte, extsnFilter.getExtension(img), userId);
         } else {
-            event = new ProjectCreateEvent(projectCreateRequestDto, null, null, userId);
+        	// Exception
         }
 
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC, event);
