@@ -6,14 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import user.service.repository.MemberRepository;
 import user.service.web.MemberController;
 import user.service.web.dto.member.request.MemberRemoveRequestDto;
 
@@ -49,14 +45,12 @@ public class MemberServiceTest {
         String insertSql = "INSERT INTO user_task (task_id, user_id) VALUES (?, ?)";
         jdbcTemplate.update(insertSql, 1L, "TestLoginID");
     }
-
     @AfterEach
     public void tearDown() {
         // 테스트 데이터 정리
         String deleteSql = "DELETE FROM user_task WHERE task_id = ? AND user_id = ?";
         jdbcTemplate.update(deleteSql, 1L, "TestLoginID");
     }
-
     @Test
     public void testDeleteUsersFromTask() throws InterruptedException {
         // Given: 테스트에 필요한 데이터 설정
