@@ -41,21 +41,28 @@ public class ProjectService {
 		project.setStartDate(projectCreateRequestDto.getStartDate());
 		project.setEndDate(projectCreateRequestDto.getEndDate());
 		
+		/**
+    	 * 'I' : 이미지
+    	 * 'C' : 아이콘
+    	 * 'E' : 이모지
+    	 * 'N' : 없음
+    	 */
 		String thumbnail;
-		if (img != null && projectCreateRequestDto.getIcon() == null) {
-			thumbnail = UUID.randomUUID().toString() + "." + extsn;
-			// 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
-			// 나중에 개발...ㅋㅋ...
-			fileManagement.uploadThumbnail(img, thumbnail, 'P');
+		char thumbnailType = projectCreateRequestDto.getThumbnailType();
+		if (thumbnailType != 'N') {
+			if (thumbnailType == 'I') {			// 썸네일이 이미지일 경우
+				thumbnail = UUID.randomUUID().toString() + "." + extsn;
+				// 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
+				// 나중에 개발...ㅋㅋ...
+				fileManagement.uploadThumbnail(img, thumbnail, 'P');
+				project.setThumbnail(thumbnail);
+			} else {							// 썸네일이 아이콘 또는 이모지일 경우
+				thumbnail = projectCreateRequestDto.getThumbnail();
+				project.setThumbnail(thumbnail);
+			}
 			project.setThumbnail(thumbnail);
-			project.setThumbnailType('M');
-		} else if(projectCreateRequestDto.getIcon() != null && img == null) {
-			thumbnail = projectCreateRequestDto.getIcon();
-			project.setThumbnail(thumbnail);
-			project.setThumbnailType('C');
-		} else {
-			project.setThumbnailType('N');
 		}
+		project.setThumbnailType(projectCreateRequestDto.getThumbnailType());
 
 		return projectRepository.save(project);
 	}

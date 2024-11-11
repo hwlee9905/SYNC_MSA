@@ -2,7 +2,10 @@ package alarm.service.entity;
 
 import java.util.UUID;
 
-import alarm.service.dto.AlarmDto;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import alarm.service.dto.AlarmUrlDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,28 +16,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "alarm")
+@Table(name = "alarm_url")
+@DynamicInsert
+@DynamicUpdate
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class Alarm extends BaseEntity{
-	@Id 
-	@Column(name = "alarm_id")
-	private UUID alarmId;
+public class AlarmUrl extends BaseEntity{
+	@Id
+	private UUID url;
 	
-	//@Column(name = "user_id", columnDefinition = "BIGINT UNSIGNED", nullable = false)
+//	@Column(name = "user_id", columnDefinition = "BIGINT UNSIGNED", nullable = false)
 	@Column(name = "user_id", nullable = false)
 	private long userId;
 	
-	@Column(name = "message", length = 255, nullable = false)
-	private String message;
-
-	public AlarmDto toDto() {
-		return AlarmDto.builder()
-				.alarmId(alarmId)
+	public AlarmUrlDto toDto() {
+		return AlarmUrlDto.builder()
+				.url(url)
 				.userId(userId)
-				.message(message)
 				.build();
 	}
 }
