@@ -1,11 +1,8 @@
 package project.service.dto.response;
 
 import lombok.*;
-import project.service.entity.Task;
 
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -20,5 +17,14 @@ public class GetTasksByProjectIdResponseDto {
     private Date endDate;
     private int status;
     private int depth;
-    private float progress;
+    private Task task;
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Task {
+        private int totalCount;
+        private int completedCount;
+    }
 }

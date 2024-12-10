@@ -127,6 +127,7 @@ public class KafkaTaskProducerService {
                 })
                 .collect(Collectors.toList()) :
             Collections.emptyList();
+
         List<TaskUpdateEvent.FileData> deletedFileDataList = deletedImages != null ?
             deletedImages.stream()
                 .map(file -> {
@@ -138,6 +139,7 @@ public class KafkaTaskProducerService {
                 })
                 .collect(Collectors.toList()) :
             Collections.emptyList();
+
         TaskUpdateEvent event = new TaskUpdateEvent(updateTaskRequestDto, fileDataList, deletedFileDataList);
         kafkaTemplate.send(TOPIC3, event);
         return SuccessResponse.builder().message("업무 수정 이벤트 생성").data(updateTaskRequestDto).build();
