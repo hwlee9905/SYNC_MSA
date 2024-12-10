@@ -308,7 +308,10 @@ public class TaskService {
                 .endDate(task.getEndDate())
                 .status(task.getStatus())
                 .depth(task.getDepth())
-                .progress((float) project.getChildCompleteCount() / project.getChildCount())
+                .task(GetTasksByProjectIdResponseDto.Task.builder()
+                    .totalCount(task.getChildCount())
+                    .completedCount(task.getChildCompleteCount())
+                    .build())
                 .build())
             .collect(Collectors.toList());
 
