@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.service.dto.request.CreateProjectRequestDto;
 import project.service.dto.request.UpdateProjectRequestDto;
 import project.service.dto.response.GetProjectsResponseDto;
+import project.service.dto.response.GetTasksByProjectIdResponseDto;
 import project.service.entity.Project;
 import project.service.global.SuccessResponse;
 import project.service.global.util.FileManagement;
@@ -93,10 +94,6 @@ public class ProjectService {
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.map(project -> {
-					float progress = 0.0f;
-					if (project.getChildCount() > 0) {
-						progress = (float) project.getChildCompleteCount() / project.getChildCount();
-					}
 					return new GetProjectsResponseDto(
 						project.getId(),
 						project.getTitle(),
@@ -106,7 +103,10 @@ public class ProjectService {
 						project.getEndDate(),
 						project.getThumbnailType() == 'M' ? request.getScheme() + "://" +request.getServerName() + ":" + request.getServerPort() + "/project/thumbnail/" + project.getThumbnail() : project.getThumbnail(),
 						project.getThumbnailType(),
-						progress
+						new GetProjectsResponseDto.Task(
+								project.getChildCount(),
+								project.getChildCompleteCount()
+						)
 					);
 				})
 				.collect(Collectors.toList());

@@ -37,7 +37,7 @@ public class KafkaMemberProducerService {
     }
     public SuccessResponse sendRemoveUserFromTaskEvent(MemberRemoveRequestDto memberRemoveRequestDto) {
         Long userId = userService.getUserEntityId(memberRemoveRequestDto.getUserId());
-        DeleteMemberFromTaskEvent event = new DeleteMemberFromTaskEvent(userId, memberRemoveRequestDto.getTaskId());
+        DeleteMemberFromTaskEvent event = new DeleteMemberFromTaskEvent(memberRemoveRequestDto.getTaskId(), userId);
         ProducerRecord<String, Object> record = new ProducerRecord<>(TOPIC1, event);
         record.headers().remove("spring.json.header.types");
         kafkaTemplate.send(record);

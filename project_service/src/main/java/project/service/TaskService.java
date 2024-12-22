@@ -250,7 +250,6 @@ public class TaskService {
         if (thumbnailByte != null && createTaskRequestDto.getThumbnailIcon() == null) {
             thumbnail = UUID.randomUUID().toString() + "." + extsn;
             // 만약 Exception 발생하면 저장된 썸네일 이미지도 삭제 시켜야함 (롤백)
-            // 나중에 개발...ㅋㅋ...
             fileManagement.uploadThumbnail(thumbnailByte, thumbnail, 'T');
             task.setThumbnail(thumbnail);
             task.setThumbnailType('M');
@@ -331,6 +330,7 @@ public class TaskService {
             return;
         }
         userTaskRepository.deleteById(userTaskId);
+        userTaskRepository.flush(); // 변경 사항 강제 반영
         log.info("Ending removeUserFromTask transaction");
     }
 

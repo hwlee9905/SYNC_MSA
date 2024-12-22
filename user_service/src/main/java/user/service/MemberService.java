@@ -104,13 +104,12 @@ public class MemberService {
     @Transactional(rollbackFor = { Exception.class })
     public Boolean allMembersInSameProject(MemberMappingToTaskRequestDto memberMappingToTaskRequestDto) {
         List<Long> userIds = memberMappingToTaskRequestDto.getUserIds();
-        Set<Long> uniqueProjectIds = userIds.stream()
-                .map(userId -> memberRepository.findMemberByUserId(userId)
-                        .orElseThrow(() -> new EntityNotFoundException("Member not found for UserId: " + userId)))
-                .map(Member::getProjectId)
-                .collect(Collectors.toSet());
+        Long projectId = memberMappingToTaskRequestDto.getProjectId();
 
-        return uniqueProjectIds.size() == 1;
+        return userIds.stream()
+                .map(userId -> memberRepository.findMemberByUserIdAndProjectId(userId, projectId)
+                        .orElseThrow(() -> new EntityNotFoundException("Member not found for UserId: " + userId + " and ProjectId: " + projectId)))
+                .allMatch(member -> member.getProjectId().equals(projectId));
     }
     
     /**
