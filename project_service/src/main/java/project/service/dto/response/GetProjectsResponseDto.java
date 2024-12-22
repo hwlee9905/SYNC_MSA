@@ -1,7 +1,6 @@
 package project.service.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Date;
 @AllArgsConstructor
@@ -15,5 +14,14 @@ public class GetProjectsResponseDto {
     private Date endDate;
     private String thumbnail;
     private char thumbnailType;
-    private Float progress;
+    private Task task;
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Task {
+        private int totalCount;
+        private int completedCount;
+    }
 }

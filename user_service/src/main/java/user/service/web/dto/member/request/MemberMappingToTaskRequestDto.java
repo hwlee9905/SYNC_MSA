@@ -19,4 +19,7 @@ public class MemberMappingToTaskRequestDto {
     @Schema(description = "업무 아이디")
     @NotNull(message = "업무 아이디는 필수값입니다.")
     private Long taskId;
+    @Schema(description = "업무 아이디")
+    @NotNull(message = "업무 아이디는 필수값입니다.")
+    private Long projectId;
 }
