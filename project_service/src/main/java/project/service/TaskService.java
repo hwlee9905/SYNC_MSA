@@ -240,10 +240,18 @@ public class TaskService {
 
             task.setDepth(parentTask.get().getDepth() + 1);
             task.setParentTask(parentTaskEntity);
+
+            // updateChildCompleteCount 호출
+            updateChildCompleteCount(parentTaskEntity, 0, createTaskRequestDto.getStatus());
+            taskRepository.save(parentTaskEntity);
         } else {
             project.setChildCount(project.getChildCount() + 1);
 
             task.setDepth(0);
+
+            // updateChildCompleteCountForProject 호출
+            updateChildCompleteCountForProject(project, 0, createTaskRequestDto.getStatus());
+            projectRepository.save(project);
         }
 
         String thumbnail;
@@ -274,6 +282,11 @@ public class TaskService {
         Optional.of(parentTask)
                 .filter(task -> oldStatus == 2 && newStatus != 2)
                 .ifPresent(task -> task.setChildCompleteCount(task.getChildCompleteCount() - 1));
+
+        // getChildCompleteCount와 childCount의 개수가 같으면 status를 2로 설정
+        if (parentTask.getChildCompleteCount().equals(parentTask.getChildCount())) {
+            parentTask.setStatus(2);
+        }
     }
     public SuccessResponse getUserIdsFromTask(Long taskId) {
         List<UserTask> userTasks = userTaskRepository.findByTaskId(taskId);
