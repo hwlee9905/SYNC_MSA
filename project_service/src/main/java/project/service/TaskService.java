@@ -274,6 +274,11 @@ public class TaskService {
         Optional.of(parentTask)
                 .filter(task -> oldStatus == 2 && newStatus != 2)
                 .ifPresent(task -> task.setChildCompleteCount(task.getChildCompleteCount() - 1));
+
+        // getChildCompleteCount와 childCount의 개수가 같으면 status를 2로 설정
+        if (parentTask.getChildCompleteCount().equals(parentTask.getChildCount())) {
+            parentTask.setStatus(2);
+        }
     }
     public SuccessResponse getUserIdsFromTask(Long taskId) {
         List<UserTask> userTasks = userTaskRepository.findByTaskId(taskId);
