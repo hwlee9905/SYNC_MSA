@@ -240,10 +240,18 @@ public class TaskService {
 
             task.setDepth(parentTask.get().getDepth() + 1);
             task.setParentTask(parentTaskEntity);
+
+            // updateChildCompleteCount 호출
+            updateChildCompleteCount(parentTaskEntity, 0, createTaskRequestDto.getStatus());
+            taskRepository.save(parentTaskEntity);
         } else {
             project.setChildCount(project.getChildCount() + 1);
 
             task.setDepth(0);
+
+            // updateChildCompleteCountForProject 호출
+            updateChildCompleteCountForProject(project, 0, createTaskRequestDto.getStatus());
+            projectRepository.save(project);
         }
 
         String thumbnail;
