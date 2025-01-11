@@ -1,6 +1,7 @@
 package project.service.controller;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +41,10 @@ public class TaskController {
     }
     @GetMapping("node2/api/task/image")
     public ResponseEntity<Resource> getImage(@RequestParam String filename) {
-        return taskService.getImage(filename);
+        Resource file = taskService.getImage(filename).getBody(); // getImage 메서드가 Resource 객체 반환
+        String contentType = "image/jpeg"; // 적절한 MIME 타입으로 설정
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(file);
     }
-
 }
