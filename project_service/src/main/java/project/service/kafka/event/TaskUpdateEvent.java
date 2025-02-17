@@ -1,9 +1,6 @@
 package project.service.kafka.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import project.service.dto.request.UpdateTaskRequestDto;
 
 import java.util.List;
@@ -16,6 +13,7 @@ public class TaskUpdateEvent {
     private List<FileData> deletedImages;
 
     @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class FileData implements project.service.global.FileData{
         private String fileName;
