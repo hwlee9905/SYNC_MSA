@@ -3,9 +3,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import user.service.global.entity.BaseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
