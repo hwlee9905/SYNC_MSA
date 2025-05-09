@@ -50,16 +50,14 @@ public class TaskController {
 
     
     //해당 업무의 자식 업무만 조회합니다.
-    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
-        "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
+    @Operation(summary = "해당 업무의 자식 업무를 조회하기 위한 API", description = "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksResponseDto <br>")
     @GetMapping("node2/api/task/v1")
     @LogAop
     public void getOnlyChildrenTasks(@RequestParam Long taskId) {
     }
     
-    @Operation(summary = "해당 프로젝트의 업무를 조회하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
-        "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
+    @Operation(summary = "해당 프로젝트의 업무를 조회하기 위한 API", description = "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생 <br>" +
         "ResponseDto : GetTasksByProjectIdResponseDto")
     @GetMapping("node2/api/task/v2")
     @LogAop
@@ -67,15 +65,13 @@ public class TaskController {
     }
     
     //해당 업무를 삭제합니다.
-    @Operation(summary = "업무를 삭제하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
-            "ValidationDetails : DeleteTaskRequestDto")
+    @Operation(summary = "업무를 삭제하기 위한 API", description = "ValidationDetails : DeleteTaskRequestDto")
     @DeleteMapping("/user/api/task")
     @LogAop
     public SuccessResponse deleteTask(@RequestBody @Valid DeleteTaskRequestDto deleteTaskRequestDto) {
         return kafkaTaskProducerService.sendDeleteTaskEvent(deleteTaskRequestDto);
     }
-    @Operation(summary = "업무를 수정하기 위한 API", description = "HOST = 150.136.153.235:30443 <br>" +
-        "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 수정 불가 <br>" +
+    @Operation(summary = "업무를 수정하기 위한 API", description = "Validation : 로그인 필요함, 해당 프로젝트에 속해있지 않은 유저는 업무 수정 불가 <br>" +
         "DTOValidation : UpdateTaskRequestDto")
     @PutMapping("/user/api/task")
     @LogAop
@@ -88,16 +84,14 @@ public class TaskController {
         return kafkaTaskProducerService.sendUpdateTaskEvent(updateTaskRequestDto, descriptionImages, deletedImages);
     }
     
-    @Operation(summary = "파일을 가져오기 위한 API", description = "HOST = 150.136.153.235:30443 <br>"
-        + "Validation : 로그인 필요하지 않음, 잘못된 filename 입력시 오류 발생")
+    @Operation(summary = "파일을 가져오기 위한 API", description = "Validation : 로그인 필요하지 않음, 잘못된 filename 입력시 오류 발생")
     @GetMapping("node2/api/task/image")
     @LogAop
     public void getImage(@RequestParam String filename) {
 
     }
     
-    @Operation(summary = "이미지를 포함한 단일 task를 가져오는 API", description = "HOST = 150.136.153.235:30443"
-        + "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생")
+    @Operation(summary = "이미지를 포함한 단일 task를 가져오는 API", description = "Validation : 로그인 필요하지 않음, 잘못된 taskId 입력시 오류 발생")
     @GetMapping("node2/api/task/v3")
     @LogAop
     public void getTask(@RequestParam Long taskId) {
