@@ -37,8 +37,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             //스프링 시큐리티에서 id와 password를 검증하기 위해서 token에 담는다.
             // (token이 AuthenticationManager로 넘겨질 때 dto 역할을 한다.)
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password, null);
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            return authentication;
+            return authenticationManager.authenticate(authenticationToken);
         } catch (Exception e) {
             exceptionResolver.resolveException(request, response, null, e);
         }
