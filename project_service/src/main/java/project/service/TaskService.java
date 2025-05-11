@@ -96,7 +96,7 @@ public class TaskService {
 
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse getOnlyChildrenTasks(Long taskId) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findTaskWithSubTasks(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
         GetTasksResponseDto result = GetTasksResponseDto.fromEntityOnlyChildrenTasks(task);
         return SuccessResponse.builder().data(result).build();
@@ -106,7 +106,7 @@ public class TaskService {
         Optional<Task> task = taskRepository.findById(userAddToTaskEvent.getTaskId());
         //task id 존재하지 않는경우 예외처리 해야함 (추가)
         List<Long> userIds = userAddToTaskEvent.getUserIds();
-        userIds.stream().forEach(userId -> {
+        userIds.forEach(userId -> {
             UserTaskId userTaskId = UserTaskId.builder()
                 .userId(userId)
                 .taskId(task.get().getId())

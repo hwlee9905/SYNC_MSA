@@ -1,5 +1,6 @@
 package user.service.global.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import user.service.global.advice.LogTrace;
 import user.service.global.advice.ThreadLocalLogTrace;
 
 @Configuration
+@Getter
 public class ApplicationConfig {
 	@Value("${spring.kafka.bootstrap-servers}")
 	private String kafkaHost;
@@ -24,18 +26,6 @@ public class ApplicationConfig {
 	@Bean
 	public MultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
-	}
-
-	public String getKafkaHost() {
-		return this.kafkaHost;
-	}
-
-	public String getAlarmApi() {
-		return this.alarmApi;
-	}
-
-	public String getProjectApi() {
-		return this.projectApi;
 	}
 	@Bean
 	public LogTrace logTrace() {

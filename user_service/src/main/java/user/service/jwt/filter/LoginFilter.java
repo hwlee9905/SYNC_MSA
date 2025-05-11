@@ -79,22 +79,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         throw new AuthenticationFailureException("패스워드가 잘못되었습니다.", ErrorCode.USER_FAILED_AUTHENTICATION);
     }
     private ResponseCookie createCookie(String key, String value) {
-        ResponseCookie cookie = ResponseCookie.from(key, value)
+        return ResponseCookie.from(key, value)
             .path("/")
             .sameSite("none")
             .httpOnly(false)
             .secure(true)
             .maxAge(30*60)
             .build();
-        return cookie;
     }
     @Override
     protected String obtainUsername(HttpServletRequest request) {
         return request.getParameter("id");
     }
     static class UserResponse {
-        private String userId;
-        private String name;
+        private final String userId;
+        private final String name;
 
         public UserResponse(String userId, String name) {
             this.userId = userId;

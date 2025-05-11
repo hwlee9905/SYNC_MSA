@@ -45,7 +45,7 @@ public class MemberService {
     @Transactional(rollbackFor = { Exception.class })
     public SuccessResponse memberAddToProject(MemberMappingToProjectRequestDto memberMappingToProjectRequestDto) {
         List<String> userIds = memberMappingToProjectRequestDto.getUserIds();
-        Long projectId = memberMappingToProjectRequestDto.getProjectId();
+        long projectId = memberMappingToProjectRequestDto.getProjectId();
         int isManager = memberMappingToProjectRequestDto.getIsManager();
 
         userIds.forEach(userId -> {
